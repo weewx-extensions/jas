@@ -3,12 +3,6 @@ title: Defining New Charts
 nav_order: 5
 ---
 
-## Table of Contents
-{: .no_toc}
-
-- Table of Contents
-{:toc}
-
 WeeWX uses [Apache ECharts](https://echarts.apache.org/en/index.html) to generate the charts.
 A very complete set of [reference documentation](https://echarts.apache.org/handbook/en/get-started) exists.
 WeeWX-JAS also contains some basic charts.
@@ -38,9 +32,14 @@ var option = {
               text = "'Inside Temperature'"
 ```
 
+
 ## `[[[[chart_definitions]]]]`
+{: .no_toc}
 
 This section is used to define the additional charts.
+
+- Table of Contents
+{:toc}
 
 ### `[[[[[chart-name]]]]]`
 
