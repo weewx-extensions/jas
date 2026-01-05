@@ -28,6 +28,8 @@ url: "https://weewx-extensions.github.io" # the base hostname & protocol for you
 #twitter_username: jekyllrb
 #github_username:  jekyll
 remote_theme: just-the-docs/just-the-docs
+back_to_top: true
+back_to_top_text: "Back to top"
 
 # Build settings
 #theme: minima
