@@ -1,4 +1,4 @@
-#    Copyright (c) 2021-2025 Rich Bell <bellrichm@gmail.com>
+#    Copyright (c) 2021-2026 Rich Bell <bellrichm@gmail.com>
 #    See the file LICENSE.txt for your rights.
 
 # pylint: disable=line-too-long, too-many-lines

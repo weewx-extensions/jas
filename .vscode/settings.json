@@ -1,4 +1,11 @@
 {
-    "python.pythonPath": "/usr/bin/python3",
+    "pylint.enabled": true,
+
+    "flake8.importStrategy": "fromEnvironment",
+    "python.analysis.extraPaths": [
+        "../weewx/src",
+        "bin"
+    ],
+    
     "git.autofetch": true
 }

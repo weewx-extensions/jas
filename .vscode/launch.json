@@ -6,7 +6,7 @@
     "configurations": [
             {
             "name": "weectl report",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "justMyCode": false,
             "program": "~/weewx/src/weectl.py",
@@ -20,6 +20,21 @@
             ],            
             "console": "integratedTerminal"
         },
+        {
+            "name": "Specific test",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${file}",
+            "program": "bin/user/tests/unit/test_template.py",
+            "console": "integratedTerminal",
+            "args": [
+                //"TestInit",
+                //"test_PublishWeeWX_stanza_is_deprecated",
+
+                "TestTemplate",
+                "test_template",
+            ],
+        },        
         {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
