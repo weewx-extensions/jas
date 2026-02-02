@@ -4,3 +4,4 @@ skins/jas/lang/de*.conf
 skins/jas/lang/bad-encoding/*
 .coverage
 act-artifacts/
+tmp/

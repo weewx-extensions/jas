@@ -1507,6 +1507,8 @@ class JASGenerator(weewx.reportengine.ReportGenerator):
                                'archive-month': weeutil.weeutil.genMonthSpans,
                                'archive-year' : weeutil.weeutil.genYearSpans}        
 
+    def _spangen(self, start_ts, stop_ts):
+        return [weeutil.weeutil.TimeSpan(start_ts, stop_ts)]
 
     def _skip_generation(self, generator_dict, timespan, generate_interval, interval_type, filename, stop_ts):
 
@@ -1631,7 +1633,7 @@ class ChartGenerator(JASGenerator):
                 if page_name in self.generator_dict:
                     _spangen = self.generator_dict[page_name]
                 else:
-                    _spangen = lambda start_ts, stop_ts: [weeutil.weeutil.TimeSpan(start_ts, stop_ts)]
+                    _spangen = self._spangen
                 for timespan in _spangen(start_ts, stop_ts):
                     #self.timespan = timespan # todo
                     start_tt = time.localtime(timespan.start)
@@ -1755,10 +1757,10 @@ class ChartGenerator(JASGenerator):
                     self.chart_defs[chart]['series'][value]['weewx'] = {}
                 weeutil.config.conditional_merge(self.chart_defs[chart]['series'][value]['weewx'], weewx_options)
 
-    def _gen_charts(self, filename, page, interval, page_name):
+    def _gen_charts(self, filename, page_name, interval, page):
         start_time = time.time()
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
-        page_series_type = self.skin_dict['Extras']['page_definition'][page].get('series_type', 'single')
+        page_series_type = self.skin_dict['Extras']['page_definition'][page_name].get('series_type', 'single')
 
         chart_final = '\n'
         chart_final += '/* jas ' + VERSION + ' ' + str(self.gen_time) + ' */\n'
@@ -1777,17 +1779,17 @@ class ChartGenerator(JASGenerator):
         chart_final += '\n'
         chart_final += 'function setupCharts() {\n'
         chart_final += "  ordinateNames = ['" + "', '".join(self.ordinate_names) + "'];\n"
-        if self.skin_dict['Extras']['pages'][page].get('windRose', None) is not None:
+        if self.skin_dict['Extras']['pages'][page_name].get('windRose', None) is not None:
             chart_final += "  windRangeLegend = " + self._get_wind_range_legend() + ";\n"
         chart_final += "\n"
 
         chart2 = ""
         chart3 = "  index = 0;\n"
         charts = self.skin_dict['Extras']['chart_definitions']
-        for chart in self.skin_dict['Extras']['pages'][page]:
+        for chart in self.skin_dict['Extras']['pages'][page_name]:
             if chart in charts.sections:
                 chart_data_binding = charts[chart].get('weewx', {}).get('data_binding', skin_data_binding)
-                chart_series_type = self.skin_dict['Extras']['pages'][page][chart].get('series_type')
+                chart_series_type = self.skin_dict['Extras']['pages'][page_name][chart].get('series_type')
 
                 if chart_series_type and chart_series_type == 'mqtt':
                     series_type = chart_series_type
@@ -1807,7 +1809,7 @@ class ChartGenerator(JASGenerator):
                 #self.charts_def[chart].merge(self.skin_dict['Extras']['pages'][page][chart])
 
                 chart_js = "  var option = {\n"
-                chart2 += self._gen_series('    ', page, chart, chart_js, series_type, chart_def['series'], chart_data_binding)
+                chart2 += self._gen_series('    ', page_name, chart, chart_js, series_type, chart_def['series'], chart_data_binding)
 
                 if chart not in self.charts_javascript:
                     self.charts_javascript[chart] = {}
@@ -1819,9 +1821,9 @@ class ChartGenerator(JASGenerator):
 
                 chart2 += "  };\n"
                 chart2 += "\n"
-                chart2 += "  pageIndex['" + chart + page_name + "'] = Object.keys(pageIndex).length;\n"
-                chart2 += "  var telem = document.getElementById('" + chart + page_name + "');\n"
-                chart2 += "  var " + chart + "chart = echarts.init(document.getElementById('" + chart + page_name + "'));\n"
+                chart2 += "  pageIndex['" + chart + page + "'] = Object.keys(pageIndex).length;\n"
+                chart2 += "  var telem = document.getElementById('" + chart + page + "');\n"
+                chart2 += "  var " + chart + "chart = echarts.init(document.getElementById('" + chart + page + "'));\n"
                 chart2 += "  " + chart + "chart.setOption(option);\n"
 
                 chart2 += "  pageChart = {};\n"
@@ -1846,8 +1848,8 @@ class ChartGenerator(JASGenerator):
                         obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
                         chart3 += "      {name: " + chart_def['series'][obs].get('name', 'getLabel(' + "'" + obs + "')") + ",\n"
                         chart3 += "       data: [\n"
-                        (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page].get('start', None),
-                                                                 self.skin_dict['Extras']['pages'][page].get('end', None),
+                        (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
+                                                                 self.skin_dict['Extras']['pages'][page_name].get('end', None),
                                                                  chart_data_binding)
                         for year in range(start_year, end_year):
                             chart3 += "               ...year" + str(year) + "_" + aggregate_type \
@@ -1863,8 +1865,8 @@ class ChartGenerator(JASGenerator):
                     obs = next(iter(chart_def['series']))
                     obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
                     aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                    (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page].get('start', None),
-                                                             self.skin_dict['Extras']['pages'][page].get('end', None),
+                    (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
+                                                             self.skin_dict['Extras']['pages'][page_name].get('end', None),
                                                              chart_data_binding)
                     for year in range(start_year, end_year):
                         chart3 += "      {name: '" + str(year) + "',\n"
@@ -2793,7 +2795,7 @@ class DataGenerator(JASGenerator):
                 if page_name in self.generator_dict:
                     _spangen = self.generator_dict[page_name]
                 else:
-                    _spangen = lambda start_ts, stop_ts: [weeutil.weeutil.TimeSpan(start_ts, stop_ts)]
+                    _spangen = self._spangen
 
                 for timespan in _spangen(start_ts, stop_ts):
                     self.timespan = timespan
