@@ -16,7 +16,7 @@
                 //"develop",
                 //"jas-monitor",
                 "jas",
-                "--config", "~/weewx-data/weewx.conf"
+                "--config", "tmp/weewx.conf"
             ],            
             "console": "integratedTerminal"
         },
