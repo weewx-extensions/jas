@@ -2237,7 +2237,7 @@ class DataGenerator(JASGenerator):
                 json.dump(forecast_data, forecast_fp, indent=2)
         return forecast_data
 
-    def _get_current(self, obs_type, data_binding, unit_name=None):
+    def _get_current(self, timespan, obs_type, data_binding, unit_name=None):
         db_manager = self.db_binder.get_manager(data_binding=data_binding)
 
         # Start of code stolen from tags.py CurrentObj __getattr__
@@ -2245,7 +2245,7 @@ class DataGenerator(JASGenerator):
         # It does not gave the necessary data.
         # This always uses data from the database.
         # Get the record for this timestamp from the database
-        record = db_manager.getRecord(self.timespan.stop, max_delta=None)
+        record = db_manager.getRecord(timespan.stop, max_delta=None)
         # If there was no record at that timestamp, it will be None. If there was a record,
         # check to see if the type is in it.
 
@@ -2428,33 +2428,33 @@ class DataGenerator(JASGenerator):
 
     # Create time stamps by aggregation time for the end of interval
     # For example: endTimestamp_min, endTimestamp_max
-    def _gen_interval_end_timestamp(self, page_data_binding, interval_name, page_definition_name):
+    def _gen_interval_end_timestamp(self, timespan, page_data_binding, interval_name, page_definition_name):
         data = ''
         for aggregate_type in self.skin_dict['Extras']['page_definition'][page_definition_name]['aggregate_interval']:
             aggregate_interval = self.skin_dict['Extras']['page_definition'][page_definition_name]['aggregate_interval'][aggregate_type]
             if aggregate_interval == 'day':
-                end_timestamp =(self._get_timespan_binder(interval_name, page_data_binding).end.raw // 86400 * 86400 - (self.utc_offset * 60)) * 1000
+                end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 86400 * 86400 - (self.utc_offset * 60)) * 1000
             elif aggregate_interval == 'hour':
-                end_timestamp =(self._get_timespan_binder(interval_name, page_data_binding).end.raw // 3600 * 3600 - (self.utc_offset * 60)) * 1000
+                end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 3600 * 3600 - (self.utc_offset * 60)) * 1000
             else:
-                end_timestamp =(self._get_timespan_binder(interval_name, page_data_binding).end.raw // 60 * 60 - (self.utc_offset * 60)) * 1000
+                end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 60 * 60 - (self.utc_offset * 60)) * 1000
 
             data +=  "  pageData.endTimestamp_" + aggregate_type +  " = " +  str(end_timestamp) + ";\n"
 
         return data
 
-    def _get_timespan_binder(self, time_period, data_binding):
-        return TimespanBinder(self._get_timespan(time_period, self.timespan.stop),
+    def _get_timespan_binder(self, timespan, time_period, data_binding):
+        return TimespanBinder(self._get_timespan(time_period, timespan.stop),
                                      self.db_binder.bind_default(data_binding),
                                      data_binding=data_binding,
                                      context=time_period,
                                      formatter=self.formatter,
                                      converter=self.converter)
 
-    def _get_aggregate(self, observation, data_binding, time_period, aggregate_type, unit_name = None, rounding=2, add_label=False, localize=False):
+    def _get_aggregate(self, timespan, observation, data_binding, time_period, aggregate_type, unit_name = None, rounding=2, add_label=False, localize=False):
         obs_binder = weewx.tags.ObservationBinder(
             observation,
-            self._get_timespan(time_period, self.timespan.stop),
+            self._get_timespan(time_period, timespan.stop),
             self.db_binder.bind_default(data_binding),
             data_binding,
             time_period,
@@ -2566,10 +2566,10 @@ class DataGenerator(JASGenerator):
 
         return wind_compass_avg, wind_compass_max, wind_compass_speeds
 
-    def _get_series(self, observation, data_binding, time_period, aggregate_type=None, aggregate_interval=None, time_series='both', time_unit='unix_epoch', unit_name = None, rounding=2, jsonize=True):
+    def _get_series(self, timespan, observation, data_binding, time_period, aggregate_type=None, aggregate_interval=None, time_series='both', time_unit='unix_epoch', unit_name = None, rounding=2, jsonize=True):
         obs_binder = weewx.tags.ObservationBinder(
             observation,
-            self._get_timespan(time_period, self.timespan.stop),
+            self._get_timespan(time_period, timespan.stop),
             self.db_binder.bind_default(data_binding),
             data_binding,
             time_period,
@@ -2589,7 +2589,7 @@ class DataGenerator(JASGenerator):
 
         return data3
 
-    def _gen_aggregate_objects(self, interval, page_definition_name, interval_long_name):
+    def _gen_aggregate_objects(self, timespan, interval, page_definition_name, interval_long_name):
         data = ""
 
         # Define the 'aggegate' objects to hold the data
@@ -2614,7 +2614,7 @@ class DataGenerator(JASGenerator):
                         array_name = name_prefix
 
                         if aggregate_interval is not None:
-                            data += "  pageData." + array_name + " = " + self._get_series(observation, data_binding, interval, aggregate_type, aggregate_interval, self.aggregate_time_display, 'unix_epoch_ms', unit_name, 2, True) + ";\n"
+                            data += "  pageData." + array_name + " = " + self._get_series(timespan, observation, data_binding, interval, aggregate_type, aggregate_interval, self.aggregate_time_display, 'unix_epoch_ms', unit_name, 2, True) + ";\n"
                         else:
                             # wind 'observation' is special see #87
                             if observation == 'wind':
@@ -2626,7 +2626,7 @@ class DataGenerator(JASGenerator):
                             else:
                                 weewx_observation = observation
                             #end if
-                            data += "  pageData." + array_name + " = " + self._get_series(weewx_observation, data_binding, interval, None, None, self.time_display, 'unix_epoch_ms', unit_name, 2, True) + ";\n"
+                            data += "  pageData." + array_name + " = " + self._get_series(timespan, weewx_observation, data_binding, interval, None, None, self.time_display, 'unix_epoch_ms', unit_name, 2, True) + ";\n"
 
         data += "\n"
         return data
@@ -2742,11 +2742,11 @@ class DataGenerator(JASGenerator):
 
     # Proof of concept - wind rose
     # Create data for wind rose chart
-    def _gen_windrose(self, page_data_binding, interval_name, page_definition_name, interval_long_name):
+    def _gen_windrose(self, timespan, page_data_binding, interval_name, page_definition_name, interval_long_name):
         data = ''
 
-        interval_start_seconds_global = self._get_timespan_binder(interval_name, page_data_binding).start.raw
-        interval_end_seconds_global = self._get_timespan_binder(interval_name, page_data_binding).end.raw
+        interval_start_seconds_global = self._get_timespan_binder(timespan, interval_name, page_data_binding).start.raw
+        interval_end_seconds_global = self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw
 
         if self.skin_dict['Extras']['pages'][page_definition_name].get('windRose', None) is not None:
             avg_value, max_value, wind_directions = self._get_wind_compass(data_binding=page_data_binding, start_time=interval_start_seconds_global, end_time=interval_end_seconds_global) # need to match function signature pylint: disable=unused-variable
@@ -2798,7 +2798,7 @@ class DataGenerator(JASGenerator):
                     _spangen = self._spangen
 
                 for timespan in _spangen(start_ts, stop_ts):
-                    self.timespan = timespan
+                    # self.timespan = timespan
                     start_tt = time.localtime(timespan.start)
                     #stop_tt = time.localtime(timespan.stop)
                     if page_name == 'archive-year':
@@ -2843,7 +2843,7 @@ class DataGenerator(JASGenerator):
                     if self._skip_generation(self.skin_dict.get('DataGenerator'), timespan, generate_interval, period_type, filename, stop_ts):
                         continue
 
-                    data = self._gen_it(dataload_file, page_name, interval_long_name, data_load_file_name)
+                    data = self._gen_it(timespan, dataload_file, page_name, interval_long_name, data_load_file_name)
                     byte_string = data.encode('utf8')
 
                     try:
@@ -2863,7 +2863,7 @@ class DataGenerator(JASGenerator):
                     if self.skin_dict['Extras']['page_definition'][page_name].get('series_type', 'single') != 'single':
                         continue
 
-                    data = self._gen_data_load(filename, time_period, period_type, page_name, interval_long_name)
+                    data = self._gen_data_load(timespan, filename, time_period, period_type, page_name, interval_long_name)
                     byte_string = data.encode('utf8')
 
                     try:
@@ -2906,7 +2906,7 @@ class DataGenerator(JASGenerator):
             except OSError:
                 pass
 
-    def _gen_it(self, filename, page_definition_name, interval_long_name, data_load_file_name):
+    def _gen_it(self, timespan, filename, page_definition_name, interval_long_name, data_load_file_name):
         start_time = time.time()
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         series_type = self.skin_dict['Extras']['page_definition'][page_definition_name].get('series_type', 'single')
@@ -2919,7 +2919,7 @@ class DataGenerator(JASGenerator):
         query_string = ''
         if 'data' in to_list(self.skin_dict['Extras']['pages'][page_definition_name].get('query_string_on',
                                                                                          self.skin_dict['Extras']['pages'].get('query_string_on', []))):
-            query_string = f"?ts={str(self._get_current('dateTime', data_binding=skin_data_binding, unit_name='default').raw )}"
+            query_string = f"?ts={str(self._get_current(timespan, 'dateTime', data_binding=skin_data_binding, unit_name='default').raw )}"
 
         data = ''
 
@@ -2972,7 +2972,7 @@ class DataGenerator(JASGenerator):
 
         return data
 
-    def _gen_data_load(self, filename, interval, interval_type, page_definition_name, interval_long_name):
+    def _gen_data_load(self, timespan, filename, interval, interval_type, page_definition_name, interval_long_name):
         start_time = time.time()
 
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
@@ -3033,18 +3033,18 @@ class DataGenerator(JASGenerator):
                 data += '  pageData.forecasts.push(forecast);\n'
                 data += '\n'
 
-        data += self._gen_data_load2(interval, interval_type, page_definition_name, skin_data_binding, page_data_binding)
+        data += self._gen_data_load2(timespan, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding)
 
-        data += self._gen_aggregate_objects(interval, page_definition_name, interval_long_name)
+        data += self._gen_aggregate_objects(timespan, interval, page_definition_name, interval_long_name)
 
         if self.skin_dict['Extras']['pages'][page_definition_name].get('current', None) is not None:
-            data += self._gen_data_load3(skin_data_binding, interval)
+            data += self._gen_data_load3(timespan, skin_data_binding, interval)
 
         data += "\n"
 
         data += "\n"
         if self.skin_dict['Extras']['pages'][page_definition_name].get('windRose', None) is not None:
-            data += self._gen_windrose(page_data_binding, interval, page_definition_name, interval_long_name)
+            data += self._gen_windrose(timespan, page_data_binding, interval, page_definition_name, interval_long_name)
 
         data += '        console.debug(Date.now().toString() + " dataLoad end");\n'
         data += "}\n"
@@ -3061,17 +3061,17 @@ class DataGenerator(JASGenerator):
     # This data is stored in a javascript object named 'current'.
     # 'current.header' is an object with the data for the header portion of this section.
     # 'current.observations' is a map. The key is the observation name, like 'outTemp'. The value is the data to populate the section.
-    def _gen_data_load3(self, skin_data_binding, interval):
+    def _gen_data_load3(self, timespan, skin_data_binding, interval):
         data = ''
 
         current_data_binding = self.skin_dict['Extras']['current'].get('data_binding', skin_data_binding)
         interval_current = self.skin_dict['Extras']['current'].get('interval', interval)
 
         #data += 'var mqtt_enabled = false;\n'
-        data += '  pageData.updateDate = ' + str(self._get_current('dateTime', data_binding=current_data_binding, unit_name='default').raw * 1000) + ';\n'
+        data += '  pageData.updateDate = ' + str(self._get_current(timespan, 'dateTime', data_binding=current_data_binding, unit_name='default').raw * 1000) + ';\n'
         if self.skin_dict['Extras']['current'].get('observation', False):
             data_binding = self.skin_dict['Extras']['current'].get('header_data_binding', current_data_binding)
-            data += '  pageData.currentHeaderValue = "' + self._get_current(self.skin_dict['Extras']['current']['observation'], data_binding, 'default').format(add_label=False,localize=False) + '";\n'
+            data += '  pageData.currentHeaderValue = "' + self._get_current(timespan, self.skin_dict['Extras']['current']['observation'], data_binding, 'default').format(add_label=False,localize=False) + '";\n'
 
         data += '  var currentData = {};\n'
         for observation in self.skin_dict['Extras']['current']['observations']:
@@ -3085,20 +3085,20 @@ class DataGenerator(JASGenerator):
                 observation_value = 'bar'
                 #label = 'foo'
             elif type_value in ['first', 'last', 'min', 'max', 'sum']:
-                observation_value = self._get_aggregate(observation, data_binding, interval_current, type_value, unit_name, False)
+                observation_value = self._get_aggregate(timespan, observation, data_binding, interval_current, type_value, unit_name, False)
             else:
-                observation_value = self._get_current(observation, data_binding, unit_name).format(add_label=False,localize=False)
+                observation_value = self._get_current(timespan, observation, data_binding, unit_name).format(add_label=False,localize=False)
 
             data += '  currentData.' + observation + ' = "' + observation_value + '";\n'
 
         data += '  pageData.currentData = JSON.stringify(currentData);'
         return data
 
-    def _gen_data_load2(self, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding):
+    def _gen_data_load2(self, timespan, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding):
         data = ""
 
-        skin_timespan_binder = self._get_timespan_binder(interval, skin_data_binding)
-        page_timespan_binder = self._get_timespan_binder(interval, page_data_binding)
+        skin_timespan_binder = self._get_timespan_binder(timespan, interval, skin_data_binding)
+        page_timespan_binder = self._get_timespan_binder(timespan, interval, page_data_binding)
 
         if interval_type == 'active':
             data += "  pageData.startDate = moment('" + getattr(page_timespan_binder, 'start').format("%Y-%m-%dT%H:%M:%S") + "').utcOffset(" + str(self.utc_offset) + ");\n"
@@ -3119,7 +3119,7 @@ class DataGenerator(JASGenerator):
             data += "pageData.endDate = moment('" + end_date + "').utcOffset(" + str(self.utc_offset) + ");\n"
 
         data += "\n"
-        data += self._gen_interval_end_timestamp(page_data_binding, interval, page_definition_name)
+        data += self._gen_interval_end_timestamp(timespan, page_data_binding, interval, page_definition_name)
 
         return data
 
