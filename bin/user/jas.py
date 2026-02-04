@@ -532,6 +532,9 @@ class JAS(SearchList):
             selected_month = str(month)
 
         data = '// start\n'
+        data += 'selectedYear = "' + selected_year + '";\n'
+        data += 'selectedMonth = "' + selected_month + '";\n'
+
         # begin custom by page
         min_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('min', 'none')
         max_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('max', 'none')
@@ -567,6 +570,11 @@ class JAS(SearchList):
 
         offset_seconds = str(self.utc_offset * 60)
 
+        wait_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('wait_seconds', 300)) * 1000)
+        delay_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('delay_seconds', 60)) * 1000)
+        data += 'millisecondsWait = "' + wait_milliseconds + '";\n'
+        data += 'millisecondsDelay = "' + delay_milliseconds + '";\n'
+
         data += 'headerMaxDecimals = ' + self.skin_dict['Extras'].get('current', {}).get('header_max_decimals', 'null') + ';\n'
         data += "logLevel = sessionStorage.getItem('logLevel');\n"
 
@@ -576,258 +584,251 @@ class JAS(SearchList):
         data += '}\n'
         data += '\n'
 
-        data += '// Update the min/max observations\n'
-        data += 'function updateMinMax(startTimestamp, endTimestamp) {\n'
-        data += '    jasLogDebug("Min start: ", startTimestamp);\n'
-        data += '    jasLogDebug("Max start: ", endTimestamp);\n'
-        data += '    // ToDo: optimize to only get index once for all observations?\n'
-        data += '    minMaxObs.forEach(function(minMaxObsData) {\n'
-        data += '        startIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == startTimestamp);\n'
-        data += '        endIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == endTimestamp);\n'
-        data += '        if (startIndex < 0) {\n'
-        data += '            startIndex = 0;\n'
-        data += '        }\n'
-        data += '        if (endIndex < 0) {\n'
-        data += '            endIndex  = minMaxObsData.minDateTimeArray.length - 1;\n'
-        data += '        }\n'
-        data += '        if (startIndex == endIndex) {\n'
-        data += '            minIndex = startIndex;\n'
-        data += '            maxIndex = endIndex;\n'
-        data += '        } else {\n'
-        data += '            minIndex = minMaxObsData.minDataArray.indexOf(Math.min(...minMaxObsData.minDataArray.slice(startIndex, endIndex + 1).filter(obs => obs != null)));\n'
-        data += '            maxIndex = minMaxObsData.maxDataArray.indexOf(Math.max(...minMaxObsData.maxDataArray.slice(startIndex, endIndex + 1)));\n'
-        data += '        }\n'
-        data += '\n'
-        data += '        min = minMaxObsData.minDataArray[minIndex];\n'
-        data += '        max = minMaxObsData.maxDataArray[maxIndex];\n'
-        data += '        if (minMaxObsData.maxDecimals) {\n'
-        data += '            min = min.toFixed(minMaxObsData.maxDecimals);\n'
-        data += '            max = max.toFixed(minMaxObsData.maxDecimals);\n'
-        data += '        }\n'
-        data += '        min = Number(min).toLocaleString(lang);\n'
-        data += '        max = Number(max).toLocaleString(lang);\n'
-        data += '        min = min + minMaxObsData.label;\n'
-        data += '        max = max + minMaxObsData.label;\n'
-        data += '\n'
-        data += '        minDate = moment.unix(minMaxObsData.minDateTimeArray[minIndex]/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].chart[minFormat].label);\n'
-        data += '        maxDate = moment.unix(minMaxObsData.maxDateTimeArray[maxIndex]/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].chart[maxFormat].label);\n'
-        data += '\n'
-        data += '        observation_element=document.getElementById(minMaxObsData.minId);\n'
-        data += '        observation_element.innerHTML = min + "<br>" + minDate;\n'
-        data += '        observation_element=document.getElementById(minMaxObsData.maxId);\n'
-        data += '        observation_element.innerHTML = max + "<br>" + maxDate;\n'
-        data += '    });\n'
-        data += '}\n'
-
-        data += '\n'
-
-        data += 'function setupZoomDate() {\n'
-        data += '    zoomDateRangePicker = new DateRangePicker("zoomdatetimerange-input",\n'
-        data += '                        {\n'
-        data += '                            minDate: startMinMaxDate,\n'
-        data += '                            maxDate: endMinMaxDate,\n'
-        data += '                            startDate: startMinMaxDate,\n'
-        data += '                            endDate: endMinMaxDate,\n'
-        data += '                            locale: {\n'
-        data += '                                format: dateTimeFormat[lang].datePicker,\n'
-        data += '                                applyLabel: getText("datepicker_apply_label"),\n'
-        data += '                                cancelLabel: getText("datepicker_cancel_label"),\n'
-        data += '                            },\n'
-        data += '                        },\n'
-        data += '                        function(start, end, label) {\n'
-        data += '                            // Update all charts with selected date/time and min/max values\n'
-        data += '                            pageCharts.forEach(function(pageChart) {\n'
-        data += '                                pageChart.chart.dispatchAction({type: "dataZoom", startValue: start.unix() * 1000, endValue: end.unix() * 1000});\n'
-        data += '                            });\n'
-        data += '\n'
-        data += '                            updateMinMax(start.unix() * 1000, end.startOf("day").unix() * 1000);\n'
-        data += '                    }\n'
-        data += '    );\n'
-        data += '}\n'
-        data += '\n'
-        data += 'function setupThisDate() {\n'
-        data += '    var thisDateRangePicker = new DateRangePicker("thisdatetimerange-input",\n'
-        data += '                        {singleDatePicker: true,\n'
-        data += '                            minDate: startMinMaxDate,\n'
-        data += '                            maxDate: endMinMaxDate,\n'
-        data += '                            locale: {\n'
-        data += '                                format: dateTimeFormat[lang].datePicker,\n'
-        data += '                                applyLabel: getText("datepicker_apply_label"),\n'
-        data += '                                cancelLabel: getText("datepicker_cancel_label"),\n'
-        data += '                            },\n'
-        data += '                        },\n'
-        data += '                            function(start, end, label) {\n'
-        data += '                                updateThisDate(start.unix() * 1000);\n'
-        data += '                        }\n'
-        data += '    );\n'
-        data += '\n'
-        data += '    var lastDay = new Date(' + selected_year + ', ' + selected_month + ', 0).getDate();\n'
-        data += '    var selectedDay = new Date().getDate();\n'
-        data += '    if (selectedDay > lastDay) {\n'
-        data += '        selectedDay = lastDay;\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    var selectedDate = Date.UTC(' + selected_year + ', ' + selected_month + ' - 1, selectedDay) / 1000 - ' + offset_seconds + ';\n'
-        data += '\n'
-        data += '    thisDateRangePicker.setStartDate(moment.unix(selectedDate).utcOffset(' + str(self.utc_offset) + '));\n'
-        data += '    thisDateRangePicker.setEndDate(moment.unix(selectedDate).utcOffset(' + str(self.utc_offset) + '));\n'
-        data += '    updateThisDate(selectedDate * 1000);\n'
-        data += '}\n'
-        data += '\n'
-        wait_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('wait_seconds', 300)) * 1000)
-        delay_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('delay_seconds', 60)) * 1000)
-        data += 'function setupPageRefresh() {\n'
-        data += '    // Set a timer to reload the iframe/page.\n'
-        data += '    var currentDate = new Date();\n'
-        data += '    var futureDate = new Date();\n'
-        data += '    futureDate.setTime(futureDate.getTime() + ' + wait_milliseconds + ');\n'
-        data += '    var futureTimestamp = Math.floor(futureDate.getTime()/' + wait_milliseconds + ') * '+ wait_milliseconds + ';\n'
-        data += '    var timeout = futureTimestamp - currentDate.getTime() + ' + delay_milliseconds + ';\n'
-        data += '    setTimeout(function() { handleRefreshData(null); setupPageRefresh();}, timeout);\n'
-        data += '}\n'
-        data += '\n'
-        data += '// Handle reset button of zoom control\n'
-        data += 'function resetRange() {\n'
-        data += '    zoomDateRangePicker.setStartDate(startMinMaxDate);\n'
-        data += '    zoomDateRangePicker.setEndDate(endMinMaxDate);\n'
-        data += '    pageCharts.forEach(function(pageChart) {\n'
-        data += '            pageChart.chart.dispatchAction({type: "dataZoom", startValue: startMinMaxTimestamp, endValue: endMinMaxTimestamp});\n'
-        data += '    });\n'
-        data += '    updateMinMax(startMinMaxTimestamp, endMinMaxTimestamp);\n'
-        data += '}\n'
-        data += '\n'
-
-
-        data += '// Handle event messages of type "mqtt".\n'
-        data += 'var test_obj = null; // Not a great idea to be global, but makes remote debugging easier.\n'
-        data += 'function updateCurrentMQTT(topic, test_obj) {\n'
-        data += '        fieldMap = topics.get(topic);\n'
-        data += '        // Handle the "header" section of current observations.\n'
-        data += '        header = JSON.parse(sessionStorage.getItem("header"));\n'
-        data += '        if (header) {\n'
-        data += '            observation = fieldMap.get(header.name);\n'
-        data += '            if (observation === undefined) {\n'
-        data += '                mqttValue = test_obj[header.name];\n'
-        data += '            }\n'
-        data += '            else {\n'
-        data += '                mqttValue = test_obj[observation];\n'
-        data += '            }\n'
-        data += '\n'
-        data += '            if (mqttValue != undefined) {\n'
-        data += '                if (headerMaxDecimals) {\n'
-        data += '                    mqttValue = Number(mqttValue).toFixed(headerMaxDecimals);\n'
-        data += '                }\n'
-        data += '                if (!isNaN(mqttValue)) {\n'
-        data += '                    header.value = Number(mqttValue).toLocaleString(lang);\n'
-        data += '                }\n'
-        data += '            }\n'
-        data += '\n'
-        data += '            if (test_obj[header.unit]) {\n'
-        data += '                header.unit = test_obj[header.unit];\n'
-        data += '            }\n'
-        data += '            sessionStorage.setItem("header", JSON.stringify(header));\n'
-        data += '            headerElem = document.getElementById(header.name);\n'
-        data += '            if (headerElem) {\n'
-        data += '                headerElem.innerHTML = header.value + header.unit;\n'
-        data += '            }\n'
-        data += '            headerModalElem = document.getElementById("currentModalTitle");\n'
-        data += '            if (headerModalElem) {\n'
-        data += '                headerModalElem.innerHTML = header.value + header.unit;\n'
-        data += '            }\n'
-        data += '        }\n'
-        data += '\n'
-        data += '        // Process each observation in the "current" section.\n'
-        data += '        observations = [];\n'
-        data += '        if (sessionStorage.getItem("observations")) {\n'
-        data += '            observations = sessionStorage.getItem("observations").split(",");\n'
-        data += '        }\n'
-        data += '\n'
-        data += '        observations.forEach(function(observation) {\n'
-        data += '            obs = fieldMap.get(observation);\n'
-        data += '            if (obs === undefined) {\n'
-        data += '                obs = observation;\n'
-        data += '            }\n'
-        data += '\n'
-        data += '            observationInfo = current.observations.get(observation);\n'
-        data += '            if (observationInfo.mqtt && test_obj[obs]) {\n'
-        data += '                data = JSON.parse(sessionStorage.getItem(observation));\n'
-        data += '                data.value = Number(test_obj[obs]);\n'
-        data += '                if (observationInfo.maxDecimals != null) {\n'
-        data += '                   data.value = data.value.toFixed(observationInfo.maxDecimals);\n'
-        data += '                }\n'
-        data += '                if (!isNaN(data.value)) {\n'
-        data += '                    data.value = Number(data.value).toLocaleString(lang);\n'
-        data += '                }\n'
-        data += '                sessionStorage.setItem(observation, JSON.stringify(data));\n'
-        data += '\n'
-        data += '                dataElem = document.getElementById(data.name + "_value");\n'
-        data += '                if (dataElem) {\n'
-        data += '                    dataElem.innerHTML = data.value + data.unit;\n'
-        data += '                }\n'
-        data += '               if (data.modalLabel) {\n'
-        data += '                    document.getElementById(data.modalLabel).innerHTML = data.value + data.unit;\n'
-        data += '               }\n'
-        data += '            }\n'
-        data += '        });\n'
-        data += '\n'
-        data += '        // And the "current" section date/time.\n'
-        data += '        if (test_obj.dateTime) {\n'
-        data += '            sessionStorage.setItem("updateDate", test_obj.dateTime*1000);\n'
-        data += '            timeElem = document.getElementById("updateDateDiv");\n'
-        data += '            if (timeElem) {\n'
-        data += '                timeElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(utcOffset).format(dateTimeFormat[lang].current);\n'
-        data += '            }\n'
-        data += '            timeModalElem = document.getElementById("updateModalDate");\n'
-        data += '            if (timeModalElem) {\n'
-        data += '                timeModalElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(utcOffset).format(dateTimeFormat[lang].current);\n'
-        data += '            }\n'
-        data += '        }\n'
-        data += '}\n'
-        data += '\n'
-        data += 'function updateCurrentObservations() {\n'
-        data += '    if (jasOptions.currentHeader) {\n'
-        data += '        //ToDo: switch to allow non mqtt header data? similar to the observation section\n'
-        data += '        if(sessionStorage.getItem("header") === null || !jasOptions.MQTTConfig){\n'
-        data += '            sessionStorage.setItem("header", JSON.stringify(current.header));\n'
-        data += '        }\n'
-        data += '        header = JSON.parse(sessionStorage.getItem("header"));\n'
-        data += '        document.getElementById(jasOptions.currentHeader).innerHTML = header.value + header.unit;\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    if (jasOptions.displayAerisObservation) {\n'
-        data += '        document.getElementById("currentObservation").innerHTML = current_observation;\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    if (jasOptions.displayAerisAQI) {\n'
-        data += '        document.getElementById("currentAQI").innerHTML = current_aqi;\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    if (jasOptions.displayAerisAlert) {\n'
-        data += '        document.getElementById("currentAlert").innerHTML = current_alert;\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    // ToDo: cleanup, perhaps put observation data into an array and store that\n'
-        data += '    // ToDo: do a bit more in cheetah?\n'
-        data += '    observations = [];\n'
-        data += '    for (var [observation, data] of current.observations) {\n'
-        data += '        observations.push(observation);\n'
-        data += '        if (sessionStorage.getItem(observation) === null || !jasOptions.MQTTConfig || ! data.mqtt){\n'
-        data += '            sessionStorage.setItem(observation, JSON.stringify(data));\n'
-        data += '        }\n'
-        data += '        obs = JSON.parse(sessionStorage.getItem(observation));\n'
-        data += '\n'
-        data += '        document.getElementById(obs.name + "_value").innerHTML = obs.value + obs.unit;\n'
-        data += '    }\n'
-        data += '    sessionStorage.setItem("observations", observations.join(","));\n'
-        data += '\n'
-        data += '    if(sessionStorage.getItem("updateDate") === null || !jasOptions.MQTTConfig){\n'
-        data += '        sessionStorage.setItem("updateDate", updateDate);\n'
-        data += '    }\n'
-        data += '    document.getElementById("updateDateDiv").innerHTML = moment.unix(sessionStorage.getItem("updateDate")/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].current);\n'
-        data += '}\n'
-        data += '\n'
-
         javascript = '''
+// Update the min/max observations
+function updateMinMax(startTimestamp, endTimestamp) {
+    jasLogDebug("Min start: ", startTimestamp);
+    jasLogDebug("Max start: ", endTimestamp);
+    // ToDo: optimize to only get index once for all observations?
+    minMaxObs.forEach(function(minMaxObsData) {
+        startIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == startTimestamp);
+        endIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == endTimestamp);
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
+        if (endIndex < 0) {
+            endIndex  = minMaxObsData.minDateTimeArray.length - 1;
+        }
+        if (startIndex == endIndex) {
+            minIndex = startIndex;
+            maxIndex = endIndex;
+        } else {
+            minIndex = minMaxObsData.minDataArray.indexOf(Math.min(...minMaxObsData.minDataArray.slice(startIndex, endIndex + 1).filter(obs => obs != null)));
+            maxIndex = minMaxObsData.maxDataArray.indexOf(Math.max(...minMaxObsData.maxDataArray.slice(startIndex, endIndex + 1)));
+        }
+
+        min = minMaxObsData.minDataArray[minIndex];
+        max = minMaxObsData.maxDataArray[maxIndex];
+        if (minMaxObsData.maxDecimals) {
+            min = min.toFixed(minMaxObsData.maxDecimals);
+            max = max.toFixed(minMaxObsData.maxDecimals);
+        }
+        min = Number(min).toLocaleString(lang);
+        max = Number(max).toLocaleString(lang);
+        min = min + minMaxObsData.label;
+        max = max + minMaxObsData.label;
+
+        minDate = moment.unix(minMaxObsData.minDateTimeArray[minIndex]/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].chart[minFormat].label);
+        maxDate = moment.unix(minMaxObsData.maxDateTimeArray[maxIndex]/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].chart[maxFormat].label);
+
+        observation_element=document.getElementById(minMaxObsData.minId);
+        observation_element.innerHTML = min + "<br>" + minDate;
+        observation_element=document.getElementById(minMaxObsData.maxId);
+        observation_element.innerHTML = max + "<br>" + maxDate;
+    });
+}
+
+function setupZoomDate() {
+    zoomDateRangePicker = new DateRangePicker("zoomdatetimerange-input",
+                        {
+                            minDate: startMinMaxDate,
+                            maxDate: endMinMaxDate,
+                            startDate: startMinMaxDate,
+                            endDate: endMinMaxDate,
+                            locale: {
+                                format: dateTimeFormat[lang].datePicker,
+                                applyLabel: getText("datepicker_apply_label"),
+                                cancelLabel: getText("datepicker_cancel_label"),
+                            },
+                        },
+                        function(start, end, label) {
+                            // Update all charts with selected date/time and min/max values
+                            pageCharts.forEach(function(pageChart) {
+                                pageChart.chart.dispatchAction({type: "dataZoom", startValue: start.unix() * 1000, endValue: end.unix() * 1000});
+                            });
+
+                            updateMinMax(start.unix() * 1000, end.startOf("day").unix() * 1000);
+                    }
+    );
+}
+
+function setupThisDate() {
+    var thisDateRangePicker = new DateRangePicker("thisdatetimerange-input",
+                        {singleDatePicker: true,
+                            minDate: startMinMaxDate,
+                            maxDate: endMinMaxDate,
+                            locale: {
+                                format: dateTimeFormat[lang].datePicker,
+                                applyLabel: getText("datepicker_apply_label"),
+                                cancelLabel: getText("datepicker_cancel_label"),
+                            },
+                        },
+                            function(start, end, label) {
+                                updateThisDate(start.unix() * 1000);
+                        }
+    );
+
+    var lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
+    var selectedDay = new Date().getDate();
+    if (selectedDay > lastDay) {
+        selectedDay = lastDay;
+    }
+
+    var selectedDate = Date.UTC(selectedYear, selectedMonth - 1, selectedDay) / 1000 - (utcOffset * 60);
+
+    thisDateRangePicker.setStartDate(moment.unix(selectedDate).utcOffset(utcOffset));
+    thisDateRangePicker.setEndDate(moment.unix(selectedDate).utcOffset(utcOffset));
+    updateThisDate(selectedDate * 1000);
+}
+
+function setupPageRefresh() {
+    // Set a timer to reload the iframe/page.
+    var currentDate = new Date();
+    var futureDate = new Date();
+    futureDate.setTime(futureDate.getTime() + ' + wait_milliseconds + ');
+    var futureTimestamp = Math.floor(futureDate.getTime()/' + wait_milliseconds + ') * '+ wait_milliseconds + ';
+    var timeout = futureTimestamp - currentDate.getTime() + ' + delay_milliseconds + ';
+    setTimeout(function() { handleRefreshData(null); setupPageRefresh();}, timeout);
+}
+
+// Handle reset button of zoom control
+function resetRange() {
+    zoomDateRangePicker.setStartDate(startMinMaxDate);
+    zoomDateRangePicker.setEndDate(endMinMaxDate);
+    pageCharts.forEach(function(pageChart) {
+            pageChart.chart.dispatchAction({type: "dataZoom", startValue: startMinMaxTimestamp, endValue: endMinMaxTimestamp});
+    });
+    updateMinMax(startMinMaxTimestamp, endMinMaxTimestamp);
+}
+
+// Handle event messages of type "mqtt".
+var test_obj = null; // Not a great idea to be global, but makes remote debugging easier.
+function updateCurrentMQTT(topic, test_obj) {
+        fieldMap = topics.get(topic);
+        // Handle the "header" section of current observations.
+        header = JSON.parse(sessionStorage.getItem("header"));
+        if (header) {
+            observation = fieldMap.get(header.name);
+            if (observation === undefined) {
+                mqttValue = test_obj[header.name];
+            }
+            else {
+                mqttValue = test_obj[observation];
+            }
+
+            if (mqttValue != undefined) {
+                if (headerMaxDecimals) {
+                    mqttValue = Number(mqttValue).toFixed(headerMaxDecimals);
+                }
+                if (!isNaN(mqttValue)) {
+                    header.value = Number(mqttValue).toLocaleString(lang);
+                }
+            }
+
+            if (test_obj[header.unit]) {
+                header.unit = test_obj[header.unit];
+            }
+            sessionStorage.setItem("header", JSON.stringify(header));
+            headerElem = document.getElementById(header.name);
+            if (headerElem) {
+                headerElem.innerHTML = header.value + header.unit;
+            }
+            headerModalElem = document.getElementById("currentModalTitle");
+            if (headerModalElem) {
+                headerModalElem.innerHTML = header.value + header.unit;
+            }
+        }
+
+        // Process each observation in the "current" section.
+        observations = [];
+        if (sessionStorage.getItem("observations")) {
+            observations = sessionStorage.getItem("observations").split(",");
+        }
+
+        observations.forEach(function(observation) {
+            obs = fieldMap.get(observation);
+            if (obs === undefined) {
+                obs = observation;
+            }
+
+            observationInfo = current.observations.get(observation);
+            if (observationInfo.mqtt && test_obj[obs]) {
+                data = JSON.parse(sessionStorage.getItem(observation));
+                data.value = Number(test_obj[obs]);
+                if (observationInfo.maxDecimals != null) {
+                    data.value = data.value.toFixed(observationInfo.maxDecimals);
+                }
+                if (!isNaN(data.value)) {
+                    data.value = Number(data.value).toLocaleString(lang);
+                }
+                sessionStorage.setItem(observation, JSON.stringify(data));
+
+                dataElem = document.getElementById(data.name + "_value");
+                if (dataElem) {
+                    dataElem.innerHTML = data.value + data.unit;
+                }
+                if (data.modalLabel) {
+                    document.getElementById(data.modalLabel).innerHTML = data.value + data.unit;
+                }
+            }
+        });
+
+        // And the "current" section date/time.
+        if (test_obj.dateTime) {
+            sessionStorage.setItem("updateDate", test_obj.dateTime*1000);
+            timeElem = document.getElementById("updateDateDiv");
+            if (timeElem) {
+                timeElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(utcOffset).format(dateTimeFormat[lang].current);
+            }
+            timeModalElem = document.getElementById("updateModalDate");
+            if (timeModalElem) {
+                timeModalElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(utcOffset).format(dateTimeFormat[lang].current);
+            }
+        }
+}
+
+function updateCurrentObservations() {
+    if (jasOptions.currentHeader) {
+        //ToDo: switch to allow non mqtt header data? similar to the observation section
+        if(sessionStorage.getItem("header") === null || !jasOptions.MQTTConfig){
+            sessionStorage.setItem("header", JSON.stringify(current.header));
+        }
+        header = JSON.parse(sessionStorage.getItem("header"));
+        document.getElementById(jasOptions.currentHeader).innerHTML = header.value + header.unit;
+    }
+
+    if (jasOptions.displayAerisObservation) {
+        document.getElementById("currentObservation").innerHTML = current_observation;
+    }
+
+    if (jasOptions.displayAerisAQI) {
+        document.getElementById("currentAQI").innerHTML = current_aqi;
+    }
+
+    if (jasOptions.displayAerisAlert) {
+        document.getElementById("currentAlert").innerHTML = current_alert;
+    }
+
+    // ToDo: cleanup, perhaps put observation data into an array and store that
+    // ToDo: do a bit more in cheetah?
+    observations = [];
+    for (var [observation, data] of current.observations) {
+        observations.push(observation);
+        if (sessionStorage.getItem(observation) === null || !jasOptions.MQTTConfig || ! data.mqtt){
+            sessionStorage.setItem(observation, JSON.stringify(data));
+        }
+        obs = JSON.parse(sessionStorage.getItem(observation));
+
+        document.getElementById(obs.name + "_value").innerHTML = obs.value + obs.unit;
+    }
+    sessionStorage.setItem("observations", observations.join(","));
+
+    if(sessionStorage.getItem("updateDate") === null || !jasOptions.MQTTConfig){
+        sessionStorage.setItem("updateDate", updateDate);
+    }
+    document.getElementById("updateDateDiv").innerHTML = moment.unix(sessionStorage.getItem("updateDate")/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].current);
+}
+
 document.addEventListener("DOMContentLoaded", function (event) {
     console.debug(Date.now().toString() + " DOMContentLoaded start");
     setupPage();
