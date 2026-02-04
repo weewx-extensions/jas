@@ -509,14 +509,6 @@ class JAS(SearchList):
 
     def _gen_js(self, filename, page, page_name, year, month, interval_long_name):
         start_time = time.time()
-        data = ''
-
-        data += '// start\n'
-        data += 'pageLoaded = false;\n'
-        data += 'DOMLoaded = false;\n'
-        data += 'dataLoaded = false;\n'
-        data += 'traceStart = Date.now();\n'
-        data += 'console.debug(Date.now().toString() + " starting");\n'
 
         if interval_long_name:
             start_date = interval_long_name + "startDate"
@@ -539,6 +531,40 @@ class JAS(SearchList):
         if month is not None:
             selected_month = str(month)
 
+        data = '// start\n'
+        # begin custom by page
+        min_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('min', 'none')
+        max_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('max', 'none')
+        data += 'minFormat = "' + min_format + '";\n'
+        data += 'maxFormat = "' + max_format + '";\n'
+        data += 'pageName = "' + page + '";\n'
+
+        data += 'utcOffset = ' + str(self.utc_offset) + ";\n"
+        default_theme = to_list(self.skin_dict['Extras'].get('themes', 'light'))[0]
+        data +=  'defaultTheme = ' + '"' + default_theme + ';"\n'
+
+        data += 'dataLoadURL = "../dataload/' + page_name + '.html";\n'
+        if page in self.skin_dict['Extras']['pages'] and \
+          'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
+            data += '// use query string so that iframe is not cached\n'
+            data += 'dataLoadURL = dataLoadURL + "?ts=" + Date.now();\n'
+
+        if page in self.skin_dict['Extras']['page_definition']:
+            series_type = self.skin_dict['Extras']['page_definition'][page].get('series_type', 'single')
+            if series_type == 'single':
+                data += 'getDataFunction = getData' + interval_long_name + ';\n'
+            elif series_type == 'multiple':
+                data += 'getDataFunction = getDataMultiyear;\n'
+            elif series_type == 'comparison':
+                data += 'getDataFunction = getDataComparison;\n'
+
+        # end custom by page
+        data += 'pageLoaded = false;\n'
+        data += 'DOMLoaded = false;\n'
+        data += 'dataLoaded = false;\n'
+        data += 'traceStart = Date.now();\n'
+        data += 'console.debug(Date.now().toString() + " starting");\n'
+
         offset_seconds = str(self.utc_offset * 60)
 
         data += 'headerMaxDecimals = ' + self.skin_dict['Extras'].get('current', {}).get('header_max_decimals', 'null') + ';\n'
@@ -550,13 +576,58 @@ class JAS(SearchList):
         data += '}\n'
         data += '\n'
 
+        data += '// Update the min/max observations\n'
+        data += 'function updateMinMax(startTimestamp, endTimestamp) {\n'
+        data += '    jasLogDebug("Min start: ", startTimestamp);\n'
+        data += '    jasLogDebug("Max start: ", endTimestamp);\n'
+        data += '    // ToDo: optimize to only get index once for all observations?\n'
+        data += '    minMaxObs.forEach(function(minMaxObsData) {\n'
+        data += '        startIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == startTimestamp);\n'
+        data += '        endIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == endTimestamp);\n'
+        data += '        if (startIndex < 0) {\n'
+        data += '            startIndex = 0;\n'
+        data += '        }\n'
+        data += '        if (endIndex < 0) {\n'
+        data += '            endIndex  = minMaxObsData.minDateTimeArray.length - 1;\n'
+        data += '        }\n'
+        data += '        if (startIndex == endIndex) {\n'
+        data += '            minIndex = startIndex;\n'
+        data += '            maxIndex = endIndex;\n'
+        data += '        } else {\n'
+        data += '            minIndex = minMaxObsData.minDataArray.indexOf(Math.min(...minMaxObsData.minDataArray.slice(startIndex, endIndex + 1).filter(obs => obs != null)));\n'
+        data += '            maxIndex = minMaxObsData.maxDataArray.indexOf(Math.max(...minMaxObsData.maxDataArray.slice(startIndex, endIndex + 1)));\n'
+        data += '        }\n'
+        data += '\n'
+        data += '        min = minMaxObsData.minDataArray[minIndex];\n'
+        data += '        max = minMaxObsData.maxDataArray[maxIndex];\n'
+        data += '        if (minMaxObsData.maxDecimals) {\n'
+        data += '            min = min.toFixed(minMaxObsData.maxDecimals);\n'
+        data += '            max = max.toFixed(minMaxObsData.maxDecimals);\n'
+        data += '        }\n'
+        data += '        min = Number(min).toLocaleString(lang);\n'
+        data += '        max = Number(max).toLocaleString(lang);\n'
+        data += '        min = min + minMaxObsData.label;\n'
+        data += '        max = max + minMaxObsData.label;\n'
+        data += '\n'
+        data += '        minDate = moment.unix(minMaxObsData.minDateTimeArray[minIndex]/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].chart[minFormat].label);\n'
+        data += '        maxDate = moment.unix(minMaxObsData.maxDateTimeArray[maxIndex]/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].chart[maxFormat].label);\n'
+        data += '\n'
+        data += '        observation_element=document.getElementById(minMaxObsData.minId);\n'
+        data += '        observation_element.innerHTML = min + "<br>" + minDate;\n'
+        data += '        observation_element=document.getElementById(minMaxObsData.maxId);\n'
+        data += '        observation_element.innerHTML = max + "<br>" + maxDate;\n'
+        data += '    });\n'
+        data += '}\n'
+
+        data += '\n'
+
         data += 'function setupZoomDate() {\n'
         data += '    zoomDateRangePicker = new DateRangePicker("zoomdatetimerange-input",\n'
         data += '                        {\n'
-        data += '                            minDate: ' + start_date + ',\n'
-        data += '                            maxDate: '+ end_date + ',\n'
-        data += '                            startDate: '+ start_date + ',\n'
-        data += '                            endDate: ' + end_date + ',\n'
+        data += '                            minDate: startMinMaxDate,\n'
+        data += '                            maxDate: endMinMaxDate,\n'
+        data += '                            startDate: startMinMaxDate,\n'
+        data += '                            endDate: endMinMaxDate,\n'
         data += '                            locale: {\n'
         data += '                                format: dateTimeFormat[lang].datePicker,\n'
         data += '                                applyLabel: getText("datepicker_apply_label"),\n'
@@ -577,8 +648,8 @@ class JAS(SearchList):
         data += 'function setupThisDate() {\n'
         data += '    var thisDateRangePicker = new DateRangePicker("thisdatetimerange-input",\n'
         data += '                        {singleDatePicker: true,\n'
-        data += '                            minDate: ' + start_date + ',\n'
-        data += '                            maxDate: ' + end_date + ',\n'
+        data += '                            minDate: startMinMaxDate,\n'
+        data += '                            maxDate: endMinMaxDate,\n'
         data += '                            locale: {\n'
         data += '                                format: dateTimeFormat[lang].datePicker,\n'
         data += '                                applyLabel: getText("datepicker_apply_label"),\n'
@@ -617,14 +688,16 @@ class JAS(SearchList):
         data += '\n'
         data += '// Handle reset button of zoom control\n'
         data += 'function resetRange() {\n'
-        data += '    zoomDateRangePicker.setStartDate(' + start_date + ');\n'
-        data += '    zoomDateRangePicker.setEndDate(' + end_date + ');\n'
+        data += '    zoomDateRangePicker.setStartDate(startMinMaxDate);\n'
+        data += '    zoomDateRangePicker.setEndDate(endMinMaxDate);\n'
         data += '    pageCharts.forEach(function(pageChart) {\n'
-        data += '            pageChart.chart.dispatchAction({type: "dataZoom", startValue: ' + start_timestamp + ', endValue: ' + end_timestamp + '});\n'
+        data += '            pageChart.chart.dispatchAction({type: "dataZoom", startValue: startMinMaxTimestamp, endValue: endMinMaxTimestamp});\n'
         data += '    });\n'
-        data += '    updateMinMax(' + start_timestamp + ', ' + end_timestamp + ');\n'
+        data += '    updateMinMax(startMinMaxTimestamp, endMinMaxTimestamp);\n'
         data += '}\n'
         data += '\n'
+
+
         data += '// Handle event messages of type "mqtt".\n'
         data += 'var test_obj = null; // Not a great idea to be global, but makes remote debugging easier.\n'
         data += 'function updateCurrentMQTT(topic, test_obj) {\n'
@@ -687,11 +760,6 @@ class JAS(SearchList):
         data += '                }\n'
         data += '                sessionStorage.setItem(observation, JSON.stringify(data));\n'
         data += '\n'
-        # ToDo: see if this can be removed
-        #data += '                labelElem = document.getElementById(observation + "_label");\n'
-        #data += '                if (labelElem) {\n'
-        #data += '                    labelElem.innerHTML = data.label;\n'
-        #data += '                }\n'
         data += '                dataElem = document.getElementById(data.name + "_value");\n'
         data += '                if (dataElem) {\n'
         data += '                    dataElem.innerHTML = data.value + data.unit;\n'
@@ -707,11 +775,11 @@ class JAS(SearchList):
         data += '            sessionStorage.setItem("updateDate", test_obj.dateTime*1000);\n'
         data += '            timeElem = document.getElementById("updateDateDiv");\n'
         data += '            if (timeElem) {\n'
-        data += '                timeElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(' + str(self.utc_offset) + ').format(dateTimeFormat[lang].current);\n'
+        data += '                timeElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(utcOffset).format(dateTimeFormat[lang].current);\n'
         data += '            }\n'
         data += '            timeModalElem = document.getElementById("updateModalDate");\n'
         data += '            if (timeModalElem) {\n'
-        data += '                timeModalElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(' + str(self.utc_offset) + ').format(dateTimeFormat[lang].current);\n'
+        data += '                timeModalElem.innerHTML = moment.unix(test_obj.dateTime).utcOffset(utcOffset).format(dateTimeFormat[lang].current);\n'
         data += '            }\n'
         data += '        }\n'
         data += '}\n'
@@ -755,249 +823,195 @@ class JAS(SearchList):
         data += '    if(sessionStorage.getItem("updateDate") === null || !jasOptions.MQTTConfig){\n'
         data += '        sessionStorage.setItem("updateDate", updateDate);\n'
         data += '    }\n'
-        data += '    document.getElementById("updateDateDiv").innerHTML = moment.unix(sessionStorage.getItem("updateDate")/1000).utcOffset(' + str(self.utc_offset) +').format(dateTimeFormat[lang].current);\n'
+        data += '    document.getElementById("updateDateDiv").innerHTML = moment.unix(sessionStorage.getItem("updateDate")/1000).utcOffset(utcOffset).format(dateTimeFormat[lang].current);\n'
         data += '}\n'
         data += '\n'
-
-        if 'minmax' in self.skin_dict['Extras']['pages'][page]:
-            data += '// Update the min/max observations\n'
-            data += 'function updateMinMax(startTimestamp, endTimestamp) {\n'
-            data += '    jasLogDebug("Min start: ", startTimestamp);\n'
-            data += '    jasLogDebug("Max start: ", endTimestamp);\n'
-            data += '    // ToDo: optimize to only get index once for all observations?\n'
-            data += '    minMaxObs.forEach(function(minMaxObsData) {\n'
-            data += '        startIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == startTimestamp);\n'
-            data += '        endIndex = minMaxObsData.minDateTimeArray.findIndex(element => element == endTimestamp);\n'
-            data += '        if (startIndex < 0) {\n'
-            data += '            startIndex = 0;\n'
-            data += '        }\n'
-            data += '        if (endIndex < 0) {\n'
-            data += '            endIndex  = minMaxObsData.minDateTimeArray.length - 1;\n'
-            data += '        }\n'
-            data += '        if (startIndex == endIndex) {\n'
-            data += '            minIndex = startIndex;\n'
-            data += '            maxIndex = endIndex;\n'
-            data += '        } else {\n'
-            data += '            minIndex = minMaxObsData.minDataArray.indexOf(Math.min(...minMaxObsData.minDataArray.slice(startIndex, endIndex + 1).filter(obs => obs != null)));\n'
-            data += '            maxIndex = minMaxObsData.maxDataArray.indexOf(Math.max(...minMaxObsData.maxDataArray.slice(startIndex, endIndex + 1)));\n'
-            data += '        }\n'
-            data += '\n'
-            data += '        min = minMaxObsData.minDataArray[minIndex];\n'
-            data += '        max = minMaxObsData.maxDataArray[maxIndex];\n'
-            data += '        if (minMaxObsData.maxDecimals) {\n'
-            data += '            min = min.toFixed(minMaxObsData.maxDecimals);\n'
-            data += '            max = max.toFixed(minMaxObsData.maxDecimals);\n'
-            data += '        }\n'
-            data += '        min = Number(min).toLocaleString(lang);\n'
-            data += '        max = Number(max).toLocaleString(lang);\n'
-            data += '        min = min + minMaxObsData.label;\n'
-            data += '        max = max + minMaxObsData.label;\n'
-            data += '\n'
-            min_format = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}).get('min', 'none')
-            max_format = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}).get('max', 'none')
-            data += '        minDate = moment.unix(minMaxObsData.minDateTimeArray[minIndex]/1000).utcOffset(' + str(self.utc_offset) + ').format(dateTimeFormat[lang].chart["' + min_format + '"].label);\n'
-            data += '        maxDate = moment.unix(minMaxObsData.maxDateTimeArray[maxIndex]/1000).utcOffset(' + str(self.utc_offset) + ').format(dateTimeFormat[lang].chart["' +max_format + '"].label);\n'
-            data += '\n'
-            data += '        observation_element=document.getElementById(minMaxObsData.minId);\n'
-            data += '        observation_element.innerHTML = min + "<br>" + minDate;\n'
-            data += '        observation_element=document.getElementById(minMaxObsData.maxId);\n'
-            data += '        observation_element.innerHTML = max + "<br>" + maxDate;\n'
-            data += '    });\n'
-            data += '}\n'
-
-        data += '\n'
-        default_theme = to_list(self.skin_dict['Extras'].get('themes', 'light'))[0]
-        data += 'document.addEventListener("DOMContentLoaded", function (event) {\n'
-        data += '    console.debug(Date.now().toString() + " DOMContentLoaded start");\n'
-        data += '    setupPage();\n'
-        data += '    console.debug(Date.now().toString() + " setupPage done");\n'
-        if page != 'about':
-            data += '    setupCharts();\n'
-            data += '    console.debug(Date.now().toString() + " setupCharts done");\n'
-        data += '    DOMLoaded = true;\n'
-        data += '    console.debug(Date.now().toString() + " DOMContentLoaded end");\n'
-        data += '});\n'
-        data += '\n'
-
-        data += 'function updateData() {\n'
-        data += '    console.debug(Date.now().toString() + " updateData start");\n'
-        data += '    if (jasOptions.minmax) {\n'
-        data += '        updateMinMax(' + start_timestamp + ', ' + end_timestamp + ');\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    // Set up the date/time picker\n'
-        data += '    if (jasOptions.zoomcontrol) {\n'
-        data += '        setupZoomDate();\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    if (jasOptions.thisdate) {\n'
-        data += '        setupThisDate();\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    if (jasOptions.current) {\n'
-        data += '        updateCurrentObservations();\n'
-        data += '    }\n'
-        data += '    console.debug(Date.now().toString() + " updateCurrentObservations done");\n'
-        data += '    if (jasOptions.forecast) {\n'
-        data += '        updateForecasts();\n'
-        data += '    }\n'
-        data += '    console.debug(Date.now().toString() + " updateForecasts done");\n'
-        data += '    updateChartData();\n'
-        data += '    console.debug(Date.now().toString() + " updateChartData done");\n'
-        data += '    console.debug(Date.now().toString() + " updateData end");\n'
-        data += '\n'
-        data += '}\n'
-        data += '\n'
-
-        data += 'function setupPage(pageDataString) {\n'
-        data += '    console.debug(Date.now().toString() + " setupPage start");\n'
-        data += '    theme = sessionStorage.getItem("theme");\n'
-        data += '    if (!theme) {\n'
-        data += '        theme = "' + default_theme + '";\n'
-        data += '    }\n'
-        data += '    console.debug(Date.now().toString() + " getTheme done");\n'
-        data += '    setTheme(theme);\n'
-        data += '    console.debug(Date.now().toString() + " setTheme done");\n'
-        data += '    updateTexts();\n'
-        data += '    console.debug(Date.now().toString() + " updateTexts done");\n'
-        data += '    updateLabels();\n'
-        data += '    console.debug(Date.now().toString() + " updateLabels done");\n'
-        data += '\n'
-        data += '    if (jasOptions.refresh) {\n'
-        data += '        setupPageRefresh();\n'
-        data += '    }\n'
-        data += '\n'
-        data += '    console.debug(Date.now().toString() + " setupPage end");\n'
-        data += '};\n'
-        data += '\n'
-
-        data += 'window.addEventListener("load", function (event) {\n'
-        data += '    console.debug(Date.now().toString() + " onLoad start");\n'
-        data += '    setIframeSrc();\n'
-        data += '    if (dataLoaded) {\n'
-        data += '        pageLoaded = true;\n'
-        data += '        updateData();\n'
-        data += '    }\n'
-
-        data += '    modalChart = null;\n'
-        data += '    var chartModal = document.getElementById("chartModal");\n'
-
-        data += '    chartModal.addEventListener("shown.bs.modal", function (event) {\n'
-        data += '      var titleElem = document.getElementById("chartModalTitle");\n'
-        data += '      titleElem.innerText = getText(event.relatedTarget.getAttribute("data-bs-title"));\n'
-        data += '      var divelem = document.getElementById("chartModalBody");\n'
-        data += '      modalChart = echarts.init(divelem);\n'
-
-        data += '      var chartId = event.relatedTarget.getAttribute("data-bs-chart");\n'
-        data += '      index = pageIndex[chartId];\n'
-        data += '      option = pageCharts[index]["def"];\n'
-        data += '      modalChart.setOption(option);\n'
-        data += '      modalChart.setOption(pageCharts[index]["option"]);\n'
-        data += '      resizeChart(modalChart, elemHeight = divelem.getAttribute("jasHeight") -\n'
-        data += '                                      4* document.getElementById("chartModalHeader").clientHeight -\n'
-        data += '                                      document.getElementById("chartModalFooter").clientHeight);\n'
-        data += '    })\n'
-
-        data += '    chartModal.addEventListener("hidden.bs.modal", function (event) {\n'
-        data += '      modalChart.dispose();\n'
-        data += '      modalChart = null;\n'
-
-        data += '      bootstrap.Modal.getInstance(document.getElementById("chartModal")).dispose();\n'
-        data += '    })\n'
-
-        data += '    if (jasOptions.current) {\n'
-        data += '      var currentModal = document.getElementById("currentModal");\n'
-        data += '      currentModal.addEventListener("shown.bs.modal", function (event) {\n'
-        data += '          headerModalElem = document.getElementById("currentModalTitle");\n'
-        data += '          if (headerModalElem) {\n'
-        data += '              headerModalElem.innerHTML = header.value + header.unit;\n'
-        data += '          }\n'
-
-        data += '          if (jasOptions.displayAerisObservation) {\n'
-        data += '             document.getElementById("currentObservationModal").innerHTML = current_observation;\n'
-        data += '          }\n'
-        data += '          if (jasOptions.displayAerisAQI) {\n'
-        data += '             document.getElementById("currentAQIModal").innerHTML = current_aqi;\n'
-        data += '          }\n'
-        data += '          if (jasOptions.displayAerisAlert) {\n'
-        data += '             document.getElementById("currentAlertModal").innerHTML = current_alert;\n'
-        data += '          }\n'
-        data += '           // Process each observation in the "current" section.\n'
-        data += '           observations = [];\n'
-        data += '           if (sessionStorage.getItem("observations")) {\n'
-        data += '              observations = sessionStorage.getItem("observations").split(",");\n'
-        data += '           }\n'
-        data += '\n'
-        data += '           observations.forEach(function(observation) {\n'
-        data += '              obs = JSON.parse(sessionStorage.getItem(observation));\n'
-        data += '             if (obs.modalLabel) {\n'
-        data += '                  document.getElementById(obs.modalLabel).innerHTML = obs.value + obs.unit;\n'
-        data += '             }\n'
-        data += '           });\n'
-
-        data += '           var updateDate = sessionStorage.getItem("updateDate")/1000;\n'
-        data += '           timeElem = document.getElementById("updateModalDate");\n'
-        data += '           if (timeElem) {\n'
-        data += '              timeElem.innerHTML = moment.unix(updateDate).utcOffset(' + str(self.utc_offset) + ').format(dateTimeFormat[lang].current);\n'
-        data += '           }\n'
-        data += '      })\n'
-
-        data += '      currentModal.addEventListener("hidden.bs.modal", function (event) {\n'
-        data += '        bootstrap.Modal.getInstance(document.getElementById("currentModal")).dispose();\n'
-        data += '      })\n'
-
-        data += '      if (jasOptions.displayAerisAlert) {\n'
-        data += '        var alertModal = document.getElementById("alertModal");\n'
-        data += '        alertModal.addEventListener("shown.bs.modal", function (event) {\n'
-        data += '           document.getElementById("alertDetailModal").innerHTML = current_alert_detail;\n'
-        data += '        })\n'
-
-        data += '        alertModal.addEventListener("hidden.bs.modal", function (event) {\n'
-        data += '          bootstrap.Modal.getInstance(document.getElementById("alertModal")).dispose();\n'
-        data += '        })\n'
-        data += '      }\n'
-        data += '    }\n'
-
-        data += '    // Todo: create functions for code in the if statements\n'
-        data += '    // Tell the parent page the iframe size\n'
-        data += '    message = {};\n'
-        data += '    message.kind = "resize";\n'
-        data += '    message.message = {};\n'
-        data += '    message.message = { height: document.body.scrollHeight, width: document.body.scrollWidth };\n'
-        data += '    // window.top refers to parent window\n'
-        data += '    window.top.postMessage(message, "*");\n'
-        data += '\n'
-        data += '    // When the iframe size changes, let the parent page know\n'
-        data += '    const myObserver = new ResizeObserver(entries => {\n'
-        data += '        entries.forEach(entry => {\n'
-        data += '       message = {};\n'
-        data += '       message.kind = "resize";\n'
-        data += '       message.message = {};\n'
-        data += '        message.message = { height: document.body.scrollHeight, width: document.body.scrollWidth };\n'
-        data += '        // window.top refers to parent window\n'
-        data += '        window.top.postMessage(message, "*");\n'
-        data += '        });\n'
-        data += '    });\n'
-        data += '    myObserver.observe(document.body);\n'
-        data += '\n'
-        data += '    message = {};\n'
-        data += '    message.kind = "loaded";\n'
-        data += '    message.message = {};\n'
-        data += '    // window.top refers to parent window\n'
-        data += '    window.top.postMessage(message, "*");\n'
-        data += '    console.debug(Date.now().toString() + " onLoad End");\n'
-        data += '});\n'
-        data += '\n'
-        data += 'function setIframeSrc() {\n'
-        data += '    url = "../dataload/' + page_name + '.html";\n'
-        if page in self.skin_dict['Extras']['pages'] and \
-          'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
-            data += '    // use query string so that iframe is not cached\n'
-            data += '    url = url + "?ts=" + Date.now();\n'
-        data += '    document.getElementById("data-iframe").src = url;\n'
-        data += '}\n'
 
         javascript = '''
+document.addEventListener("DOMContentLoaded", function (event) {
+    console.debug(Date.now().toString() + " DOMContentLoaded start");
+    setupPage();
+    console.debug(Date.now().toString() + " setupPage done");
+    if (pageName != "about") {
+        setupCharts();
+}
+    console.debug(Date.now().toString() + " setupCharts done");
+    DOMLoaded = true;
+    console.debug(Date.now().toString() + " DOMContentLoaded end");
+});
+
+function updateData() {
+    console.debug(Date.now().toString() + " updateData start");
+    if (jasOptions.minmax) {
+        updateMinMax(startMinMaxTimestamp, endMinMaxTimestamp);
+    }
+
+    // Set up the date/time picker
+    if (jasOptions.zoomcontrol) {
+        setupZoomDate();
+    }
+
+    if (jasOptions.thisdate) {
+        setupThisDate();
+    }
+
+    if (jasOptions.current) {
+        updateCurrentObservations();
+    }
+    console.debug(Date.now().toString() + " updateCurrentObservations done");
+    if (jasOptions.forecast) {
+        updateForecasts();
+    }
+    console.debug(Date.now().toString() + " updateForecasts done");
+    updateChartData();
+    console.debug(Date.now().toString() + " updateChartData done");
+    console.debug(Date.now().toString() + " updateData end");
+
+}
+
+function setupPage(pageDataString) {
+    console.debug(Date.now().toString() + " setupPage start");
+    theme = sessionStorage.getItem("theme");
+    if (!theme) {
+        theme = defaultTheme;
+    }
+    console.debug(Date.now().toString() + " getTheme done");
+    setTheme(theme);
+    console.debug(Date.now().toString() + " setTheme done");
+    updateTexts();
+    console.debug(Date.now().toString() + " updateTexts done");
+    updateLabels();
+    console.debug(Date.now().toString() + " updateLabels done");
+
+    if (jasOptions.refresh) {
+        setupPageRefresh();
+    }
+
+    console.debug(Date.now().toString() + " setupPage end");
+};
+
+window.addEventListener("load", function (event) {
+    console.debug(Date.now().toString() + " onLoad start");
+    setIframeSrc();
+    if (dataLoaded) {
+        pageLoaded = true;
+        updateData();
+    }
+
+    modalChart = null;
+    var chartModal = document.getElementById("chartModal");
+
+    chartModal.addEventListener("shown.bs.modal", function (event) {
+        var titleElem = document.getElementById("chartModalTitle");
+        titleElem.innerText = getText(event.relatedTarget.getAttribute("data-bs-title"));
+        var divelem = document.getElementById("chartModalBody");
+        modalChart = echarts.init(divelem);
+
+        var chartId = event.relatedTarget.getAttribute("data-bs-chart");
+        index = pageIndex[chartId];
+        option = pageCharts[index]["def"];
+        modalChart.setOption(option);
+        modalChart.setOption(pageCharts[index]["option"]);
+        resizeChart(modalChart, elemHeight = divelem.getAttribute("jasHeight") -
+                                        4* document.getElementById("chartModalHeader").clientHeight -
+                                        document.getElementById("chartModalFooter").clientHeight);
+    })
+
+    chartModal.addEventListener("hidden.bs.modal", function (event) {
+        modalChart.dispose();
+        modalChart = null;
+
+        bootstrap.Modal.getInstance(document.getElementById("chartModal")).dispose();
+    })
+
+    if (jasOptions.current) {
+        var currentModal = document.getElementById("currentModal");
+        currentModal.addEventListener("shown.bs.modal", function (event) {
+            headerModalElem = document.getElementById("currentModalTitle");
+            if (headerModalElem) {
+                headerModalElem.innerHTML = header.value + header.unit;
+            }
+
+            if (jasOptions.displayAerisObservation) {
+                document.getElementById("currentObservationModal").innerHTML = current_observation;
+            }
+            if (jasOptions.displayAerisAQI) {
+                document.getElementById("currentAQIModal").innerHTML = current_aqi;
+            }
+            if (jasOptions.displayAerisAlert) {
+                document.getElementById("currentAlertModal").innerHTML = current_alert;
+            }
+            // Process each observation in the "current" section.
+            observations = [];
+            if (sessionStorage.getItem("observations")) {
+                observations = sessionStorage.getItem("observations").split(",");
+            }
+
+            observations.forEach(function(observation) {
+                obs = JSON.parse(sessionStorage.getItem(observation));
+                if (obs.modalLabel) {
+                    document.getElementById(obs.modalLabel).innerHTML = obs.value + obs.unit;
+                }
+            });
+
+            var updateDate = sessionStorage.getItem("updateDate")/1000;
+            timeElem = document.getElementById("updateModalDate");
+            if (timeElem) {
+                timeElem.innerHTML = moment.unix(updateDate).utcOffset(utcOffset).format(dateTimeFormat[lang].current);
+            }
+        })        
+
+        currentModal.addEventListener("hidden.bs.modal", function (event) {
+        bootstrap.Modal.getInstance(document.getElementById("currentModal")).dispose();
+        })
+
+        if (jasOptions.displayAerisAlert) {
+        var alertModal = document.getElementById("alertModal");
+        alertModal.addEventListener("shown.bs.modal", function (event) {
+            document.getElementById("alertDetailModal").innerHTML = current_alert_detail;
+        })
+
+        alertModal.addEventListener("hidden.bs.modal", function (event) {
+            bootstrap.Modal.getInstance(document.getElementById("alertModal")).dispose();
+        })
+        }
+    }
+
+    // Todo: create functions for code in the if statements
+    // Tell the parent page the iframe size
+    message = {};
+    message.kind = "resize";
+    message.message = {};
+    message.message = { height: document.body.scrollHeight, width: document.body.scrollWidth };
+    // window.top refers to parent window
+    window.top.postMessage(message, "*");
+
+    // When the iframe size changes, let the parent page know
+    const myObserver = new ResizeObserver(entries => {
+        entries.forEach(entry => {
+        message = {};
+        message.kind = "resize";
+        message.message = {};
+        message.message = { height: document.body.scrollHeight, width: document.body.scrollWidth };
+        // window.top refers to parent window
+        window.top.postMessage(message, "*");
+        });
+    });
+    myObserver.observe(document.body);
+
+    message = {};
+    message.kind = "loaded";
+    message.message = {};
+    // window.top refers to parent window
+    window.top.postMessage(message, "*");
+    console.debug(Date.now().toString() + " onLoad End");
+});
+
+function setIframeSrc() {
+
+    document.getElementById("data-iframe").src = dataLoadURL;
+}
+
 function jasShow(data) {
     return window[data]
 }
@@ -1240,20 +1254,9 @@ function handleScroll(message) {
 // Handle event messages of type "dataLoaded".
 function handleDataLoaded(message) {
     console.debug(Date.now().toString() + " handleDataLoaded start");
-'''
-        data += javascript
 
-        if page in self.skin_dict['Extras']['page_definition']:
-            series_type = self.skin_dict['Extras']['page_definition'][page].get('series_type', 'single')
-            if series_type == 'single':
-                data += 'getData' + interval_long_name + '(message);\n'
-            elif series_type == 'multiple':
-                data += 'getDataMultiyear(message);\n'
-            elif series_type == 'comparison':
-                data += 'getDataComparison(message);\n'
-            data += 'console.debug(Date.now().toString() + " getData done");\n'
-
-        javascript = '''
+    getDataFunction(message);
+    console.debug(Date.now().toString() + " getData done");\n
     dataLoaded = true;\n
     if (DOMLoaded) {
         pageLoaded = true;
@@ -1346,13 +1349,9 @@ function updateForecasts() {
         observation = '';
         forecast.observation_codes.forEach(function(observationCode) {
             observation += getText(observationCode) + ' '
-        });'''
-
-        data += javascript + "\n"
-        data += '        date = moment.unix(forecast["timestamp"]).utcOffset(' + str(self.utc_offset) + ').format(dateTimeFormat[lang].forecast);\n'
-
-        javascript =\
-        '''        observationId = "forecastObservation" + i;
+        });
+        date = moment.unix(forecast["timestamp"]).utcOffset(utcOffset).format(dateTimeFormat[lang].forecast);
+        observationId = "forecastObservation" + i;
         document.getElementById("forecastDate" + i).innerHTML = getText(forecast["day_code"])  + " " + date;
         document.getElementById("forecastObservation" + i).innerHTML = observation;
         document.getElementById("forecastTemp" + i).innerHTML = forecast["temp_min"] + " | " + forecast["temp_max"];
