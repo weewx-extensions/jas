@@ -541,16 +541,21 @@ class JAS(SearchList):
         data += 'minFormat = "' + min_format + '";\n'
         data += 'maxFormat = "' + max_format + '";\n'
         data += 'pageName = "' + page + '";\n'
+        data += 'pageName2 = "' + page_name + '";\n'
 
         data += 'utcOffset = ' + str(self.utc_offset) + ";\n"
         default_theme = to_list(self.skin_dict['Extras'].get('themes', 'light'))[0]
         data +=  'defaultTheme = ' + '"' + default_theme + ';"\n'
 
-        data += 'dataLoadURL = "../dataload/' + page_name + '.html";\n'
+        # ToDo: Fix NOW
+        # data += 'dataLoadURL = "../dataload/' + page_name + '.html";\n'
         if page in self.skin_dict['Extras']['pages'] and \
           'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
-            data += '// use query string so that iframe is not cached\n'
-            data += 'dataLoadURL = dataLoadURL + "?ts=" + Date.now();\n'
+            # data += '// use query string so that iframe is not cached\n'
+            # data += 'dataLoadURL = dataLoadURL + "?ts=" + Date.now();\n'
+            data += 'bustCache = true;\n'
+        else:
+            data += 'bustCache = false;\n'
 
         if page in self.skin_dict['Extras']['page_definition']:
             series_type = self.skin_dict['Extras']['page_definition'][page].get('series_type', 'single')
@@ -1008,9 +1013,14 @@ window.addEventListener("load", function (event) {
     console.debug(Date.now().toString() + " onLoad End");
 });
 
+//# ToDo: Fix NOW
 function setIframeSrc() {
+    url = "../dataload/" + pageName2 + ".html";
+    if (bustCache) {
+        url = url + "?ts=" + Date.now();
+    }
 
-    document.getElementById("data-iframe").src = dataLoadURL;
+    document.getElementById("data-iframe").src = url;
 }
 
 function jasShow(data) {
