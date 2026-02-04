@@ -572,8 +572,8 @@ class JAS(SearchList):
 
         wait_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('wait_seconds', 300)) * 1000)
         delay_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('delay_seconds', 60)) * 1000)
-        data += 'millisecondsWait = "' + wait_milliseconds + '";\n'
-        data += 'millisecondsDelay = "' + delay_milliseconds + '";\n'
+        data += 'millisecondsWait = ' + wait_milliseconds + ';\n'
+        data += 'millisecondsDelay = ' + delay_milliseconds + ';\n'
 
         data += 'headerMaxDecimals = ' + self.skin_dict['Extras'].get('current', {}).get('header_max_decimals', 'null') + ';\n'
         data += "logLevel = sessionStorage.getItem('logLevel');\n"
@@ -685,9 +685,9 @@ function setupPageRefresh() {
     // Set a timer to reload the iframe/page.
     var currentDate = new Date();
     var futureDate = new Date();
-    futureDate.setTime(futureDate.getTime() + ' + wait_milliseconds + ');
-    var futureTimestamp = Math.floor(futureDate.getTime()/' + wait_milliseconds + ') * '+ wait_milliseconds + ';
-    var timeout = futureTimestamp - currentDate.getTime() + ' + delay_milliseconds + ';
+    futureDate.setTime(futureDate.getTime() + millisecondsWait);
+    var futureTimestamp = Math.floor(futureDate.getTime()/millisecondsWait) * millisecondsWait;
+    var timeout = futureTimestamp - currentDate.getTime() + millisecondsDelay;
     setTimeout(function() { handleRefreshData(null); setupPageRefresh();}, timeout);
 }
 
