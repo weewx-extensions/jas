@@ -547,12 +547,8 @@ class JAS(SearchList):
         default_theme = to_list(self.skin_dict['Extras'].get('themes', 'light'))[0]
         data +=  'defaultTheme = ' + '"' + default_theme + ';"\n'
 
-        # ToDo: Fix NOW
-        # data += 'dataLoadURL = "../dataload/' + page_name + '.html";\n'
         if page in self.skin_dict['Extras']['pages'] and \
           'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
-            # data += '// use query string so that iframe is not cached\n'
-            # data += 'dataLoadURL = dataLoadURL + "?ts=" + Date.now();\n'
             data += 'bustCache = true;\n'
         else:
             data += 'bustCache = false;\n'
@@ -1013,7 +1009,6 @@ window.addEventListener("load", function (event) {
     console.debug(Date.now().toString() + " onLoad End");
 });
 
-//# ToDo: Fix NOW
 function setIframeSrc() {
     url = "../dataload/" + pageName2 + ".html";
     if (bustCache) {
