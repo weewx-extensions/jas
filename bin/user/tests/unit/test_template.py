@@ -9,7 +9,7 @@
 
 import unittest
 
-import helpers
+from user.tests import helpers
 
 class TestTemplate(unittest.TestCase):
     def test_template(self):
