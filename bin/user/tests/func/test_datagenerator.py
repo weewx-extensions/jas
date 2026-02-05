@@ -11,8 +11,8 @@ import unittest
 
 from user.tests import helpers
 
-class TestTemplate(unittest.TestCase):
-    def test_template(self):
+class TestDataGenerator(unittest.TestCase):
+    def test_gen_it(self):
         pass
 
 if __name__ == '__main__':
