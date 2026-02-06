@@ -1,4 +1,4 @@
-#    Copyright (c) 2026 Rich Bell <bellrichm@gmail.com>
+#    Copyright (c) 206 Rich Bell <bellrichm@gmail.com>
 #
 #    See the file LICENSE.txt for your full rights.
 #
@@ -11,8 +11,8 @@ import unittest
 
 from user.tests import helpers
 
-class TestTemplate(unittest.TestCase):
-    def test_template(self):
+class TestDataGenerator(unittest.TestCase):
+    def test_gen_it(self):
         pass
 
 if __name__ == '__main__':

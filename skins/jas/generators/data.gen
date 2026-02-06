@@ -28,6 +28,8 @@ var forecasts = [];
 #echo "var " + $interval_long_name_global + "endDate;\n"
 #echo "var " + $interval_long_name_global + "startTimestamp;\n"
 #echo "var " + $interval_long_name_global + "endTimestamp;\n"
+#echo "var startMinMaxTimestamp;\n"
+#echo "var endinMaxTimestamp;\n"
 
 var updateDate;
 
@@ -61,7 +63,11 @@ var updateDate;
 #echo "    " + $interval_long_name_global + "startDate = moment(pageData.startDate);\n"
 #echo "    " + $interval_long_name_global + "endDate = moment(pageData.endDate);\n"
 #echo "    " + $interval_long_name_global + "startTimestamp = pageData.startTimestamp;\n"
-#echo "    " + $interval_long_name_global + "endTimestamp = pageData.endTimeStamp;\n"
+#echo "    " + $interval_long_name_global + "endTimestamp = pageData.endTimestamp;\n"
+#echo "    startMinMaxDate = moment(pageData.startDate);\n"
+#echo "    endMinMaxDate = moment(pageData.endDate);\n"
+#echo "    startMinMaxTimestamp = pageData.startTimestamp;\n"
+#echo "    endMinMaxTimestamp = pageData.endTimestamp;\n"
 
 ## Populate the 'aggegate' objects
 ## Example: last7days_min.outTemp = [[dateTime1, outTemp1], [dateTime2, outTemp2]]

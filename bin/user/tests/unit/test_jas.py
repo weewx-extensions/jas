@@ -12,7 +12,7 @@ import configobj
 import unittest
 import mock
 
-import helpers
+from user.tests import helpers
 import user.jas
 
 class TestConfiguration(unittest.TestCase):
