@@ -14,6 +14,7 @@ from user.tests import helpers
 
 import configobj
 import datetime
+import os
 import time
 
 import weewx.manager
@@ -39,6 +40,8 @@ class TestDataGenerator(unittest.TestCase):
                 mock_time.time.return_value = now
                 mock_datetime.datetime.fromtimestamp.return_value = datetime.datetime.fromtimestamp(0)
                 mock_datetime.datetime.utcfromtimestamp.return_value = datetime.datetime.fromtimestamp(18000)
+                os.environ['TZ'] = 'America/New_York'
+                time.tzset()
 
                 with weewx.manager.DBBinder(config) as db_binder:
                     db_manager = db_binder.get_manager(binding)
