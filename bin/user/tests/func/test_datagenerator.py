@@ -13,6 +13,7 @@ import mock
 from user.tests import helpers
 
 import configobj
+import datetime
 import time
 
 import weewx.manager
@@ -31,6 +32,8 @@ class TestDataGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
         now = int(time.time())
+        utc_offset = (datetime.datetime.fromtimestamp(now) -
+                           datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with mock.patch('user.jas.time') as mock_time:
             mock_time.time.return_value = now
@@ -50,7 +53,7 @@ class TestDataGenerator(unittest.TestCase):
 
             result = generator._gen_data_load(time_span, 'foo', 'day', 'active', 'day', 'day_')
            #  print(result)
-            self.assertEqual(result, result2.format(now=now))
+            self.assertEqual(result, result2.format(now=now, utc_offset=utc_offset))
 
             print("done 1")
 
