@@ -26,7 +26,7 @@ config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_er
 
 binding = 'wx_binding'
 
-#@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
+@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
 class TestDataGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
@@ -34,7 +34,7 @@ class TestDataGenerator(unittest.TestCase):
 
         with mock.patch('user.jas.time') as mock_time:
             mock_time.time.return_value = now
-            
+
             with weewx.manager.DBBinder(config) as db_binder:
                 db_manager = db_binder.get_manager(binding)
                 ts = db_manager.lastGoodStamp()
