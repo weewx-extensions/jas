@@ -5,4 +5,3 @@ skins/jas/lang/bad-encoding/*
 .coverage
 act-artifacts/
 tmp/
-bin/user/tests/func/data/weewx.sdb
