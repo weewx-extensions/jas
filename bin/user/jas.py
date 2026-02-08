@@ -2119,20 +2119,6 @@ class DataGenerator(JASGenerator):
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         page_data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding', skin_data_binding)
 
-        data = user.jas_templates.data_load_template2.format(VERSION=VERSION,
-                                                             gen_time=self.gen_time)
-
-        data += "pageData = {};\n"
-        data += 'function ' + interval_long_name + 'dataLoad() {\n'
-        data += '  traceStart = Date.now();\n'
-        data += '  console.debug(Date.now().toString() + " dataLoad start");\n'
-
-        data_current = ''
-        if self.data_current:
-            data_current += '  pageData.currentObservations = ["' + '", "'.join(self.data_current['observation']) + '"];\n'
-        data += data_current
-
-        data += '  pageData.aqi = {};\n'
         data_aqi = ''
         if self.data_aqi:
             data_aqi += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
@@ -2141,9 +2127,7 @@ class DataGenerator(JASGenerator):
             data_aqi += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
             data_aqi += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
             data_aqi += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
-        data += data_aqi
 
-        data += '\n'
         data_alert = ''
         if self.data_alert:
             data_alert += '  pageData.alerts = [];\n'
@@ -2162,10 +2146,7 @@ class DataGenerator(JASGenerator):
                 data_alert += '\n'
         else:
             data_alert += '  pageData.alerts = null;\n'
-        data += data_alert
 
-        data += '  pageData.forecasts = [];\n'
-        data += '\n'
         data_forecast = ''
         if self.data_forecast:
             for forecast in self.data_forecast:
@@ -2182,6 +2163,31 @@ class DataGenerator(JASGenerator):
                 data_forecast += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
                 data_forecast += '  pageData.forecasts.push(forecast);\n'
                 data_forecast += '\n'
+
+        data = user.jas_templates.data_load_template2.format(VERSION=VERSION,
+                                                             gen_time=self.gen_time)
+
+        data += "pageData = {};\n"
+        data += 'function ' + interval_long_name + 'dataLoad() {\n'
+        data += '  traceStart = Date.now();\n'
+        data += '  console.debug(Date.now().toString() + " dataLoad start");\n'
+
+        data_current = ''
+        if self.data_current:
+            data_current += '  pageData.currentObservations = ["' + '", "'.join(self.data_current['observation']) + '"];\n'
+        data += data_current
+
+        data += '  pageData.aqi = {};\n'
+
+        data += data_aqi
+
+        data += '\n'
+
+        data += data_alert
+
+        data += '  pageData.forecasts = [];\n'
+        data += '\n'
+
         data += data_forecast
 
         data += self._gen_data_load2(timespan, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding)
