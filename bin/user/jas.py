@@ -177,6 +177,7 @@ except ImportError:
         """ log error messages """
         logmsg(syslog.LOG_ERR, msg)
 
+import user.jas_templates
 
 VERSION = "1.2.0-rc03"
 
@@ -2074,14 +2075,7 @@ class DataGenerator(JASGenerator):
                                                                                          self.skin_dict['Extras']['pages'].get('query_string_on', []))):
             query_string = f"?ts={str(self._get_current(timespan, 'dateTime', data_binding=skin_data_binding, unit_name='default').raw )}"
 
-        data = ''
-
-        data += '<!doctype html>\n'
-        data += '<html>\n'
-        data += '  <head>\n'
-        data += f'    <meta name="generator" content="jas {VERSION} {self.gen_time}">\n'
-        data += f'    <script src="https://cdn.jsdelivr.net/npm/moment@{momentjs_version}/moment{momentjs_minified}.js"></script>\n'
-
+        script_string = ''
         if page_definition_name in ['yeartoyear', 'multiyear']:
             data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding',
                                                                         self.skin_dict['Extras'].get('data_binding', self.data_binding))
@@ -2089,16 +2083,13 @@ class DataGenerator(JASGenerator):
                                                      self.skin_dict['Extras']['pages'][page_definition_name].get('end', None),
                                                      data_binding)
             for year in range(year_start, year_end):
-                data += f'    <script src="{str(year)}.js{query_string}"></script>\n'
+                script_string += f'    <script src="{str(year)}.js{query_string}"></script>\n'
         else:
-            data += f'    <script src="{data_load_file_name}{query_string}"></script>\n'
+            script_string += f'    <script src="{data_load_file_name}{query_string}"></script>\n'
 
-        data += '    <script>\n'
-        data += '      window.addEventListener("load", function (event) {\n'
-        data +=  '      console.debug(Date.now().toString() + " iframe start");\n'
-
+        dataload_string = ''
         if series_type == 'single':
-            data += f'        {interval_long_name}dataLoad();\n'
+            dataload_string += f'        {interval_long_name}dataLoad();\n'
         elif series_type in ['multiple', 'comparison']:
             data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding',
                                                                         self.skin_dict['Extras'].get('data_binding', self.data_binding))
@@ -2106,17 +2097,14 @@ class DataGenerator(JASGenerator):
                                                      self.skin_dict['Extras']['pages'][page_definition_name].get('end', None),
                                                      data_binding)
             for year in range(year_start, year_end):
-                data += f'        year{str(year)}_dataLoad();\n'
+                dataload_string += f'        year{str(year)}_dataLoad();\n'
 
-        data += '        message = {};\n'
-        data += '        message.kind = "dataLoaded";\n'
-        data += '        message.message = JSON.stringify(pageData);\n'
-        data += '        window.parent.postMessage(message, "*");\n'
-        data += '        console.debug(Date.now().toString() + " iframe end");\n'
-        data += '      })\n'
-        data += '    </script>\n'
-        data += '  </head>\n'
-        data += '</html>\n'
+        data = user.jas_templates.data_load_template.format(VERSION=VERSION,
+                                                            gen_time=self.gen_time,
+                                                            momentjs_version=momentjs_version,
+                                                            momentjs_minified=momentjs_minified,
+                                                            script_string=script_string,
+                                                            dataload_string=dataload_string)
 
         elapsed_time = time.time() - start_time
         log_msg = "Generated " + filename + " in " + str(elapsed_time)
