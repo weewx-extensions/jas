@@ -36,31 +36,32 @@ class TestDataGenerator(unittest.TestCase):
         utc_offset = -300.0
 
         with mock.patch('user.jas.time') as mock_time:
-            with mock.patch('user.jas.datetime') as mock_datetime:
-                mock_time.time.return_value = now
-                mock_datetime.datetime.fromtimestamp.return_value = datetime.datetime.fromtimestamp(0)
-                mock_datetime.datetime.utcfromtimestamp.return_value = datetime.datetime.fromtimestamp(18000)
-                os.environ['TZ'] = 'America/New_York'
-                time.tzset()
+            #with mock.patch('user.jas.datetime') as mock_datetime:
+            mock_time.time.return_value = now
+            # mock_datetime.datetime.fromtimestamp.return_value = datetime.datetime.fromtimestamp(0)
+            # mock_datetime.datetime.utcfromtimestamp.return_value = datetime.datetime.fromtimestamp(18000)
+            # ToDo: This will probably break when on day light savings time....
+            os.environ['TZ'] = 'America/New_York'
+            time.tzset()
 
-                with weewx.manager.DBBinder(config) as db_binder:
-                    db_manager = db_binder.get_manager(binding)
-                    ts = db_manager.lastGoodStamp()
-                    record = db_manager.getRecord(ts)
+            with weewx.manager.DBBinder(config) as db_binder:
+                db_manager = db_binder.get_manager(binding)
+                ts = db_manager.lastGoodStamp()
+                record = db_manager.getRecord(ts)
 
-                generator = user.jas.DataGenerator(config, config['StdReport']['jas'], ts, True, None, record)
+            generator = user.jas.DataGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
-                time_span = weeutil.weeutil.TimeSpan(ts, record['dateTime'])
+            time_span = weeutil.weeutil.TimeSpan(ts, record['dateTime'])
 
-                result = generator._gen_it(time_span, 'foo', 'day', 'day', None)
-                # print(result)
-                self.assertEqual(result, result1.format(now=now))
+            result = generator._gen_it(time_span, 'foo', 'day', 'day', None)
+            # print(result)
+            self.assertEqual(result, result1.format(now=now))
 
-                result = generator._gen_data_load(time_span, 'foo', 'day', 'active', 'day', 'day_')
-            #  print(result)
-                self.assertEqual(result, result2.format(now=now, utc_offset=utc_offset))
+            result = generator._gen_data_load(time_span, 'foo', 'day', 'active', 'day', 'day_')
+        #  print(result)
+            self.assertEqual(result, result2.format(now=now, utc_offset=utc_offset))
 
-                print("done 1")
+            print("done 1")
 
 if __name__ == '__main__':
     helpers.run_tests()

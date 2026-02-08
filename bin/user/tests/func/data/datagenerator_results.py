@@ -43,8 +43,8 @@ function day_dataLoad() {{
   pageData.alerts = null;
   pageData.forecasts = [];
 
-  pageData.startDate = moment('2026-02-06T00:00:00').utcOffset({utc_offset});
-  pageData.endDate = moment('2026-02-07T00:00:00').utcOffset({utc_offset});
+  pageData.startDate = moment('2026-02-06T00:00:00').utcOffset(-300.0);
+  pageData.endDate = moment('2026-02-07T00:00:00').utcOffset(-300.0);
   pageData.startTimestamp = 1770354000000;
   pageData.endTimestamp = 1770440400000;
 
