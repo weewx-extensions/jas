@@ -3,6 +3,10 @@
 #    See the file LICENSE.txt for your full rights.
 #
 
+'''
+Data templates used by JAS skin.
+'''
+
 data_load_template = \
 '''<!doctype html>
 <html>
@@ -21,4 +25,12 @@ data_load_template = \
     </script>
   </head>
 </html>
+'''
+
+data_load_template2 =\
+'''// the start
+'''
+
+data_load_template2 +=\
+'''/* jas {VERSION} {gen_time} */
 '''

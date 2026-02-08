@@ -2118,61 +2118,71 @@ class DataGenerator(JASGenerator):
 
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         page_data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding', skin_data_binding)
-        data = ''
-        data += '// the start\n'
-        data += '/* jas ' + VERSION + ' ' + str(self.gen_time) + ' */\n'
+
+        data = user.jas_templates.data_load_template2.format(VERSION=VERSION,
+                                                             gen_time=self.gen_time)
+
         data += "pageData = {};\n"
         data += 'function ' + interval_long_name + 'dataLoad() {\n'
         data += '  traceStart = Date.now();\n'
         data += '  console.debug(Date.now().toString() + " dataLoad start");\n'
+
+        data_current = ''
         if self.data_current:
-            data += '  pageData.currentObservations = ["' + '", "'.join(self.data_current['observation']) + '"];\n'
+            data_current += '  pageData.currentObservations = ["' + '", "'.join(self.data_current['observation']) + '"];\n'
+        data += data_current
 
         data += '  pageData.aqi = {};\n'
+        data_aqi = ''
         if self.data_aqi:
-            data += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
-            data += '  pageData.aqi.timestamp = ' + str(self.data_aqi["timestamp"]) + ';\n'
-            data += '  pageData.aqi.category = "' + self.data_aqi["category"] + '";\n'
-            data += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
-            data += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
-            data += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
+            data_aqi += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
+            data_aqi += '  pageData.aqi.timestamp = ' + str(self.data_aqi["timestamp"]) + ';\n'
+            data_aqi += '  pageData.aqi.category = "' + self.data_aqi["category"] + '";\n'
+            data_aqi += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
+            data_aqi += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
+            data_aqi += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
+        data += data_aqi
 
         data += '\n'
+        data_alert = ''
         if self.data_alert:
-            data += '  pageData.alerts = [];\n'
+            data_alert += '  pageData.alerts = [];\n'
             for alert in self.data_alert:
-                data += '  alert = {};\n'
-                data += '  alert.type = "alert_type_' + alert["type"].replace(".", "_") + '";\n'
-                data += '  alert.name = "' + alert["name"] + '";\n'
-                data += '  alert.loc = "' + alert["loc"] + '";\n'
-                data += '  alert.emergency = ' + str(alert["emergency"]).lower() + ';\n'
-                data += '  alert.priority = ' + str(alert["priority"]) + ';\n'
-                data += '  alert.color = "' + alert["color"] + '";\n'
-                data += '  alert.cat = "' + alert["cat"] + '";\n'
-                data += '  alert.body = "' + alert["body"].replace("\n", "<br>") + '";\n'
-                data += '  alert.bodyFull = "' + alert["bodyFull"].replace("\n", "<br>") + '";\n'
-                data += '  pageData.alerts.push(alert);\n'
-                data += '\n'
+                data_alert += '  alert = {};\n'
+                data_alert += '  alert.type = "alert_type_' + alert["type"].replace(".", "_") + '";\n'
+                data_alert += '  alert.name = "' + alert["name"] + '";\n'
+                data_alert += '  alert.loc = "' + alert["loc"] + '";\n'
+                data_alert += '  alert.emergency = ' + str(alert["emergency"]).lower() + ';\n'
+                data_alert += '  alert.priority = ' + str(alert["priority"]) + ';\n'
+                data_alert += '  alert.color = "' + alert["color"] + '";\n'
+                data_alert += '  alert.cat = "' + alert["cat"] + '";\n'
+                data_alert += '  alert.body = "' + alert["body"].replace("\n", "<br>") + '";\n'
+                data_alert += '  alert.bodyFull = "' + alert["bodyFull"].replace("\n", "<br>") + '";\n'
+                data_alert += '  pageData.alerts.push(alert);\n'
+                data_alert += '\n'
         else:
-            data += '  pageData.alerts = null;\n'
+            data_alert += '  pageData.alerts = null;\n'
+        data += data_alert
 
         data += '  pageData.forecasts = [];\n'
         data += '\n'
+        data_forecast = ''
         if self.data_forecast:
             for forecast in self.data_forecast:
-                data += '  forecast = {};\n'
-                data += '  forecast.timestamp = ' + str(forecast["timestamp"]) + ';\n'
-                data += '  forecast.observation_codes = ["' + '", "'.join(forecast["observation"]) + '"];\n'
-                data += '  forecast.day_code = ' + forecast["day"] + ';\n'
-                data += '  forecast.temp_min = ' + str(forecast["temp_min"]) + ';\n'
-                data += '  forecast.temp_max = ' + str(forecast["temp_max"]) + ';\n'
-                data += '  forecast.temp_unit = "' + forecast["temp_unit"] + '";\n'
-                data += '  forecast.rain = ' + str(forecast["rain"]) + ';\n'
-                data += '  forecast.wind_min = ' + str(forecast["wind_min"]) + ';\n'
-                data += '  forecast.wind_max = ' + str(forecast["wind_max"]) + ';\n'
-                data += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
-                data += '  pageData.forecasts.push(forecast);\n'
-                data += '\n'
+                data_forecast += '  forecast = {};\n'
+                data_forecast += '  forecast.timestamp = ' + str(forecast["timestamp"]) + ';\n'
+                data_forecast += '  forecast.observation_codes = ["' + '", "'.join(forecast["observation"]) + '"];\n'
+                data_forecast += '  forecast.day_code = ' + forecast["day"] + ';\n'
+                data_forecast += '  forecast.temp_min = ' + str(forecast["temp_min"]) + ';\n'
+                data_forecast += '  forecast.temp_max = ' + str(forecast["temp_max"]) + ';\n'
+                data_forecast += '  forecast.temp_unit = "' + forecast["temp_unit"] + '";\n'
+                data_forecast += '  forecast.rain = ' + str(forecast["rain"]) + ';\n'
+                data_forecast += '  forecast.wind_min = ' + str(forecast["wind_min"]) + ';\n'
+                data_forecast += '  forecast.wind_max = ' + str(forecast["wind_max"]) + ';\n'
+                data_forecast += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
+                data_forecast += '  pageData.forecasts.push(forecast);\n'
+                data_forecast += '\n'
+        data += data_forecast
 
         data += self._gen_data_load2(timespan, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding)
 
