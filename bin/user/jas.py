@@ -2150,19 +2150,30 @@ class DataGenerator(JASGenerator):
         data_forecast = ''
         if self.data_forecast:
             for forecast in self.data_forecast:
-                data_forecast += '  forecast = {};\n'
-                data_forecast += '  forecast.timestamp = ' + str(forecast["timestamp"]) + ';\n'
-                data_forecast += '  forecast.observation_codes = ["' + '", "'.join(forecast["observation"]) + '"];\n'
-                data_forecast += '  forecast.day_code = ' + forecast["day"] + ';\n'
-                data_forecast += '  forecast.temp_min = ' + str(forecast["temp_min"]) + ';\n'
-                data_forecast += '  forecast.temp_max = ' + str(forecast["temp_max"]) + ';\n'
-                data_forecast += '  forecast.temp_unit = "' + forecast["temp_unit"] + '";\n'
-                data_forecast += '  forecast.rain = ' + str(forecast["rain"]) + ';\n'
-                data_forecast += '  forecast.wind_min = ' + str(forecast["wind_min"]) + ';\n'
-                data_forecast += '  forecast.wind_max = ' + str(forecast["wind_max"]) + ';\n'
-                data_forecast += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
-                data_forecast += '  pageData.forecasts.push(forecast);\n'
-                data_forecast += '\n'
+                # data_forecast += '  forecast = {};\n'
+                # data_forecast += '  forecast.timestamp = ' + str(forecast["timestamp"]) + ';\n'
+                # data_forecast += '  forecast.observation_codes = ["' + '", "'.join(forecast["observation"]) + '"];\n'
+                # data_forecast += '  forecast.day_code = ' + forecast["day"] + ';\n'
+                # data_forecast += '  forecast.temp_min = ' + str(forecast["temp_min"]) + ';\n'
+                # data_forecast += '  forecast.temp_max = ' + str(forecast["temp_max"]) + ';\n'
+                # data_forecast += '  forecast.temp_unit = "' + forecast["temp_unit"] + '";\n'
+                # data_forecast += '  forecast.rain = ' + str(forecast["rain"]) + ';\n'
+                # data_forecast += '  forecast.wind_min = ' + str(forecast["wind_min"]) + ';\n'
+                # data_forecast += '  forecast.wind_max = ' + str(forecast["wind_max"]) + ';\n'
+                # data_forecast += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
+                # data_forecast += '  pageData.forecasts.push(forecast);\n'
+                # data_forecast += '\n'
+                data_forecast += user.jas_templates.data_forecast_tempate.format(forecast_timestamp=str(forecast["timestamp"]),
+                                                                                forecast_observation_codes='"' + '","'.join(forecast["observation"]) +'"',
+                                                                                forecast_day_code=forecast["day"],
+                                                                                forecast_temp_min=str(forecast["temp_min"]),
+                                                                                forecast_temp_max=str(forecast["temp_max"]),
+                                                                                forecast_temp_unit=forecast["temp_unit"],
+                                                                                forecast_rain=str(forecast["rain"]),
+                                                                                forecast_wind_min=str(forecast["wind_min"]),
+                                                                                forecast_wind_max=str(forecast["wind_max"]),
+                                                                                forecast_wind_unit=forecast["wind_unit"]
+                                                                                )
 
         data = user.jas_templates.data_load_template2.format(VERSION=VERSION,
                                                              gen_time=self.gen_time)

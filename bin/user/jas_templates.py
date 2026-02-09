@@ -7,6 +7,32 @@
 Data templates used by JAS skin.
 '''
 
+data_aqi_template = \
+'''
+  pageData.aqi.value = {data_aqi_value};
+  pageData.aqi.timestamp = {data_aqi_timestamp};
+  pageData.aqi.category = "{data_aqi_category}";
+  pageData.aqi.color = "{data_aqi_color}";
+  pageData.aqi.method = "{data_aqi_method}";
+  pageData.aqi.dominant = "{data_aqi_dominant}";
+'''
+
+data_forecast_tempate = \
+'''
+  forecast = {{}};
+  forecast.timestamp = {forecast_timestamp};
+  forecast.observation_codes = [{forecast_observation_codes}];
+  forecast.day_code = {forecast_day_code};
+  forecast.temp_min = {forecast_temp_min};
+  forecast.temp_max = {forecast_temp_max};
+  forecast.temp_unit = "{forecast_temp_unit}";
+  forecast.rain = {forecast_rain};
+  forecast.wind_min = {forecast_wind_min};
+  forecast.wind_max = {forecast_wind_max};
+  forecast.wind_unit = "{forecast_wind_unit}";
+  pageData.forecasts.push(forecast);
+'''
+
 data_load_template = \
 '''<!doctype html>
 <html>
