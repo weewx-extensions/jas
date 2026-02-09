@@ -2121,12 +2121,19 @@ class DataGenerator(JASGenerator):
 
         data_aqi = ''
         if self.data_aqi:
-            data_aqi += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
-            data_aqi += '  pageData.aqi.timestamp = ' + str(self.data_aqi["timestamp"]) + ';\n'
-            data_aqi += '  pageData.aqi.category = "' + self.data_aqi["category"] + '";\n'
-            data_aqi += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
-            data_aqi += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
-            data_aqi += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
+            # data_aqi += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
+            # data_aqi += '  pageData.aqi.timestamp = ' + str(self.data_aqi["timestamp"]) + ';\n'
+            # data_aqi += '  pageData.aqi.category = "' + self.data_aqi["category"] + '";\n'
+            # data_aqi += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
+            # data_aqi += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
+            # data_aqi += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
+            data_aqi += user.jas_templates.data_aqi_template.format(data_aqi_value=str(self.data_aqi["value"]),
+                                                                    data_aqi_timestamp=str(self.data_aqi["timestamp"]),
+                                                                    data_aqi_category=self.data_aqi["category"],
+                                                                    data_aqi_color=self.data_aqi["color"],
+                                                                    data_aqi_method=self.data_aqi["method"],
+                                                                    data_aqi_dominant=self.data_aqi["dominant"]
+                                                                    )
 
         data_alert = ''
         if self.data_alert:
