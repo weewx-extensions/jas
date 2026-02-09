@@ -2121,12 +2121,6 @@ class DataGenerator(JASGenerator):
 
         data_aqi = ''
         if self.data_aqi:
-            # data_aqi += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
-            # data_aqi += '  pageData.aqi.timestamp = ' + str(self.data_aqi["timestamp"]) + ';\n'
-            # data_aqi += '  pageData.aqi.category = "' + self.data_aqi["category"] + '";\n'
-            # data_aqi += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
-            # data_aqi += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
-            # data_aqi += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
             data_aqi += user.jas_templates.data_aqi_template.format(data_aqi_value=str(self.data_aqi["value"]),
                                                                     data_aqi_timestamp=str(self.data_aqi["timestamp"]),
                                                                     data_aqi_category=self.data_aqi["category"],
@@ -2139,37 +2133,22 @@ class DataGenerator(JASGenerator):
         if self.data_alert:
             data_alert += '  pageData.alerts = [];\n'
             for alert in self.data_alert:
-                data_alert += '  alert = {};\n'
-                data_alert += '  alert.type = "alert_type_' + alert["type"].replace(".", "_") + '";\n'
-                data_alert += '  alert.name = "' + alert["name"] + '";\n'
-                data_alert += '  alert.loc = "' + alert["loc"] + '";\n'
-                data_alert += '  alert.emergency = ' + str(alert["emergency"]).lower() + ';\n'
-                data_alert += '  alert.priority = ' + str(alert["priority"]) + ';\n'
-                data_alert += '  alert.color = "' + alert["color"] + '";\n'
-                data_alert += '  alert.cat = "' + alert["cat"] + '";\n'
-                data_alert += '  alert.body = "' + alert["body"].replace("\n", "<br>") + '";\n'
-                data_alert += '  alert.bodyFull = "' + alert["bodyFull"].replace("\n", "<br>") + '";\n'
-                data_alert += '  pageData.alerts.push(alert);\n'
-                data_alert += '\n'
+                data_alert += user.jas_templates.data_alert_template.format(alert_type=alert["type"].replace(".", "_"),
+                                                                            alert_name=alert["name"],
+                                                                            alert_loc=alert["loc"],
+                                                                            alert_emergency=str(alert["emergency"]).lower(),
+                                                                            alert_priority=str(alert["priority"]),
+                                                                            alert_color=alert["color"],
+                                                                            alert_cat=alert["cat"],
+                                                                            alert_body=alert["body"].replace("\n", "<br>"),
+                                                                            alert_body_full=alert["bodyFull"].replace("\n", "<br>")
+                                                                           )
         else:
             data_alert += '  pageData.alerts = null;\n'
 
         data_forecast = ''
         if self.data_forecast:
             for forecast in self.data_forecast:
-                # data_forecast += '  forecast = {};\n'
-                # data_forecast += '  forecast.timestamp = ' + str(forecast["timestamp"]) + ';\n'
-                # data_forecast += '  forecast.observation_codes = ["' + '", "'.join(forecast["observation"]) + '"];\n'
-                # data_forecast += '  forecast.day_code = ' + forecast["day"] + ';\n'
-                # data_forecast += '  forecast.temp_min = ' + str(forecast["temp_min"]) + ';\n'
-                # data_forecast += '  forecast.temp_max = ' + str(forecast["temp_max"]) + ';\n'
-                # data_forecast += '  forecast.temp_unit = "' + forecast["temp_unit"] + '";\n'
-                # data_forecast += '  forecast.rain = ' + str(forecast["rain"]) + ';\n'
-                # data_forecast += '  forecast.wind_min = ' + str(forecast["wind_min"]) + ';\n'
-                # data_forecast += '  forecast.wind_max = ' + str(forecast["wind_max"]) + ';\n'
-                # data_forecast += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
-                # data_forecast += '  pageData.forecasts.push(forecast);\n'
-                # data_forecast += '\n'
                 data_forecast += user.jas_templates.data_forecast_tempate.format(forecast_timestamp=str(forecast["timestamp"]),
                                                                                 forecast_observation_codes='"' + '","'.join(forecast["observation"]) +'"',
                                                                                 forecast_day_code=forecast["day"],

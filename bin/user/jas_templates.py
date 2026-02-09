@@ -17,6 +17,21 @@ data_aqi_template = \
   pageData.aqi.dominant = "{data_aqi_dominant}";
 '''
 
+data_alert_template = \
+'''
+  alert = {{}};
+'  alert.type = "alert_type_{alert_type}";
+'  alert.name = "{alert_name}";
+'  alert.loc = "{alert_loc}";
+'  alert.emergency = {alert_emergency};
+'  alert.priority = {alert_priority};
+'  alert.color = "{alert_color}";
+'  alert.cat = "{alert_cat}";
+'  alert.body = "{alert_body}";
+'  alert.bodyFull = "{alert_body_full}";
+  pageData.alerts.push(alert);
+'''
+
 data_forecast_tempate = \
 '''
   forecast = {{}};
