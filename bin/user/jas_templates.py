@@ -20,15 +20,15 @@ data_aqi_template = \
 data_alert_template = \
 '''
   alert = {{}};
-'  alert.type = "alert_type_{alert_type}";
-'  alert.name = "{alert_name}";
-'  alert.loc = "{alert_loc}";
-'  alert.emergency = {alert_emergency};
-'  alert.priority = {alert_priority};
-'  alert.color = "{alert_color}";
-'  alert.cat = "{alert_cat}";
-'  alert.body = "{alert_body}";
-'  alert.bodyFull = "{alert_body_full}";
+  alert.type = "alert_type_{alert_type}";
+  alert.name = "{alert_name}";
+  alert.loc = "{alert_loc}";
+  alert.emergency = {alert_emergency};
+  alert.priority = {alert_priority};
+  alert.color = "{alert_color}";
+  alert.cat = "{alert_cat}";
+  alert.body = "{alert_body}";
+  alert.bodyFull = "{alert_body_full}";
   pageData.alerts.push(alert);
 '''
 
@@ -74,4 +74,8 @@ data_load_template2 =\
 
 data_load_template2 +=\
 '''/* jas {VERSION} {gen_time} */
+pageData = {{}};
+function {interval_long_name}dataLoad() {{
+  traceStart = Date.now();
+  console.debug(Date.now().toString() + " dataLoad start");
 '''
