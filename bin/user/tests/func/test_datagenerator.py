@@ -23,9 +23,13 @@ import user.jas
 
 from  user.tests.func.data.datagenerator_results import result1, result2
 
-config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_error=True)
-
 binding = 'wx_binding'
+config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_error=True)
+# WeeWX moved the location of schemas in 5.2
+try:
+    import weewx.schemas.wview_extended
+except ModuleNotFoundError:
+    config['DataBindings'][binding]['schema'] = 'schemas.wview_extended.schema'
 
 #@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
 class TestDataGenerator(unittest.TestCase):
