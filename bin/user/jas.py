@@ -177,6 +177,7 @@ except ImportError:
         """ log error messages """
         logmsg(syslog.LOG_ERR, msg)
 
+import user.jas_templates
 
 VERSION = "1.2.0-rc03"
 
@@ -1592,7 +1593,7 @@ class DataGenerator(JASGenerator):
             else:
                 end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 60 * 60 - (self.utc_offset * 60)) * 1000
 
-            data +=  "  pageData.endTimestamp_" + aggregate_type +  " = " +  str(end_timestamp) + ";\n"
+            data +=  f'  pageData.endTimestamp_{aggregate_type} = {str(end_timestamp)};\n'
 
         return data
 
@@ -1748,7 +1749,7 @@ class DataGenerator(JASGenerator):
         # Define the 'aggegate' objects to hold the data
         # For example: last7days_min = {}, last7days_max = {}
         for aggregate_type in self.aggregate_types:
-            data += "  pageData." + interval_long_name + aggregate_type + " = {};\n"
+            data += f'  pageData.{interval_long_name}{aggregate_type} = {{}};\n'
 
         for observation, observation_items in self.observations.items():
             for aggregate_type, aggregate_type_items in observation_items['aggregate_types'].items():
@@ -1767,7 +1768,7 @@ class DataGenerator(JASGenerator):
                         array_name = name_prefix
 
                         if aggregate_interval is not None:
-                            data += "  pageData." + array_name + " = " + self._get_series(timespan, observation, data_binding, interval, aggregate_type, aggregate_interval, self.aggregate_time_display, 'unix_epoch_ms', unit_name, 2, True) + ";\n"
+                            data += f'  pageData.{array_name} = {self._get_series(timespan, observation, data_binding, interval, aggregate_type, aggregate_interval, self.aggregate_time_display, "unix_epoch_ms", unit_name, 2, True)};\n'
                         else:
                             # wind 'observation' is special see #87
                             if observation == 'wind':
@@ -1779,7 +1780,7 @@ class DataGenerator(JASGenerator):
                             else:
                                 weewx_observation = observation
                             #end if
-                            data += "  pageData." + array_name + " = " + self._get_series(timespan, weewx_observation, data_binding, interval, None, None, self.time_display, 'unix_epoch_ms', unit_name, 2, True) + ";\n"
+                            data += f'  pageData.{array_name} = {self._get_series(timespan, weewx_observation, data_binding, interval, None, None, self.time_display, "unix_epoch_ms", unit_name, 2, True)};\n'
 
         data += "\n"
         return data
@@ -2074,14 +2075,7 @@ class DataGenerator(JASGenerator):
                                                                                          self.skin_dict['Extras']['pages'].get('query_string_on', []))):
             query_string = f"?ts={str(self._get_current(timespan, 'dateTime', data_binding=skin_data_binding, unit_name='default').raw )}"
 
-        data = ''
-
-        data += '<!doctype html>\n'
-        data += '<html>\n'
-        data += '  <head>\n'
-        data += f'    <meta name="generator" content="jas {VERSION} {self.gen_time}">\n'
-        data += f'    <script src="https://cdn.jsdelivr.net/npm/moment@{momentjs_version}/moment{momentjs_minified}.js"></script>\n'
-
+        script_string = ''
         if page_definition_name in ['yeartoyear', 'multiyear']:
             data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding',
                                                                         self.skin_dict['Extras'].get('data_binding', self.data_binding))
@@ -2089,16 +2083,13 @@ class DataGenerator(JASGenerator):
                                                      self.skin_dict['Extras']['pages'][page_definition_name].get('end', None),
                                                      data_binding)
             for year in range(year_start, year_end):
-                data += f'    <script src="{str(year)}.js{query_string}"></script>\n'
+                script_string += f'    <script src="{str(year)}.js{query_string}"></script>\n'
         else:
-            data += f'    <script src="{data_load_file_name}{query_string}"></script>\n'
+            script_string += f'    <script src="{data_load_file_name}{query_string}"></script>\n'
 
-        data += '    <script>\n'
-        data += '      window.addEventListener("load", function (event) {\n'
-        data +=  '      console.debug(Date.now().toString() + " iframe start");\n'
-
+        dataload_string = ''
         if series_type == 'single':
-            data += f'        {interval_long_name}dataLoad();\n'
+            dataload_string += f'        {interval_long_name}dataLoad();\n'
         elif series_type in ['multiple', 'comparison']:
             data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding',
                                                                         self.skin_dict['Extras'].get('data_binding', self.data_binding))
@@ -2106,17 +2097,14 @@ class DataGenerator(JASGenerator):
                                                      self.skin_dict['Extras']['pages'][page_definition_name].get('end', None),
                                                      data_binding)
             for year in range(year_start, year_end):
-                data += f'        year{str(year)}_dataLoad();\n'
+                dataload_string += f'        year{str(year)}_dataLoad();\n'
 
-        data += '        message = {};\n'
-        data += '        message.kind = "dataLoaded";\n'
-        data += '        message.message = JSON.stringify(pageData);\n'
-        data += '        window.parent.postMessage(message, "*");\n'
-        data += '        console.debug(Date.now().toString() + " iframe end");\n'
-        data += '      })\n'
-        data += '    </script>\n'
-        data += '  </head>\n'
-        data += '</html>\n'
+        data = user.jas_templates.data_load_template.format(VERSION=VERSION,
+                                                            gen_time=self.gen_time,
+                                                            momentjs_version=momentjs_version,
+                                                            momentjs_minified=momentjs_minified,
+                                                            script_string=script_string,
+                                                            dataload_string=dataload_string)
 
         elapsed_time = time.time() - start_time
         log_msg = "Generated " + filename + " in " + str(elapsed_time)
@@ -2130,61 +2118,65 @@ class DataGenerator(JASGenerator):
 
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         page_data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding', skin_data_binding)
-        data = ''
-        data += '// the start\n'
-        data += '/* jas ' + VERSION + ' ' + str(self.gen_time) + ' */\n'
-        data += "pageData = {};\n"
-        data += 'function ' + interval_long_name + 'dataLoad() {\n'
-        data += '  traceStart = Date.now();\n'
-        data += '  console.debug(Date.now().toString() + " dataLoad start");\n'
+
+        data_current = ''
         if self.data_current:
-            data += '  pageData.currentObservations = ["' + '", "'.join(self.data_current['observation']) + '"];\n'
+            data_current += '  pageData.currentObservations = ["' + '", "'.join(self.data_current['observation']) + '"];\n'
 
-        data += '  pageData.aqi = {};\n'
+        data_aqi = '  pageData.aqi = {};\n'
         if self.data_aqi:
-            data += '  pageData.aqi.value = ' + str(self.data_aqi["value"]) + ';\n'
-            data += '  pageData.aqi.timestamp = ' + str(self.data_aqi["timestamp"]) + ';\n'
-            data += '  pageData.aqi.category = "' + self.data_aqi["category"] + '";\n'
-            data += '  pageData.aqi.color = "' + self.data_aqi["color"] + '";\n'
-            data += '  pageData.aqi.method = "' + self.data_aqi["method"] + '";\n'
-            data += '  pageData.aqi.dominant = "' + self.data_aqi["dominant"] + '";\n'
+            data_aqi += user.jas_templates.data_aqi_template.format(data_aqi_value=str(self.data_aqi["value"]),
+                                                                    data_aqi_timestamp=str(self.data_aqi["timestamp"]),
+                                                                    data_aqi_category=self.data_aqi["category"],
+                                                                    data_aqi_color=self.data_aqi["color"],
+                                                                    data_aqi_method=self.data_aqi["method"],
+                                                                    data_aqi_dominant=self.data_aqi["dominant"]
+                                                                    )
+        data_aqi += '\n'
 
-        data += '\n'
+        data_alert = ''
         if self.data_alert:
-            data += '  pageData.alerts = [];\n'
+            data_alert += '  pageData.alerts = [];\n'
             for alert in self.data_alert:
-                data += '  alert = {};\n'
-                data += '  alert.type = "alert_type_' + alert["type"].replace(".", "_") + '";\n'
-                data += '  alert.name = "' + alert["name"] + '";\n'
-                data += '  alert.loc = "' + alert["loc"] + '";\n'
-                data += '  alert.emergency = ' + str(alert["emergency"]).lower() + ';\n'
-                data += '  alert.priority = ' + str(alert["priority"]) + ';\n'
-                data += '  alert.color = "' + alert["color"] + '";\n'
-                data += '  alert.cat = "' + alert["cat"] + '";\n'
-                data += '  alert.body = "' + alert["body"].replace("\n", "<br>") + '";\n'
-                data += '  alert.bodyFull = "' + alert["bodyFull"].replace("\n", "<br>") + '";\n'
-                data += '  pageData.alerts.push(alert);\n'
-                data += '\n'
+                data_alert += user.jas_templates.data_alert_template.format(alert_type=alert["type"].replace(".", "_"),
+                                                                            alert_name=alert["name"],
+                                                                            alert_loc=alert["loc"],
+                                                                            alert_emergency=str(alert["emergency"]).lower(),
+                                                                            alert_priority=str(alert["priority"]),
+                                                                            alert_color=alert["color"],
+                                                                            alert_cat=alert["cat"],
+                                                                            alert_body=alert["body"].replace("\n", "<br>"),
+                                                                            alert_body_full=alert["bodyFull"].replace("\n", "<br>")
+                                                                           )
         else:
-            data += '  pageData.alerts = null;\n'
+            data_alert += '  pageData.alerts = null;\n'
 
-        data += '  pageData.forecasts = [];\n'
-        data += '\n'
+        data_forecast = '  pageData.forecasts = [];\n\n'
         if self.data_forecast:
             for forecast in self.data_forecast:
-                data += '  forecast = {};\n'
-                data += '  forecast.timestamp = ' + str(forecast["timestamp"]) + ';\n'
-                data += '  forecast.observation_codes = ["' + '", "'.join(forecast["observation"]) + '"];\n'
-                data += '  forecast.day_code = ' + forecast["day"] + ';\n'
-                data += '  forecast.temp_min = ' + str(forecast["temp_min"]) + ';\n'
-                data += '  forecast.temp_max = ' + str(forecast["temp_max"]) + ';\n'
-                data += '  forecast.temp_unit = "' + forecast["temp_unit"] + '";\n'
-                data += '  forecast.rain = ' + str(forecast["rain"]) + ';\n'
-                data += '  forecast.wind_min = ' + str(forecast["wind_min"]) + ';\n'
-                data += '  forecast.wind_max = ' + str(forecast["wind_max"]) + ';\n'
-                data += '  forecast.wind_unit = "' + forecast["wind_unit"] + '";\n'
-                data += '  pageData.forecasts.push(forecast);\n'
-                data += '\n'
+                data_forecast += user.jas_templates.data_forecast_tempate.format(forecast_timestamp=str(forecast["timestamp"]),
+                                                                                forecast_observation_codes='"' + '","'.join(forecast["observation"]) +'"',
+                                                                                forecast_day_code=forecast["day"],
+                                                                                forecast_temp_min=str(forecast["temp_min"]),
+                                                                                forecast_temp_max=str(forecast["temp_max"]),
+                                                                                forecast_temp_unit=forecast["temp_unit"],
+                                                                                forecast_rain=str(forecast["rain"]),
+                                                                                forecast_wind_min=str(forecast["wind_min"]),
+                                                                                forecast_wind_max=str(forecast["wind_max"]),
+                                                                                forecast_wind_unit=forecast["wind_unit"]
+                                                                                )
+
+        data = user.jas_templates.data_load_template2.format(VERSION=VERSION,
+                                                             gen_time=self.gen_time,
+                                                             interval_long_name=interval_long_name)
+
+        data += data_current
+
+        data += data_aqi
+
+        data += data_alert
+
+        data += data_forecast
 
         data += self._gen_data_load2(timespan, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding)
 
@@ -2193,9 +2185,6 @@ class DataGenerator(JASGenerator):
         if self.skin_dict['Extras']['pages'][page_definition_name].get('current', None) is not None:
             data += self._gen_data_load3(timespan, skin_data_binding, interval)
 
-        data += "\n"
-
-        data += "\n"
         if self.skin_dict['Extras']['pages'][page_definition_name].get('windRose', None) is not None:
             data += self._gen_windrose(timespan, page_data_binding, interval, page_definition_name, interval_long_name)
 
@@ -2221,10 +2210,10 @@ class DataGenerator(JASGenerator):
         interval_current = self.skin_dict['Extras']['current'].get('interval', interval)
 
         #data += 'var mqtt_enabled = false;\n'
-        data += '  pageData.updateDate = ' + str(self._get_current(timespan, 'dateTime', data_binding=current_data_binding, unit_name='default').raw * 1000) + ';\n'
+        data += f'  pageData.updateDate = {str(self._get_current(timespan, "dateTime", data_binding=current_data_binding, unit_name="default").raw * 1000)};\n'
         if self.skin_dict['Extras']['current'].get('observation', False):
             data_binding = self.skin_dict['Extras']['current'].get('header_data_binding', current_data_binding)
-            data += '  pageData.currentHeaderValue = "' + self._get_current(timespan, self.skin_dict['Extras']['current']['observation'], data_binding, 'default').format(add_label=False,localize=False) + '";\n'
+            data += f'  pageData.currentHeaderValue = "{self._get_current(timespan, self.skin_dict["Extras"]["current"]["observation"], data_binding, "default").format(add_label=False,localize=False)}";\n'
 
         data += '  var currentData = {};\n'
         for observation in self.skin_dict['Extras']['current']['observations']:
@@ -2242,22 +2231,23 @@ class DataGenerator(JASGenerator):
             else:
                 observation_value = self._get_current(timespan, observation, data_binding, unit_name).format(add_label=False,localize=False)
 
-            data += '  currentData.' + observation + ' = "' + observation_value + '";\n'
+            data += f'  currentData.{observation} = "{observation_value}";\n'
 
         data += '  pageData.currentData = JSON.stringify(currentData);'
+        data += '\n\n'
         return data
 
     def _gen_data_load2(self, timespan, interval, interval_type, page_definition_name, skin_data_binding, page_data_binding):
-        data = ""
+        data = ''
 
         skin_timespan_binder = self._get_timespan_binder(timespan, interval, skin_data_binding)
         page_timespan_binder = self._get_timespan_binder(timespan, interval, page_data_binding)
 
         if interval_type == 'active':
-            data += "  pageData.startDate = moment('" + getattr(page_timespan_binder, 'start').format("%Y-%m-%dT%H:%M:%S") + "').utcOffset(" + str(self.utc_offset) + ");\n"
-            data += "  pageData.endDate = moment('" + getattr(page_timespan_binder, 'end').format("%Y-%m-%dT%H:%M:%S") + "').utcOffset(" + str(self.utc_offset) + ");\n"
-            data += "  pageData.startTimestamp = " + str(getattr(page_timespan_binder, 'start').raw * 1000) + ";\n"
-            data += "  pageData.endTimestamp = " + str(getattr(page_timespan_binder, 'end').raw * 1000) + ";\n"
+            data += f'  pageData.startDate = moment("{getattr(page_timespan_binder, "start").format("%Y-%m-%dT%H:%M:%S")}").utcOffset({str(self.utc_offset)});\n'
+            data += f'  pageData.endDate = moment("{getattr(page_timespan_binder, "end").format("%Y-%m-%dT%H:%M:%S")}").utcOffset({str(self.utc_offset)});\n'
+            data += f'  pageData.startTimestamp = {str(getattr(page_timespan_binder, "start").raw * 1000)};\n'
+            data += f'  pageData.endTimestamp = {str(getattr(page_timespan_binder, "end").raw * 1000)};\n'
         else:
             # ToDo: document that skin data binding controls start/end of historical data
             # ToDo: make start/end configurable
@@ -2266,12 +2256,12 @@ class DataGenerator(JASGenerator):
             start_date = datetime.datetime.fromtimestamp(start_timestamp).strftime('%Y-%m-%dT%H:%M:%S')
             end_date = datetime.datetime.fromtimestamp(end_timestamp).strftime('%Y-%m-%dT%H:%M:%S')
 
-            data += "pageData.startTimestamp =  " + str(start_timestamp * 1000) + ";\n"
-            data += "pageData.startDate = moment('" + start_date + "').utcOffset(" + str(self.utc_offset) + ");\n"
-            data += "pageData.endTimestamp =  " + str(end_timestamp * 1000) + ";\n"
-            data += "pageData.endDate = moment('" + end_date + "').utcOffset(" + str(self.utc_offset) + ");\n"
+            data += f'pageData.startTimestamp =  {str(start_timestamp * 1000)};\n'
+            data += f'pageData.startDate = moment("{start_date}").utcOffset({str(self.utc_offset)});\n'
+            data += f'pageData.endTimestamp =  {str(end_timestamp * 1000)};\n'
+            data += f'pageData.endDate = moment("{end_date}").utcOffset({str(self.utc_offset)});\n'
 
-        data += "\n"
+        data += '\n'
         data += self._gen_interval_end_timestamp(timespan, page_data_binding, interval, page_definition_name)
 
         return data
