@@ -16,7 +16,7 @@ Follow the [instructions](https://github.com/bellrichm/weewx-jas#installation) t
 
 ## Customizing
 
-See [Customizing](https://github.com/bellrichm/weewx-jas/wiki/Customizing)
+See [Customizing](https://weewx-extensions.github.io/jas/customizing)
 
 ## Overview
 
@@ -28,13 +28,13 @@ Others, like WeeWX-JAS, extract the data and use Javascript libraries to create 
 
 ### WeeWX-JAS Components
 
-WeeWX-JAS is made up of [pages](https://github.com/bellrichm/weewx-jas/wiki/Pages).
+WeeWX-JAS is made up of [pages](https://weewx-extensions.github.io/jas/pages).
 Each page is made up of four components, data, HTML, chartd, and Javascript code.
 
 #### Data
 
-This is what will be displayed in either [charts](https://github.com/bellrichm/weewx-jas/wiki/Charts)
-or as [section](https://github.com/bellrichm/weewx-jas/wiki/Sections), like a table.
+This is what will be displayed in either [charts](https://weewx-extensions.github.io/jas/charts)
+or as [section](https://weewx-extensions.github.io/jas/sections), like a table.
 The data component is made up of the following two sub-components.
 
 ##### Data Loader

@@ -3,15 +3,15 @@ title: Sections
 nav_order: 13
 ---
 
-A WeeWX-JAS [page](https://github.com/bellrichm/weewx-jas/wiki/Pages) consists of [charts](https://github.com/bellrichm/weewx-jas/wiki/Charts) and sections.
-Sections display information other than charts and can be included on any [page](https://github.com/bellrichm/weewx-jas/wiki/Pages).
+A WeeWX-JAS [page](https://weewx-extensions.github.io/jas/pages) consists of [charts](https://weewx-extensions.github.io/jas/charts) and sections.
+Sections display information other than charts and can be included on any [page](https://weewx-extensions.github.io/jas/pages).
 
 ## The `[[[[current]]]]` section
 
 ### grid_cols
 
 Override the default and page `grid_cols` setting.
-For more information see, [grid_cols](https://github.com/bellrichm/weewx-jas/wiki/Miscellaneous-Options#grid_cols-) at the page level.
+For more information see, [grid_cols](https://weewx-extensions.github.io/jas/miscellaneous-options#grid_cols-) at the page level.
 
 This section is used to display the current value of WeeWX observations.
 
@@ -147,7 +147,7 @@ A configured `minmax` section would look something like this.
 ## The `[[[[radar]]]]` section
 
 No configuration of the `radar` section is required.
-It just needs to be included on a [page](https://github.com/bellrichm/weewx-jas/wiki/Pages).
+It just needs to be included on a [page](https://weewx-extensions.github.io/jas/pages).
 
 ## The `[[[[thisdate]]]]` section
 

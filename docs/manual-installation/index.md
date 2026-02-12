@@ -70,7 +70,7 @@ Prior to making any updates/changes, always make a backup.
     ```
 
     This will configure WeeWX-JAS to create a line chart of the outTemp observation and display it on the day page.
-    For additional information read [Customizing](https://github.com/bellrichm/weewx-jas/wiki/  ).
+    For additional information read [Customizing](https://weewx-extensions.github.io/jas/customizing).
 
 5. Restart WeeWX
 

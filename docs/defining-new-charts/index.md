@@ -45,7 +45,7 @@ This section is used to define the additional charts.
 
 Each  additional `chart` gets it is own section.
 The section is the name of the chart.
-The additional charts can then be included on any [page](https://github.com/bellrichm/weewx-jas/wiki/Pages).
+The additional charts can then be included on any [page](https://weewx-extensions.github.io/jas/pages).
 
 #### _EChart Options_
 

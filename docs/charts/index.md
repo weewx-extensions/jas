@@ -21,15 +21,15 @@ To see the  predefined charts, browse the `[[chart_definitions]]` section of
 [skin.conf](https://github.com/bellrichm/weewx-jas/blob/master/skins/jas/skin.conf).
 Each section under `[[[chart_definitions]]` is a separate chart.
 
-In addition to the predefined charts, it is ‘easy’ to [define additional charts](https://github.com/bellrichm/weewx-jas/wiki/Defining-New-Charts)
+In addition to the predefined charts, it is ‘easy’ to [define additional charts](https://weewx-extensions.github.io/jas/defining-new-charts)
 
-To display a chart it needs to be added to a [page](https://github.com/bellrichm/weewx-jas/wiki/Pages#the-pages-section).
+To display a chart it needs to be added to a [page](https://weewx-extensions.github.io/jas/pages#the-pages-section).
 
 The following chart options ate configured in the `[[[[pages]]][[[[[page-name]]][[[[[[chart-name]]]]]] section.
 
 ## chart_modal =
 
-Overrides the [chart_modal](https://github.com/bellrichm/weewx-jas/wiki/Miscellaneous-Options#chart_modal-) for this specific `chart`.
+Overrides the [chart_modal](https://weewx-extensions.github.io/jas/miscellaneous-options#chart_modal-) for this specific `chart`.
 
 ## series_type =
 

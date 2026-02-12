@@ -76,13 +76,12 @@ Prior to making any updates/changes, always make a backup.
 
 ## Manual Installation
 
-Why? Just use [wee_extension](https://github.com/bellrichm/weewx-jas#installation). But if you must, [read on](https://github.com/bellrichm/weewx-jas/wiki/Manual-Installation).
+Why? Just use [wee_extension](https://github.com/bellrichm/weewx-jas#installation). But if you must, [read on](https://weewx-extensions.github.io/jas/manual-installation).
 
 ## Updating/Upgrading
 
 WeeWX-JAS extracts data from the WeeWX database to be visualized in either charts or tables.
 Historical and aggregated data does not have to be extracted every archive period.
-For performance reasons it is extracted on this [schedule](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#generating-weewx-jas-pages).
 This means a new release WeeWX-JAS might require the extracted data to be in a different format.
 For this reason it is recommended to delete all files that WeeWX-JAS creates prior to upgrading WeeWX-JAS.
 The default location of these files is, $HTML_ROOT/jas.
@@ -92,11 +91,11 @@ After deleting the generated files follow the [installation steps](https://githu
 ## Customizing
 
 Once the base installation is working see,
-[customizinf](https://github.com/bellrichm/weewx-jas/wiki/Customizing) for information on how to customize the skin.
+[customizing](https://weewx-extensions.github.io/jas/customizing) for information on how to customize the skin.
 
 ## Debugging
 
-See, [debugging](https://github.com/bellrichm/weewx-jas/wiki/Debugging).
+See, [debugging](https://weewx-extensions.github.io/jas/debugging).
 
 ## Getting Help
 

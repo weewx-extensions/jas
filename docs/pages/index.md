@@ -4,7 +4,7 @@ nav_order: 12
 ---
 
 Pages are the base building block to display data.
-Pages consist of [sections](https://github.com/bellrichm/weewx-jas/wiki/Sections) and [charts](https://github.com/bellrichm/weewx-jas/wiki/Charts).
+Pages consist of [sections](https://weewx-extensions.github.io/jas/sections) and [charts](https://weewx-extensions.github.io/jas/charts).
 WeeWX-JAS has the following pages.
 
 | Name          | Time period                  | Data ('no' aggregation) | Sum (chart)    | Sum (current)     | Min/Max        |
@@ -27,7 +27,7 @@ WeeWX-JAS has the following pages.
 - Time period: The period of time from which the data is displayed.
 - Data ('no' aggregation): The data displayed (usually in a chart) when no aggregation is specified.
 - The year-archive and month-archive are more like a template that will generate a page for every
-year and every year/month in the database. Theses pages must have [navbar = primary](https://github.com/bellrichm/weewx-jas/wiki/Pages#navbar-).
+year and every year/month in the database. Theses pages must have [navbar = primary](https://weewx-extensions.github.io/jas/pages#navbar-).
 
 ## filename =
 
@@ -43,26 +43,26 @@ The name of a cheetah include file that will change the layout of all pages exce
 
 ## query_string_on
 
-Provides the ability to add a query string to requests for the page's [HTML component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#html)
+Provides the ability to add a query string to requests for the page's [HTML component](https://weewx-extensions.github.io/jas/getting-started#html)
 or
-requests for the page’s [data component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#data).
+requests for the page’s [data component](https://weewx-extensions.github.io/jas/getting-started#data).
 This allows the serving infrastructure to use the query string as part of the cache key.
-The  pages' [data component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#data) is made up of
-the [data loader sub-component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#data-loader) and
-the [data helper sub-component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#data-helper).
+The  pages' [data component](https://weewx-extensions.github.io/jas/getting-started#data) is made up of
+the [data loader sub-component](https://weewx-extensions.github.io/jas/getting-started#data-loader) and
+the [data helper sub-component](https://weewx-extensions.github.io/jas/getting-started#data-helper).
 
 When `query_string_on` contains the value `data`:
 
-- The query string on request for the javascript portion of the [data loader sub-component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#data-loader)
+- The query string on request for the javascript portion of the [data loader sub-component](https://weewx-extensions.github.io/jas/getting-started#data-loader)
 is the timestamp that the data was generated.
-- The query string on request for the HTML portion of the [data loader sub-component](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#data-loader)
+- The query string on request for the HTML portion of the [data loader sub-component](https://weewx-extensions.github.io/jas/getting-started#data-loader)
 is the current timestamp.
 This ensures the HTML is never cached and it will be updated with the new javascript query string.
 This makes it easy to ‘break’ the cache when new data has been generated.
 
 When `query_string_on` contains the value `page`:
 
-- The query string on the request for the [HTML](https://github.com/bellrichm/weewx-jas/wiki/Getting-Started#html)
+- The query string on the request for the [HTML](https://weewx-extensions.github.io/jas/getting-started#html)
 is the current timestamp. This value is deprecated and will be removed.
 
 Valid values are any combination of `page` and `data`.
@@ -73,11 +73,11 @@ The default value is `not set`.
 
 The pages to display are configured by including a [[[[[*page-name*]]]]] subsection for the desired named page.
 The order of the [[[[[*page-name*]]]]] sections is the order the pages will be displayed in the navigation menu.
-It is one of the values listed in the [above table](https://github.com/bellrichm/weewx-jas/wiki/Pages#the-pages-section).
+It is one of the values listed in the [above table](https://weewx-extensions.github.io/jas/pages#the-pages-section).
 
 ### chart_modal =
 
-Overrides the [chart_modal](https://github.com/bellrichm/weewx-jas/wiki/Miscellaneous#chart_modal) at the page level.
+Overrides the [chart_modal](https://weewx-extensions.github.io/jas/miscellaneous-options#chart_modal) at the page level.
 
 ### delay_seconds =
 
@@ -95,7 +95,7 @@ For charts that display multiple years of data, controls the ending year to disp
 
 ### grid_cols =
 
-Override the default [grid_cols](https://github.com/bellrichm/weewx-jas/wiki/Miscellaneous-Options#grid_cols-) at the page level.
+Override the default [grid_cols](https://weewx-extensions.github.io/jas/miscellaneous-options#grid_cols-) at the page level.
 
 ### navbar =
 
@@ -109,7 +109,7 @@ Controls if page sections are updated with MQTT data.
 
 ### query_string_on
 
-Overrides the [query_string on](https://github.com/bellrichm/weewx-jas/wiki/Pages#query_string_on) at the page level.
+Overrides the [query_string on](https://weewx-extensions.github.io/jas/pages#query_string_on) at the page level.
 
 ### reload =
 
@@ -133,8 +133,8 @@ This does not change the aggregate interval.
 
 ### The `[[[[[[section-name]]]]]]` stanza
 
-Used to include either [sections](https://github.com/bellrichm/weewx-jas/wiki/Sections) or
-[charts](https://github.com/bellrichm/weewx-jas/wiki/Charts).
+Used to include either [sections](https://weewx-extensions.github.io/jas/sections) or
+[charts](https://weewx-extensions.github.io/jas/charts).
 Each section and chart has its own stanza that is the name of the defined section or chart.
 
 #### layout =

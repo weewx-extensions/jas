@@ -17,7 +17,7 @@ VERSION = "1.2.0-rc03"
 EXTENSION_CONFIG = """
 [StdReport]
     # jas (Just another Skin) is highly configurable. This is an example to get the skin up and running.
-    # For more information head over to, https://github.com/bellrichm/weewx-jas/wiki/Getting-Started
+    # For more information head over to, https://weewx-extensions.github.io/jas/getting-started/
     [[jas]]
         skin = jas
         HTML_ROOT = jas
@@ -67,7 +67,7 @@ EXTENSION_CONFIG = """
                 
             # Define an additional chart.
             # Once a chart is defined, it can be added to pages.
-            # https://github.com/bellrichm/weewx-jas/wiki/Defining-New-Charts
+            # https://weewx-extensions.github.io/jas/defining-new-charts
             [[[[chart_definitions]]]]
                 # The name of this chart is inTemp. It could be anything.
                 [[[[[inTemp]]]]]
@@ -82,7 +82,7 @@ EXTENSION_CONFIG = """
 
             # The '$current' value of these observations will be displayed.
             # If MQTT is enabled, these will be updated when a message is received.
-            # https://github.com/bellrichm/weewx-jas/wiki/Sections#the-current-section
+            # https://weewx-extensions.github.io/jas/sections#the-current-section
             [[[[current]]]] 
                 # The header observation is outTemp
                 observation = outTemp
@@ -104,7 +104,7 @@ EXTENSION_CONFIG = """
                     [[[[[[radiation]]]]]]
                     
             # The minimum and maximum values of these observations will be displayed. 
-            # https://github.com/bellrichm/weewx-jas/wiki/Sections#the-minmax-section
+            # https://weewx-extensions.github.io/jas/sections#the-minmax-section
             [[[[minmax]]]]
                 [[[[[observations]]]]]
                     [[[[[[outTemp]]]]]]
@@ -119,7 +119,7 @@ EXTENSION_CONFIG = """
                     [[[[[[radiation]]]]]]
 
             # For the selected date, values of these observations will be displayed.
-            # https://github.com/bellrichm/weewx-jas/wiki/Sections#the-thisdate-section
+            # https://weewx-extensions.github.io/jas/sections#the-thisdate-section
             [[[[thisdate]]]]
                 [[[[[observations]]]]]
                     [[[[[[outTemp]]]]]]
@@ -138,9 +138,8 @@ EXTENSION_CONFIG = """
                     [[[[[[radiation]]]]]]
 
             # The pages and the content on the pages to display.
-            # https://github.com/bellrichm/weewx-jas/wiki/Pages
-            # https://github.com/bellrichm/weewx-jas/wiki/Predefined-Charts
-            # https://github.com/bellrichm/weewx-jas/wiki/Sections
+            # https://weewx-extensions.github.io/jas/pages
+            # https://weewx-extensions.github.io/jas/sections
             [[[[pages]]]]
                 [[[[[last24hours]]]]]
                     [[[[[[current]]]]]]
