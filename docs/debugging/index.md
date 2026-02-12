@@ -26,6 +26,6 @@ Note: It does matter what content of page is clicked on. Usually a blank portion
 ![Save as](/images/saveFiles.png)
 
 Once the necessary information is gathered,
-[open an issue](https://github.com/bellrichm/weewx-jas/issues/new),
-[start a discussion in github](https://github.com/bellrichm/weewx-jas/discussions/new),
+[open an issue](https://github.com/weewx-extensions/jas/issues/new),
+[start a discussion in github](https://github.com/weewx-extensions/jas/discussions/new),
 or [post on WeeWX google group](https://groups.google.com/g/weewx-user).

@@ -7,7 +7,7 @@ WeeWX uses [Apache ECharts](https://echarts.apache.org/en/index.html) to generat
 A very complete set of [reference documentation](https://echarts.apache.org/handbook/en/get-started) exists.
 WeeWX-JAS also contains some basic charts.
 To see the  predefined charts, browse the `[[chart_definitions]]` section of
-[skin.conf](https://github.com/bellrichm/weewx-jas/blob/master/skins/jas/skin.conf).
+[skin.conf](https://github.com/weewx-extensions/jas/blob/master/skins/jas/skin.conf).
 Each section under `[[[chart_definitions]]` is a separate chart.
 
 With the exception of `series` and `weewx`, options map directly to [EChart configuration options](https://echarts.apache.org/en/option.html).

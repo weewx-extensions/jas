@@ -12,7 +12,7 @@ If MQTT is being used, some knowledge of [MQTT](https://www.eclipse.org/paho/ind
 
 ## Installation
 
-Follow the [instructions](https://github.com/bellrichm/weewx-jas#installation) to install WeeWX-JAS.
+Follow the [instructions](https://github.com/weewx-extensions/jas#installation) to install WeeWX-JAS.
 
 ## Customizing
 
@@ -149,8 +149,8 @@ The Javascript is generated once, at the end of the first archive period.
 
 ## Ask for Help
 
-Feel free to [open an issue](https://github.com/bellrichm/weewx-jas/issues/new),
-[start a discussion in github](https://github.com/bellrichm/weewx-jas/discussions/new),
+Feel free to [open an issue](https://github.com/weewx-extensions/jas/issues/new),
+[start a discussion in github](https://github.com/weewx-extensions/jas/discussions/new),
 or [post on WeeWX google group](https://groups.google.com/g/weewx-user).
 Because WeeWX-JAS uses javascript to create the charts, a `weewx.log` is not always useful.
 But it never hurts to include one.

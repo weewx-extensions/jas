@@ -3,7 +3,7 @@ title: Manual Installation
 nav_order: 9
 ---
 
-Why? Just use [wee_extension](https://github.com/bellrichm/weewx-jas#installation). But if you must, read on.
+Why? Just use [wee_extension](https://github.com/weewx-extensions/jas#installation). But if you must, read on.
 
 ## Installation notes
 
@@ -33,10 +33,10 @@ Prior to making any updates/changes, always make a backup.
 1. Download WeeWX-JAS
 
     ```
-    wget -P $DOWNLOAD_ROOT https://github.com/bellrichm/weewx-jas/archive/vX.Y.Z.tar.gz
+    wget -P $DOWNLOAD_ROOT https://github.com/weewx-extensions/jas/archive/vX.Y.Z.tar.gz
     ```
 
-    All of the releases can be found [here](https://github.com/bellrichm/weewx-jas/releases) and this is the [latest](https://github.com/bellrichm/weewx-jas/releases/latest).
+    All of the releases can be found [here](https://github.com/weewx-extensions/jas/releases) and this is the [latest](https://github.com/weewx-extensions/jas/releases/latest).
 
 2. Unpack WeeWX-JAS
 

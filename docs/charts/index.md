@@ -18,7 +18,7 @@ This charts visualizes data across years.
 ![Year to Year](/images/yearToYear.png)
 
 To see the  predefined charts, browse the `[[chart_definitions]]` section of
-[skin.conf](https://github.com/bellrichm/weewx-jas/blob/master/skins/jas/skin.conf).
+[skin.conf](https://github.com/weewx-extensions/jas/blob/master/skins/jas/skin.conf).
 Each section under `[[[chart_definitions]]` is a separate chart.
 
 In addition to the predefined charts, it is ‘easy’ to [define additional charts](https://weewx-extensions.github.io/jas/defining-new-charts)

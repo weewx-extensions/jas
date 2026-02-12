@@ -37,10 +37,10 @@ Prior to making any updates/changes, always make a backup.
 1. Download WeeWX-JAS
 
     ```
-    wget -P $DOWNLOAD_ROOT https://github.com/bellrichm/weewx-jas/archive/vX.Y.Z.tar.gz
+    wget -P $DOWNLOAD_ROOT https://github.com/weewx-extensions/jas/archive/vX.Y.Z.tar.gz
     ```
 
-    All of the releases can be found [here](https://github.com/bellrichm/weewx-jas/releases) and this is the [latest](https://github.com/bellrichm/weewx-jas/releases/latest).
+    All of the releases can be found [here](https://github.com/weewx-extensions/jas/releases) and this is the [latest](https://github.com/weewx-extensions/jas/releases/latest).
 
 2. Install WeeWX-JAS
 
@@ -76,7 +76,7 @@ Prior to making any updates/changes, always make a backup.
 
 ## Manual Installation
 
-Why? Just use [wee_extension](https://github.com/bellrichm/weewx-jas#installation). But if you must, [read on](https://weewx-extensions.github.io/jas/manual-installation).
+Why? Just use [wee_extension](https://github.com/weewx-extensions/jas#installation). But if you must, [read on](https://weewx-extensions.github.io/jas/manual-installation).
 
 ## Updating/Upgrading
 
@@ -86,7 +86,7 @@ This means a new release WeeWX-JAS might require the extracted data to be in a d
 For this reason it is recommended to delete all files that WeeWX-JAS creates prior to upgrading WeeWX-JAS.
 The default location of these files is, $HTML_ROOT/jas.
 
-After deleting the generated files follow the [installation steps](https://github.com/bellrichm/weewx-jas#installation-notes).
+After deleting the generated files follow the [installation steps](https://github.com/weewx-extensions/jas#installation-notes).
 
 ## Customizing
 
@@ -99,8 +99,8 @@ See, [debugging](https://weewx-extensions.github.io/jas/debugging).
 
 ## Getting Help
 
-Feel free to [open an issue](https://github.com/bellrichm/weewx-jas/issues/new),
-[start a discussion in github](https://github.com/bellrichm/weewx-jas/discussions/new),
+Feel free to [open an issue](https://github.com/weewx-extensions/jas/issues/new),
+[start a discussion in github](https://github.com/weewx-extensions/jas/discussions/new),
 or [post on WeeWX google group](https://groups.google.com/g/weewx-user).
 When doing so, see [Help! Posting to weewx user](https://github.com/weewx/weewx/wiki/Help!-Posting-to-weewx-user)
 for information on capturing the log.
