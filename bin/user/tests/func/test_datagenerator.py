@@ -61,7 +61,7 @@ class TestDataGenerator(unittest.TestCase):
             self.assertEqual(result, result1.format(now=now))
 
             result = generator._gen_data_load(time_span, 'foo', 'day', 'active', 'day', 'day_')
-            #  print(result)
+            # print(result)
             self.assertEqual(result, result2.format(now=now, utc_offset=utc_offset))
 
             print("done 1")
