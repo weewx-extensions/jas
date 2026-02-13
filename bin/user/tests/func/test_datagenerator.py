@@ -29,7 +29,7 @@ config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_er
 try:
     import weewx.schemas.wview_extended
 except ModuleNotFoundError:
-    for _, data_binding in config['DataBindings']:
+    for _, data_binding in config['DataBindings'].items():
         data_binding['schema'] = 'schemas.wview_extended.schema'
 
 #@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
