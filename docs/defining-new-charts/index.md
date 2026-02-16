@@ -3,7 +3,7 @@ title: Defining New Charts
 nav_order: 5
 ---
 
-WeeWX uses [Apache ECharts](https://echarts.apache.org/en/index.html) to generate the charts.
+WeeWX-JAS uses [Apache ECharts](https://echarts.apache.org/en/index.html) to generate the charts.
 A very complete set of [reference documentation](https://echarts.apache.org/handbook/en/get-started) exists.
 WeeWX-JAS also contains some basic charts.
 To see the  predefined charts, browse the `[[chart_definitions]]` section of
@@ -40,13 +40,13 @@ This section is used to define the additional charts.
 - Table of Contents
 {:toc}
 
-### [[[[[chart-name]]]]]
+### *[[[[[CHART NAME]]]]]*
 
 Each  additional `chart` gets it is own section.
 The section is the name of the chart.
 The additional charts can then be included on any [page](https://weewx-extensions.github.io/jas/pages).
 
-#### EChart Options
+#### *ECHART OPTIONS*
 
 Any valid [EChart option and sub-option(s)](https://echarts.apache.org/en/option.html), except for `series` and `yAxis` options.
 These options are specified in special sections as documented below.
@@ -76,9 +76,9 @@ The `[[[[[[series]]]]]]` option can have `N` subsections.
 Each subsection is a WeeWX observation to be plotted.
 WeeWX-JAS will create the `name` and `data` options for each series.
 
-##### [[[[[[[observation-name]]]]]]]
+##### *[[[[[[[OBSERVATION NAME]]]]]]]*
 
-###### EChart Options
+###### *ECHART OPTIONS*
 
 Any valid [series option and sub-option(s)](https://echarts.apache.org/en/option.html#series).
 
@@ -98,7 +98,9 @@ Sets the WeeWX aggregate_type for this observation.
 
  Sets the WeeWX unit for this observation.
 
-## Full [[[[chart_definitions]]]] example
+## Example [[[[chart_definitions]]]]
+
+### Example of Chart defined from 'scratch'
 
 Putting it all together, the WeeWX configuration would look like this.
 
@@ -133,7 +135,7 @@ Putting it all together, the WeeWX configuration would look like this.
                             fontSize = 20
 ```
 
-Or using WeeWX-JAS defaults, a simple line chart of `inTemp` and `outTemp` would like lthis.
+### Example of chart defined using WeeWX-JAS defaults
 
 ```
 [StdReport]
