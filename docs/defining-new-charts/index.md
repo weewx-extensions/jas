@@ -32,8 +32,7 @@ var option = {
               text = "'Inside Temperature'"
 ```
 
-
-## `[[[[chart_definitions]]]]`
+## [[[[chart_definitions]]]]
 {: .no_toc}
 
 This section is used to define the additional charts.
@@ -41,17 +40,18 @@ This section is used to define the additional charts.
 - Table of Contents
 {:toc}
 
-### `[[[[[chart-name]]]]]`
+### [[[[[chart-name]]]]]
 
 Each  additional `chart` gets it is own section.
 The section is the name of the chart.
 The additional charts can then be included on any [page](https://weewx-extensions.github.io/jas/pages).
 
-#### _EChart Options_
+#### EChart Options
 
-Any valid [EChart option and sub-option(s)](https://echarts.apache.org/en/option.html#yAxis).
+Any valid [EChart option and sub-option(s)](https://echarts.apache.org/en/option.html), except for `series` and `yAxis` options.
+These options are specified in special sections as documented below.
 
-#### `[[[[[[weewx]]]]]]`
+#### [[[[[[weewx]]]]]]
 
 The `weewx` section is for options that are used by WeeWX-JAS.
 
@@ -64,39 +64,41 @@ Sets the WeeWX data_binding for this chart.
 Sets the title for this chart.
 If not set, the variable `’chart-name’_title` in the `lang` files can be used to set the title.
 
-##### `[[[[[[[yAxis]]]]]]]`
+##### [[[[[[[yAxis]]]]]]]
 
 Used to specify optons specific to the y-axis.
 
 Any valid [yAxis option and sub-option(s)](https://echarts.apache.org/en/option.html#yAxis).
 
-#### `[[[[[[series]]]]]]`
+#### [[[[[[series]]]]]]
 
 The `[[[[[[series]]]]]]` option can have `N` subsections.
 Each subsection is a WeeWX observation to be plotted.
 WeeWX-JAS will create the `name` and `data` options for each series.
 
-#### `[[[[[[[observation-name]]]]]]]`
+##### [[[[[[[observation-name]]]]]]]
 
-##### _EChart Options_ =
+###### EChart Options
 
 Any valid [series option and sub-option(s)](https://echarts.apache.org/en/option.html#series).
 
-##### `[[[[[[[[weewx]]]]]]]]`
+###### [[[[[[[[weewx]]]]]]]]
 
 The `weewx` section is for options that are used by WeeWX-JAS.
 
-##### data_binding =
+###### data_binding =
 
 Sets the WeeWX data_binding for this observation .
 
-##### aggregate_type =
+###### aggregate_type =
 
 Sets the WeeWX aggregate_type for this observation.
 
-##### unit =
+###### unit =
 
-Sets the WeeWX unit for this observation.
+ Sets the WeeWX unit for this observation.
+
+## Full [[[[chart_definitions]]]] example
 
 Putting it all together, the WeeWX configuration would look like this.
 
