@@ -27,8 +27,8 @@ data_alert_template = \
   alert.priority = {alert_priority};
   alert.color = "{alert_color}";
   alert.cat = "{alert_cat}";
-  alert.body = "{alert_body}";
-  alert.bodyFull = "{alert_body_full}";
+  alert.body = `{alert_body}`;
+  alert.bodyFull = `{alert_body_full}`;
   pageData.alerts.push(alert);
 '''
 
