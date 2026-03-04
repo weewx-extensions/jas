@@ -10,7 +10,7 @@ To see the  predefined charts, browse the `[[chart_definitions]]` section of
 [skin.conf](https://github.com/weewx-extensions/jas/blob/master/skins/jas/skin.conf).
 Each section under `[[[chart_definitions]]` is a separate chart.
 
-With the exception of `series` and `weewx`, options map directly to [EChart configuration options](https://echarts.apache.org/en/option.html).
+With the exception of [`[[[[[[series]]]]]]`](#series) and [`[[[[[[weewx]]]]]]`](#weewx), options map directly to [EChart configuration options](https://echarts.apache.org/en/option.html).
 Specifically, objects `{}` in the EChart configuration map to sections `[]` in the weewx.conf.
 So if you wanted to configure the title for the chart, the EChart configuration would look like this.
 
