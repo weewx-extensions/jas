@@ -24,6 +24,13 @@ from  user.tests.func.data.chartgenerator_results import result1
 
 config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_error=True)
 
+# WeeWX moved the location of schemas in 5.2
+try:
+    import weewx.schemas.wview_extended
+except ModuleNotFoundError:
+    for _, data_binding in config['DataBindings'].items():
+        data_binding['schema'] = 'schemas.wview_extended.schema'
+
 binding = 'wx_binding'
 
 #@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
