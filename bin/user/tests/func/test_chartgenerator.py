@@ -13,6 +13,7 @@ import mock
 from user.tests import helpers
 
 import configobj
+import os
 import time
 
 import weewx.manager
@@ -39,9 +40,13 @@ class TestChartGenerator(unittest.TestCase):
         with mock.patch('user.jas.time') as mock_time:
             #with mock.patch('user.jas.datetime') as mock_datetime:
             mock_time.time.return_value = now
+            # ToDo: This will probably break when on day light savings time....
+            os.environ['TZ'] = 'America/New_York'
+            time.tzset()
+
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
-            result = generator._gen_charts('foo', 'day', 'day', 'day')
+            result = generator._gen_charts(helpers.random_string(), 'day', 'day', 'day')
             # print(result)
             self.assertEqual(result, result1.format(now=now))
 
