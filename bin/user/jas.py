@@ -1115,16 +1115,13 @@ class ChartGenerator(JASGenerator):
         chart2 = chart_js
         for key, value in dictionary.items():
             if isinstance(value, dict):
-                if key == 'weewx':
+                if key in {'weewx', 'series'}:
                     continue
-                if key == 'series':
-                    continue
-                else:
-                    chart2 += indent + key + ":" + " {\n"
-                    chart2 = self._iterdict(indent + '  ', chart2, value)
-                    chart2 += indent + "},\n"
+
+                chart3 = f"{chart2}{indent}{key}: {{\n"
+                chart2 = self._iterdict(indent + '  ', chart3, value) + f"{indent}}},\n"
             else:
-                chart2 += indent + key + ": " + value + ",\n"
+                chart2 += f"{indent}{key}: {value},\n"
         return chart2
 
     def _gen_chart_common(self, chart, chart_def):
