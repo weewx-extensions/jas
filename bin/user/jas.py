@@ -1084,7 +1084,7 @@ class ChartGenerator(JASGenerator):
                 for year in range(start_year, end_year):
                     chart2 += indent + " {\n"
                     chart2 += "    name: '" + str(year) + "',\n"
-                    chart2 = self._iterdict(indent + '  ', chart2, value[obs])
+                    chart2 += self._iterdict(indent + '  ', chart2, value[obs])
                     chart2 += indent + "  },\n"
             else:
                 for obs in value:
@@ -1102,7 +1102,7 @@ class ChartGenerator(JASGenerator):
                         chart2 = "  aggregate_interval = '" + aggregate_interval + "'\n" + chart2
 
                     chart2 += indent + "{\n"
-                    chart2 = self._iterdict(indent + '  ', chart2, value[obs])
+                    chart2 += self._iterdict(indent + '  ', chart2, value[obs])
 
                     chart2 += indent + "},\n"
 
@@ -1111,24 +1111,28 @@ class ChartGenerator(JASGenerator):
             chart2 += indent + 'series' + ": " + value + ",\n"
         return chart2
 
-    def _iterdict(self, indent, chart_js, dictionary):
-        chart2 = chart_js
+    def _iterdict(self, indent, parent_js, dictionary):
+        dict_js = ''
         for key, value in dictionary.items():
             if isinstance(value, dict):
                 if key in {'weewx', 'series'}:
                     continue
 
-                chart3 = f"{chart2}{indent}{key}: {{\n"
-                chart2 = self._iterdict(indent + '  ', chart3, value) + f"{indent}}},\n"
+                dict_js += f"{indent}{key}: {{\n"
+                javascript = self._iterdict(f"{indent}  ",
+                                        f"{dict_js}{indent}{key}: {{\n",
+                                        value
+                                        )
+                dict_js += f"{javascript}"
+                dict_js += f"{indent}}},\n"
             else:
-                chart2 += f"{indent}{key}: {value},\n"
-        return chart2
+                dict_js += f"{indent}{key}: {value},\n"
+        return dict_js
 
     def _gen_chart_common(self, chart, chart_def):
         chart_js =''
         chart2 = ''
-        chart_temp = self._iterdict('    ', chart_js, chart_def)
-        chart2 += chart_temp
+        chart2 += self._iterdict('    ', chart_js, chart_def)
 
         # ToDo: do not hard code 'grid'
         if 'polar' in self.skin_dict['Extras']['chart_definitions'][chart]:
