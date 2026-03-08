@@ -38,9 +38,6 @@ binding = 'wx_binding'
 class TestChartGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
-        now = int(time.time())
-        utc_offset = (datetime.datetime.fromtimestamp(now) -
-                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -48,11 +45,14 @@ class TestChartGenerator(unittest.TestCase):
             record = db_manager.getRecord(ts)
 
         with mock.patch('user.jas.time') as mock_time:
-            #with mock.patch('user.jas.datetime') as mock_datetime:
-            mock_time.time.return_value = now
-            # ToDo: This will probably break when on day light savings time....
             os.environ['TZ'] = 'America/New_York'
             time.tzset()
+
+            now = int(time.time())
+            utc_offset = (datetime.datetime.fromtimestamp(now) -
+                          datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
+            mock_time.time.return_value = now
 
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
@@ -64,9 +64,6 @@ class TestChartGenerator(unittest.TestCase):
 
     def test_gen_it2(self):
         self.maxDiff = None
-        now = int(time.time())
-        utc_offset = (datetime.datetime.fromtimestamp(now) -
-                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -74,11 +71,14 @@ class TestChartGenerator(unittest.TestCase):
             record = db_manager.getRecord(ts)
 
         with mock.patch('user.jas.time') as mock_time:
-            #with mock.patch('user.jas.datetime') as mock_datetime:
-            mock_time.time.return_value = now
-            # ToDo: This will probably break when on day light savings time....
             os.environ['TZ'] = 'America/New_York'
             time.tzset()
+
+            now = int(time.time())
+            utc_offset = (datetime.datetime.fromtimestamp(now) -
+                          datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
+            mock_time.time.return_value = now
 
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
@@ -90,9 +90,6 @@ class TestChartGenerator(unittest.TestCase):
 
     def test_gen_it3(self):
         self.maxDiff = None
-        now = int(time.time())
-        utc_offset = (datetime.datetime.fromtimestamp(now) -
-                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -100,11 +97,14 @@ class TestChartGenerator(unittest.TestCase):
             record = db_manager.getRecord(ts)
 
         with mock.patch('user.jas.time') as mock_time:
-            #with mock.patch('user.jas.datetime') as mock_datetime:
-            mock_time.time.return_value = now
-            # ToDo: This will probably break when on day light savings time....
             os.environ['TZ'] = 'America/New_York'
             time.tzset()
+
+            now = int(time.time())
+            utc_offset = (datetime.datetime.fromtimestamp(now) -
+                          datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
+            mock_time.time.return_value = now
 
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
@@ -116,9 +116,6 @@ class TestChartGenerator(unittest.TestCase):
 
     def test_gen_it4(self):
         self.maxDiff = None
-        now = int(time.time())
-        utc_offset = (datetime.datetime.fromtimestamp(now) -
-                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -126,11 +123,14 @@ class TestChartGenerator(unittest.TestCase):
             record = db_manager.getRecord(ts)
 
         with mock.patch('user.jas.time') as mock_time:
-            #with mock.patch('user.jas.datetime') as mock_datetime:
-            mock_time.time.return_value = now
-            # ToDo: This will probably break when on day light savings time....
             os.environ['TZ'] = 'America/New_York'
             time.tzset()
+
+            now = int(time.time())
+            utc_offset = (datetime.datetime.fromtimestamp(now) -
+                          datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
+            mock_time.time.return_value = now
 
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
