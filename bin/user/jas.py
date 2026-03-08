@@ -511,17 +511,6 @@ class JAS(SearchList):
     def _gen_js(self, filename, page, page_name, year, month, interval_long_name):
         start_time = time.time()
 
-        if interval_long_name:
-            start_date = interval_long_name + "startDate"
-            end_date = interval_long_name + "endDate"
-            start_timestamp = interval_long_name + "startTimestamp"
-            end_timestamp = interval_long_name + "endTimestamp"
-        else:
-            start_date = "null"
-            end_date = "null"
-            start_timestamp = "null"
-            end_timestamp = "null"
-
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
 
         selected_year = str(today.year)
@@ -569,8 +558,6 @@ class JAS(SearchList):
         data += 'dataLoaded = false;\n'
         data += 'traceStart = Date.now();\n'
         data += 'console.debug(Date.now().toString() + " starting");\n'
-
-        offset_seconds = str(self.utc_offset * 60)
 
         wait_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('wait_seconds', 300)) * 1000)
         delay_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('delay_seconds', 60)) * 1000)
@@ -1084,7 +1071,7 @@ class ChartGenerator(JASGenerator):
                 for year in range(start_year, end_year):
                     chart2 += indent + " {\n"
                     chart2 += "    name: '" + str(year) + "',\n"
-                    chart2 += self._iterdict(indent + '  ', chart2, value[obs])
+                    chart2 += self._iterdict(indent + '  ', value[obs])
                     chart2 += indent + "  },\n"
             else:
                 for obs in value:
@@ -1102,7 +1089,7 @@ class ChartGenerator(JASGenerator):
                         chart2 = "  aggregate_interval = '" + aggregate_interval + "'\n" + chart2
 
                     chart2 += indent + "{\n"
-                    chart2 += self._iterdict(indent + '  ', chart2, value[obs])
+                    chart2 += self._iterdict(indent + '  ', value[obs])
 
                     chart2 += indent + "},\n"
 
@@ -1111,7 +1098,7 @@ class ChartGenerator(JASGenerator):
             chart2 += indent + 'series' + ": " + value + ",\n"
         return chart2
 
-    def _iterdict(self, indent, parent_js, dictionary):
+    def _iterdict(self, indent, dictionary):
         dict_js = ''
         for key, value in dictionary.items():
             if isinstance(value, dict):
@@ -1120,7 +1107,6 @@ class ChartGenerator(JASGenerator):
 
                 dict_js += f"{indent}{key}: {{\n"
                 javascript = self._iterdict(f"{indent}  ",
-                                        f"{dict_js}{indent}{key}: {{\n",
                                         value
                                         )
                 dict_js += f"{javascript}"
@@ -1130,9 +1116,8 @@ class ChartGenerator(JASGenerator):
         return dict_js
 
     def _gen_chart_common(self, chart, chart_def):
-        chart_js =''
         chart2 = ''
-        chart2 += self._iterdict('    ', chart_js, chart_def)
+        chart2 += self._iterdict('    ', chart_def)
 
         # ToDo: do not hard code 'grid'
         if 'polar' in self.skin_dict['Extras']['chart_definitions'][chart]:
@@ -1162,7 +1147,7 @@ class ChartGenerator(JASGenerator):
                         chart2 += "      name:' " + y_axis_label + "',\n"
                         del y_axis_default['name']
 
-                chart2 += self._iterdict('      ', '', y_axis_default)
+                chart2 += self._iterdict('      ', y_axis_default)
                 chart2 += '    },\n'
             chart2 += '  ],\n'
 
