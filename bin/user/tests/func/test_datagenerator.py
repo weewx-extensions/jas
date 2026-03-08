@@ -37,18 +37,16 @@ except ModuleNotFoundError:
 class TestDataGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
-        now = int(time.time())
-        utc_offset = (datetime.datetime.fromtimestamp(now) -
-                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with mock.patch('user.jas.time') as mock_time:
-            #with mock.patch('user.jas.datetime') as mock_datetime:
-            mock_time.time.return_value = now
-            # mock_datetime.datetime.fromtimestamp.return_value = datetime.datetime.fromtimestamp(0)
-            # mock_datetime.datetime.utcfromtimestamp.return_value = datetime.datetime.fromtimestamp(18000)
-            # ToDo: This will probably break when on day light savings time....
             os.environ['TZ'] = 'America/New_York'
             time.tzset()
+
+            now = int(time.time())
+            utc_offset = (datetime.datetime.fromtimestamp(now) -
+                          datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
+            mock_time.time.return_value = now
 
             with weewx.manager.DBBinder(config) as db_binder:
                 db_manager = db_binder.get_manager(binding)
