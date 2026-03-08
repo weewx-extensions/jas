@@ -13,6 +13,7 @@ import mock
 from user.tests import helpers
 
 import configobj
+import datetime
 import os
 import time
 
@@ -37,7 +38,8 @@ class TestDataGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
         now = int(time.time())
-        utc_offset = -300.0
+        utc_offset = (datetime.datetime.fromtimestamp(now) -
+                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with mock.patch('user.jas.time') as mock_time:
             #with mock.patch('user.jas.datetime') as mock_datetime:

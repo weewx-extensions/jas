@@ -12,7 +12,7 @@
 result1 =\
 '''
 /* jas 1.2.0-rc03 {now} */
-utc_offset = -300.0;
+utc_offset = {utc_offset};
 function simpleTooltipFormatter(args) {{
   dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);
   let tooltip = `<div>${{dateTime}}</div> `;
@@ -794,7 +794,7 @@ function updateChartData() {{
 result2 =\
 '''
 /* jas 1.2.0-rc03 {now} */
-utc_offset = -300.0;
+utc_offset = {utc_offset};
 function simpleTooltipFormatter(args) {{
   dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);
   let tooltip = `<div>${{dateTime}}</div> `;
@@ -1791,7 +1791,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.outTemp_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.outTemp_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1799,7 +1799,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_min.outTemp_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_min.outTemp_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1807,7 +1807,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_min.windchill_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_min.windchill_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1815,7 +1815,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.heatindex_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.heatindex_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1823,7 +1823,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_avg.barometer_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_avg.barometer_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1831,7 +1831,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.dewpoint_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.dewpoint_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1839,7 +1839,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_min.dewpoint_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_min.dewpoint_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1847,7 +1847,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.outHumidity_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.outHumidity_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1855,7 +1855,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_min.outHumidity_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_min.outHumidity_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1863,7 +1863,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_sum.rain_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_sum.rain_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1871,7 +1871,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.windGust_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.windGust_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1879,7 +1879,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_sum.ET_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_sum.ET_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1887,7 +1887,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.UV_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.UV_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1895,7 +1895,7 @@ function updateChartData() {{
   series_option = {{
     series: [
       {{name: '2026',
-       data: year2026_max.radiation_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset(-300.0).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
+       data: year2026_max.radiation_wx_binding.map(arr => [moment.unix(arr[0] / 1000).utcOffset({utc_offset}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1906,7 +1906,7 @@ function updateChartData() {{
 result3 =\
 '''
 /* jas 1.2.0-rc03 {now} */
-utc_offset = -300.0;
+utc_offset = {utc_offset};
 function simpleTooltipFormatter(args) {{
   dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);
   let tooltip = `<div>${{dateTime}}</div> `;
@@ -2737,7 +2737,7 @@ function updateChartData() {{
 result4 =\
 '''
 /* jas 1.2.0-rc03 {now} */
-utc_offset = -300.0;
+utc_offset = {utc_offset};
 function simpleTooltipFormatter(args) {{
   dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);
   let tooltip = `<div>${{dateTime}}</div> `;

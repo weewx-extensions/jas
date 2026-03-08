@@ -13,6 +13,7 @@ import mock
 from user.tests import helpers
 
 import configobj
+import datetime
 import os
 import time
 
@@ -38,6 +39,8 @@ class TestChartGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
         now = int(time.time())
+        utc_offset = (datetime.datetime.fromtimestamp(now) -
+                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -55,13 +58,15 @@ class TestChartGenerator(unittest.TestCase):
 
             result = generator._gen_charts(helpers.random_string(), 'day', 'day', 'day')
             # print(result)
-            self.assertEqual(result, result1.format(now=now))
+            self.assertEqual(result, result1.format(now=now, utc_offset=utc_offset))
 
             print("done 1")
 
     def test_gen_it2(self):
         self.maxDiff = None
         now = int(time.time())
+        utc_offset = (datetime.datetime.fromtimestamp(now) -
+                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -79,13 +84,15 @@ class TestChartGenerator(unittest.TestCase):
 
             result = generator._gen_charts(helpers.random_string(), 'yeartoyear', 'yeartoyear', 'yeartoyear')
             #print(result)
-            self.assertEqual(result, result2.format(now=now))
+            self.assertEqual(result, result2.format(now=now, utc_offset=utc_offset))
 
             print("done 1")
 
     def test_gen_it3(self):
         self.maxDiff = None
         now = int(time.time())
+        utc_offset = (datetime.datetime.fromtimestamp(now) -
+                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -103,13 +110,15 @@ class TestChartGenerator(unittest.TestCase):
 
             result = generator._gen_charts(helpers.random_string(), 'multiyear', 'year', 'multiyear')
             # print(result)
-            self.assertEqual(result, result3.format(now=now))
+            self.assertEqual(result, result3.format(now=now, utc_offset=utc_offset))
 
             print("done 1")
 
     def test_gen_it4(self):
         self.maxDiff = None
         now = int(time.time())
+        utc_offset = (datetime.datetime.fromtimestamp(now) -
+                      datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
         with weewx.manager.DBBinder(config) as db_binder:
             db_manager = db_binder.get_manager(binding)
@@ -127,7 +136,7 @@ class TestChartGenerator(unittest.TestCase):
 
             result = generator._gen_charts(helpers.random_string(), 'debug', 'last24hours', 'debug')
             # rint(result)
-            self.assertEqual(result, result4.format(now=now))
+            self.assertEqual(result, result4.format(now=now, utc_offset=utc_offset))
 
             print("done 1")
 
