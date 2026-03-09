@@ -1077,6 +1077,7 @@ class ChartGenerator(JASGenerator):
 
     def _gen_series(self, indent, page, chart, chart_js, series_type, value, chart_data_binding):
         chart2 = chart_js
+        chart3 = ''
         if isinstance(value, dict):
             chart2 += indent + "series: [\n"
 
@@ -1092,27 +1093,29 @@ class ChartGenerator(JASGenerator):
                     chart2 += indent + "  },\n"
             else:
                 for obs in value:
+                    chart2 += indent + "{\n"
+                    chart2 += self._iterdict(indent + '  ', value[obs])
+
+                    # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
+                    # Note, this means the last observation's aggregate type will be used to determine the aggregate interval
                     aggregate_type = self.chart_defs[chart]['series'][obs]['weewx']['aggregate_type']
                     aggregate_interval = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}) \
                                         .get(aggregate_type, 'none')
 
-                    # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
-                    # Note, this means the last observation's aggregate type will be used to determine the aggregate interval
                     if series_type == 'multiple':
-                        chart2 = "  aggregate_interval = 'multiyear'\n" + chart2
+                        chart3 += "  aggregate_interval = 'multiyear'\n"
                     elif series_type == 'mqtt':
-                        chart2 = "  aggregate_interval = 'mqtt'\n" + chart2
+                        chart3 += "  aggregate_interval = 'mqtt'\n"
                     else:
-                        chart2 = "  aggregate_interval = '" + aggregate_interval + "'\n" + chart2
-
-                    chart2 += indent + "{\n"
-                    chart2 += self._iterdict(indent + '  ', value[obs])
+                        chart3 += "  aggregate_interval = '" + aggregate_interval + "'\n"
 
                     chart2 += indent + "},\n"
+                chart2 = chart3 + chart2
 
             chart2 += indent +"],\n"
         else:
             chart2 += indent + 'series' + ": " + value + ",\n"
+
         return chart2
 
     def _gen_chart_common(self, chart_name, chart_def):
@@ -1149,7 +1152,7 @@ class ChartGenerator(JASGenerator):
                     y_axis_values_js += name_js
                     y_axis_values_js += self._iterdict('      ', y_axis_default)
                     y_axis_values_js += '    },\n'
-            
+
             y_axis_js = '    yAxis: [\n'
             y_axis_js += y_axis_values_js
             y_axis_js += '  ],\n'
