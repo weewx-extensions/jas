@@ -898,6 +898,23 @@ class ChartGenerator(JASGenerator):
                     self.chart_defs[chart]['series'][value]['weewx'] = {}
                 weeutil.config.conditional_merge(self.chart_defs[chart]['series'][value]['weewx'], weewx_options)
 
+    def _iterdict(self, indent, dictionary):
+        dict_js = ''
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                if key in {'weewx', 'series'}:
+                    continue
+
+                dict_js += f"{indent}{key}: {{\n"
+                javascript = self._iterdict(f"{indent}  ",
+                                        value
+                                        )
+                dict_js += f"{javascript}"
+                dict_js += f"{indent}}},\n"
+            else:
+                dict_js += f"{indent}{key}: {value},\n"
+        return dict_js
+
     def _gen_charts(self, filename, page_name, interval, page):
         start_time = time.time()
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
@@ -1097,23 +1114,6 @@ class ChartGenerator(JASGenerator):
         else:
             chart2 += indent + 'series' + ": " + value + ",\n"
         return chart2
-
-    def _iterdict(self, indent, dictionary):
-        dict_js = ''
-        for key, value in dictionary.items():
-            if isinstance(value, dict):
-                if key in {'weewx', 'series'}:
-                    continue
-
-                dict_js += f"{indent}{key}: {{\n"
-                javascript = self._iterdict(f"{indent}  ",
-                                        value
-                                        )
-                dict_js += f"{javascript}"
-                dict_js += f"{indent}}},\n"
-            else:
-                dict_js += f"{indent}{key}: {value},\n"
-        return dict_js
 
     def _gen_chart_common(self, chart_name, chart_def):
         # ToDo: do not hard code 'grid'
