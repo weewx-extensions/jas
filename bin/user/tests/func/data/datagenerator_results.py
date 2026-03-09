@@ -94,6 +94,13 @@ function day_dataLoad() {{
   currentData.radiation = "164.000000";
   pageData.currentData = JSON.stringify(currentData);
 
+  pageData.day_avg.windCompassRange0_wx_binding = JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  pageData.day_avg.windCompassRange1_wx_binding = JSON.stringify([1, 0, 0, 0, 0, 1, 1, 4, 9, 14, 7, 2, 1, 0, 0, 2]);
+  pageData.day_avg.windCompassRange2_wx_binding = JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  pageData.day_avg.windCompassRange3_wx_binding = JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  pageData.day_avg.windCompassRange4_wx_binding = JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  pageData.day_avg.windCompassRange5_wx_binding = JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  pageData.day_avg.windCompassRange6_wx_binding = JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
         console.debug(Date.now().toString() + " dataLoad end");
 }}
 
