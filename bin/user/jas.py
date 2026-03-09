@@ -1115,28 +1115,26 @@ class ChartGenerator(JASGenerator):
                 dict_js += f"{indent}{key}: {value},\n"
         return dict_js
 
-    def _gen_chart_common(self, chart, chart_def):
-        chart2 = ''
-        chart2 += self._iterdict('    ', chart_def)
-
+    def _gen_chart_common(self, chart_name, chart_def):
         # ToDo: do not hard code 'grid'
-        if 'polar' in self.skin_dict['Extras']['chart_definitions'][chart]:
+        if 'polar' in self.skin_dict['Extras']['chart_definitions'][chart_name]:
             coordinate_type = 'polar'
-        elif 'grid' in self.skin_dict['Extras']['chart_definitions'][chart]:
+        elif 'grid' in self.skin_dict['Extras']['chart_definitions'][chart_name]:
             coordinate_type = 'grid'
         else:
             coordinate_type = 'grid'
 
         default_grid_properties = self.skin_dict['Extras']['chart_defaults'].get('properties', {}).get('grid', None)
+        y_axis_js = ''
         if 'yAxis' not in chart_def and coordinate_type == 'grid':
-            chart2 += '    yAxis: [\n'
+            y_axis_values_js = ''
             for i in range(0, len(chart_def['weewx']['yAxis'])):
                 i_str = str(i)
                 y_axis_default = copy.deepcopy(default_grid_properties['yAxis'])
                 if i_str in chart_def['weewx']['yAxis']:
                     y_axis_default.merge(chart_def['weewx']['yAxis'][str(i)])
-                    chart2 += '    {\n'
 
+                    name_js = ''
                     if 'name' in y_axis_default and y_axis_default['name'] == 'weewx_unit_label':
                         unit_name = chart_def['weewx']['yAxis'][i_str]['weewx'].get('unit', None)
                         if unit_name is not None:
@@ -1144,14 +1142,21 @@ class ChartGenerator(JASGenerator):
                         else:
                             y_axis_label = self._get_obs_unit_label( chart_def['weewx']['yAxis'][i_str]['weewx']['obs'])
 
-                        chart2 += "      name:' " + y_axis_label + "',\n"
+                        name_js = f"      name:' {y_axis_label}',\n"
                         del y_axis_default['name']
 
-                chart2 += self._iterdict('      ', y_axis_default)
-                chart2 += '    },\n'
-            chart2 += '  ],\n'
+                    y_axis_values_js += '    {\n'
+                    y_axis_values_js += name_js
+                    y_axis_values_js += self._iterdict('      ', y_axis_default)
+                    y_axis_values_js += '    },\n'
+            
+            y_axis_js = '    yAxis: [\n'
+            y_axis_js += y_axis_values_js
+            y_axis_js += '  ],\n'
 
-        return chart2
+        chart_js = self._iterdict('    ', chart_def)
+        chart_js += y_axis_js
+        return chart_js
 
     def _get_wind_range_legend(self):
         wind_speed_unit = self.skin_dict["Units"]["Groups"]["group_speed"]
