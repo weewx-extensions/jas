@@ -30,8 +30,6 @@ function setupCharts() {{
   windRangeLegend = ['<1  mph', '1-4  mph', '4-8  mph', '8-13  mph', '13-19  mph', '19-25  mph', '25-32  mph', '>32  mph'];
 
   aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   var option = {{
     series: [
     {{
@@ -118,8 +116,6 @@ function setupCharts() {{
   pageChart.chart = outTempchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -294,7 +290,6 @@ function setupCharts() {{
   pageCharts.push(pageChart);
 
   aggregate_interval = 'none'
-  aggregate_interval = 'none'
   var option = {{
     series: [
     {{
@@ -385,8 +380,6 @@ function setupCharts() {{
   pageChart.chart = rainchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -483,12 +476,6 @@ function setupCharts() {{
   pageChart.chart = windchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -2049,9 +2036,6 @@ function setupCharts() {{
   ordinateNames = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 
   aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   var option = {{
     series: [
     {{
@@ -2221,9 +2205,6 @@ pageChart.def = option;
   pageCharts.push(pageChart);
 
   aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   var option = {{
     series: [
     {{
@@ -2325,7 +2306,6 @@ pageChart.def = option;
   pageCharts.push(pageChart);
 
   aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   var option = {{
     series: [
     {{
@@ -2416,8 +2396,6 @@ pageChart.def = option;
   pageChart.chart = rainchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   aggregate_interval = 'multiyear'
   var option = {{
     series: [
@@ -2881,8 +2859,6 @@ function setupCharts() {{
   ordinateNames = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 
   aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   var option = {{
     series: [
     {{
@@ -2982,8 +2958,6 @@ pageChart.series.push(seriesData);
   pageChart.chart = outTempchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   aggregate_interval = 'mqtt'
   var option = {{
     series: [
@@ -3176,7 +3150,6 @@ pageChart.series.push(seriesData);
   pageCharts.push(pageChart);
 
   aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   var option = {{
     series: [
     {{
@@ -3276,8 +3249,6 @@ pageChart.series.push(seriesData);
   pageChart.chart = rainchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   aggregate_interval = 'mqtt'
   var option = {{
     series: [
