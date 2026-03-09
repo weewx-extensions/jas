@@ -8,6 +8,7 @@
 # pylint: disable=invalid-name
 
 # pylint: disable=line-too-long
+# pylint: disable=too-many-lines
 
 result1 =\
 '''
