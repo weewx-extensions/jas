@@ -135,7 +135,7 @@ class TestChartGenerator(unittest.TestCase):
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
             result = generator._gen_charts(helpers.random_string(), 'debug', 'last24hours', 'debug')
-            # rint(result)
+            # print(result)
             self.assertEqual(result, result4.format(now=now, utc_offset=utc_offset))
 
             print("done 1")

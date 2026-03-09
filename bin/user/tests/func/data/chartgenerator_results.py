@@ -26,6 +26,7 @@ function simpleTooltipFormatter(args) {{
 
 function setupCharts() {{
   ordinateNames = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  windRangeLegend = ['<1  mph', '1-4  mph', '4-8  mph', '8-13  mph', '13-19  mph', '19-25  mph', '25-32  mph', '>32  mph'];
 
   aggregate_interval = 'none'
   aggregate_interval = 'none'
@@ -450,7 +451,7 @@ function setupCharts() {{
     }},
     yAxis: [
     {{
-      name:' ',
+      name:'  mph',
       type: 'value',
       boundaryGap: [0, '100%'],
       min: function (value) {{return Math.floor(value.min);}},
@@ -479,6 +480,111 @@ function setupCharts() {{
   pageChart = {{}};
   pageChart.def = option;
   pageChart.chart = windchart;
+  pageCharts.push(pageChart);
+
+  aggregate_interval = 'none'
+  aggregate_interval = 'none'
+  aggregate_interval = 'none'
+  aggregate_interval = 'none'
+  aggregate_interval = 'none'
+  aggregate_interval = 'none'
+  aggregate_interval = 'none'
+  var option = {{
+    series: [
+    {{
+      name: windRangeLegend[0],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    {{
+      name: windRangeLegend[1],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    {{
+      name: windRangeLegend[2],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    {{
+      name: windRangeLegend[3],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    {{
+      name: windRangeLegend[4],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    {{
+      name: windRangeLegend[5],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    {{
+      name: windRangeLegend[6],
+      barCategoryGap: 0,
+      type: 'bar',
+      coordinateSystem: 'polar',
+      stack: 'a',
+    }},
+    ],
+    tooltip: {{
+      trigger: 'item',
+      className: 'echarts-tooltip',
+      textStyle: {{
+        color: 'var(--bs-body-color)',
+      }},
+    }},
+    angleAxis: {{
+      type: 'category',
+      data: ordinateNames,
+      boundaryGap: false,
+      axisTick: {{
+        show: false,
+      }},
+      splitLine: {{
+        show: true,
+      }},
+    }},
+    radiusAxis: {{
+      show: false,
+    }},
+    polar: {{
+    }},
+    legend: {{
+      data: windRangeLegend,
+      orient: 'vertical',
+      right: 0,
+      type: 'scroll',
+      icon: 'roundRect',
+      textStyle: {{
+        width: 70,
+        color: 'color',
+        overflow: 'break',
+      }},
+    }},
+  }};
+
+  pageIndex['windRoseday'] = Object.keys(pageIndex).length;
+  var telem = document.getElementById('windRoseday');
+  var windRosechart = echarts.init(document.getElementById('windRoseday'));
+  windRosechart.setOption(option);
+  pageChart = {{}};
+  pageChart.def = option;
+  pageChart.chart = windRosechart;
   pageCharts.push(pageChart);
 
   aggregate_interval = 'none'
@@ -760,6 +866,26 @@ function updateChartData() {{
        data: day_max.windGust_wx_binding}},
       {{name: getLabel('windDir'),
        data: day_avg.windDir_wx_binding}},
+  ]}};
+  pageCharts[index].chart.setOption(series_option);
+  pageCharts[index].option = series_option;
+  index += 1;
+  series_option = {{
+    series: [
+      {{name: windRangeLegend[0],
+       data: day_avg.windCompassRange0_wx_binding}},
+      {{name: windRangeLegend[1],
+       data: day_avg.windCompassRange1_wx_binding}},
+      {{name: windRangeLegend[2],
+       data: day_avg.windCompassRange2_wx_binding}},
+      {{name: windRangeLegend[3],
+       data: day_avg.windCompassRange3_wx_binding}},
+      {{name: windRangeLegend[4],
+       data: day_avg.windCompassRange4_wx_binding}},
+      {{name: windRangeLegend[5],
+       data: day_avg.windCompassRange5_wx_binding}},
+      {{name: windRangeLegend[6],
+       data: day_avg.windCompassRange6_wx_binding}},
   ]}};
   pageCharts[index].chart.setOption(series_option);
   pageCharts[index].option = series_option;
@@ -1556,7 +1682,7 @@ pageChart.def = option;
     }},
     yAxis: [
     {{
-      name:' ',
+      name:'  mph',
       type: 'value',
       boundaryGap: [0, '100%'],
       min: function (value) {{return Math.floor(value.min);}},
@@ -2356,7 +2482,7 @@ pageChart.def = option;
     }},
     yAxis: [
     {{
-      name:' ',
+      name:'  mph',
       type: 'value',
       boundaryGap: [0, '100%'],
       min: function (value) {{return Math.floor(value.min);}},
@@ -2734,6 +2860,7 @@ function updateChartData() {{
   index += 1;
 }}
 '''
+
 result4 =\
 '''
 /* jas 1.2.0-rc03 {now} */
@@ -3215,7 +3342,7 @@ pageChart.series.push(seriesData);
     }},
     yAxis: [
     {{
-      name:' ',
+      name:'  mph',
       type: 'value',
       boundaryGap: [0, '100%'],
       min: function (value) {{return Math.floor(value.min);}},
