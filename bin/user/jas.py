@@ -998,35 +998,28 @@ class ChartGenerator(JASGenerator):
                         else:
                             chart2 += 'seriesData.name = null;\n'
                         chart2 += 'pageChart.series.push(seriesData);\n'
-                    #chart3 += "  index += 1;\n"
                 elif series_type == 'multiple':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
-                    #chart3 += "  index += 1;\n"
                 elif series_type == 'comparison':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_comparison_chart_data(page_name, chart_def, chart_data_binding)
-                    #chart3 += "  index += 1;\n"
                 else:
                     chart2 += "  pageChart.def = option;\n"
                     chart3 += self._gen_update_chart_data(interval, chart_def, chart_data_binding)
-                    #chart3 += "  index += 1;\n"
 
                 chart2 += "  pageChart.chart = " + chart + "chart;\n"
                 chart2 += "  pageCharts.push(pageChart);\n"
                 chart2 += "\n"
 
         chart2 += "}\n"
-
-        chart4 = ""
-        chart4 += "function updateChartData() {\n"
-        if series_type != 'mqtt':
-            chart4 += "  index = 0;\n"
-            chart4 += chart3
-        chart4 += "}\n"
-        chart2 += chart4
-
         chart_final += chart2
+
+        chart_final += "function updateChartData() {\n"
+        if series_type != 'mqtt':
+            chart_final += "  index = 0;\n"
+            chart_final += chart3
+        chart_final += "}\n"
 
         elapsed_time = time.time() - start_time
         log_msg = "Generated " + filename + " in " + str(elapsed_time)
