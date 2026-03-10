@@ -967,7 +967,8 @@ class ChartGenerator(JASGenerator):
                 #self.charts_def[chart].merge(self.skin_dict['Extras']['pages'][page][chart])
 
                 chart_js = "  var option = {\n"
-                chart2 += self._gen_series('    ', page_name, chart, chart_js, series_type, chart_def['series'], chart_data_binding)
+                chart2 += self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])
+                chart2 += self._gen_series('    ', page_name, chart_js, series_type, chart_def['series'], chart_data_binding)
 
                 if chart not in self.charts_javascript:
                     self.charts_javascript[chart] = {}
@@ -1074,25 +1075,27 @@ class ChartGenerator(JASGenerator):
             logdbg(log_msg)
         return chart_final
 
-
-    def _gen_series(self, indent, page, chart, chart_js, series_type, value, chart_data_binding):
-        chart3 = ''
+    def _gen_aggregate_interval(self, page, chart, series_type, value):
+        # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
+        # Note, this means the first observation's aggregate type will be used to determine the aggregate interval
         obs = next(iter(value), None)
-        if obs and series_type != 'comparison':                
-            # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
-            # Note, this means the first observation's aggregate type will be used to determine the aggregate interval
+        if obs and series_type != 'comparison':
             aggregate_type = self.chart_defs[chart]['series'][obs]['weewx']['aggregate_type']
             aggregate_interval = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}) \
                                 .get(aggregate_type, 'none')
 
             if series_type == 'multiple':
-                chart3 = "  aggregate_interval = 'multiyear'\n"
-            elif series_type == 'mqtt':
-                chart3 = "  aggregate_interval = 'mqtt'\n"
-            else:
-                chart3 = "  aggregate_interval = '" + aggregate_interval + "'\n"
+                return "  aggregate_interval = 'multiyear'\n"
 
-        chart2 = chart3 + chart_js
+            if series_type == 'mqtt':
+                return "  aggregate_interval = 'mqtt'\n"
+
+            return "  aggregate_interval = '" + aggregate_interval + "'\n"
+
+        return ''
+
+    def _gen_series(self, indent, page, chart_js, series_type, value, chart_data_binding):
+        chart2 = chart_js
 
         if isinstance(value, dict):
             chart2 += indent + "series: [\n"
@@ -1104,7 +1107,7 @@ class ChartGenerator(JASGenerator):
                                                             chart_data_binding)
                 for year in range(start_year, end_year):
                     chart2 += indent + " {\n"
-                    chart2 += "    name: '" + str(year) + "',\n"
+                    chart2 += indent + "name: '" + str(year) + "',\n"
                     chart2 += self._iterdict(indent + '  ', value[obs])
                     chart2 += indent + "  },\n"
             else:
