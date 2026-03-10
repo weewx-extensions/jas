@@ -942,7 +942,7 @@ class ChartGenerator(JASGenerator):
         chart_final += "\n"
 
         chart2 = ""
-        chart3 = "  index = 0;\n"
+        chart3 = ""
         charts = self.skin_dict['Extras']['chart_definitions']
         for chart in self.skin_dict['Extras']['pages'][page_name]:
             if chart in charts.sections:
@@ -1000,6 +1000,7 @@ class ChartGenerator(JASGenerator):
                             chart2 += 'seriesData.name = null;\n'
                         chart2 += 'pageChart.series.push(seriesData);\n'
                 elif series_type == 'multiple':
+                    chart2 += "pageChart.def = option;\n"
                     chart3 += "  series_option = {\n"
                     chart3 += "    series: [\n"
                     for obs in chart_def['series']:
@@ -1017,8 +1018,8 @@ class ChartGenerator(JASGenerator):
                     chart3 += "  ]};\n"
                     chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
                     chart3 += "  pageCharts[index].option = series_option;\n"
-                    chart2 += "pageChart.def = option;\n"
                 elif series_type == 'comparison':
+                    chart2 += "pageChart.def = option;\n"
                     chart3 += "  series_option = {\n"
                     chart3 += "    series: [\n"
                     obs = next(iter(chart_def['series']))
@@ -1036,8 +1037,8 @@ class ChartGenerator(JASGenerator):
                     chart3 += "  ]};\n"
                     chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
                     chart3 += "  pageCharts[index].option = series_option;\n"
-                    chart2 += "pageChart.def = option;\n"
                 else:
+                    chart2 += "  pageChart.def = option;\n"
                     chart3 += "  series_option = {\n"
                     chart3 += "    series: [\n"
                     for obs in chart_def['series']:
@@ -1055,7 +1056,6 @@ class ChartGenerator(JASGenerator):
                     chart3 += "  ]};\n"
                     chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
                     chart3 += "  pageCharts[index].option = series_option;\n"
-                    chart2 += "  pageChart.def = option;\n"
 
                 chart3 += "  index += 1;\n"
 
@@ -1064,9 +1064,13 @@ class ChartGenerator(JASGenerator):
                 chart2 += "\n"
 
         chart2 += "}\n"
-        chart2 += "function updateChartData() {\n"
-        chart2 += chart3
-        chart2 += "}\n"
+    
+        chart4 = "function updateChartData() {\n"
+        chart4 += "  index = 0;\n"
+        chart4 += chart3
+        chart4 += "}\n"
+
+        chart2 += chart4
         chart_final += chart2
 
         elapsed_time = time.time() - start_time
