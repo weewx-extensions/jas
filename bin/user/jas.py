@@ -937,9 +937,9 @@ class ChartGenerator(JASGenerator):
         chart_final += "}\n"
         chart_final += "\n"
         chart_final += "function setupCharts() {\n"
-        chart_final += "  ordinateNames = ['" + "', '".join(self.ordinate_names) + "'];\n"
+        chart_final += f"  ordinateNames = ['{self.ordinate_names_string}'];\n"
         if self.skin_dict['Extras']['pages'][page_name].get('windRose', None) is not None:
-            chart_final += "  windRangeLegend = " + self._get_wind_range_legend() + ";\n"
+            chart_final += f"  windRangeLegend = {self._get_wind_range_legend()};\n"
         chart_final += "\n"
 
         chart2 = ""
