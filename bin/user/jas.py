@@ -966,20 +966,20 @@ class ChartGenerator(JASGenerator):
                 # The workaround is to define a specific chart for the page
                 #self.charts_def[chart].merge(self.skin_dict['Extras']['pages'][page][chart])
 
-                chart_js = "  var option = {\n"
-                chart2 += self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])
-                chart2 += self._gen_series('    ', page_name, chart_js, series_type, chart_def['series'], chart_data_binding)
-
                 if chart not in self.charts_javascript:
                     self.charts_javascript[chart] = {}
                     self.charts_javascript[chart][series_type] = self._gen_chart_common(chart, chart_def)
                 elif series_type not in self.charts_javascript[chart]:
                     self.charts_javascript[chart][series_type] = self._gen_chart_common(chart, chart_def)
 
-                chart2 += self.charts_javascript[chart][series_type]
+                chart2 += self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])
 
+                chart2 += "  var option = {\n"
+                chart2 += self._gen_series('    ', page_name, series_type, chart_def['series'], chart_data_binding)
+                chart2 += self.charts_javascript[chart][series_type]
                 chart2 += "  };\n"
                 chart2 += "\n"
+
                 chart2 += "  pageIndex['" + chart + page + "'] = Object.keys(pageIndex).length;\n"
                 chart2 += "  var telem = document.getElementById('" + chart + page + "');\n"
                 chart2 += "  var " + chart + "chart = echarts.init(document.getElementById('" + chart + page + "'));\n"
@@ -1113,8 +1113,8 @@ class ChartGenerator(JASGenerator):
 
         return ''
 
-    def _gen_series(self, indent, page, chart_js, series_type, value, chart_data_binding):
-        chart2 = chart_js
+    def _gen_series(self, indent, page, series_type, value, chart_data_binding):
+        chart2 = ''
 
         if isinstance(value, dict):
             chart2 += indent + "series: [\n"
