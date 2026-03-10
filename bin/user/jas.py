@@ -726,6 +726,7 @@ class ChartGenerator(JASGenerator):
 
         self.ordinate_names = copy.deepcopy(self.formatter.ordinate_names)
         del self.ordinate_names[-1]
+        self.ordinate_names_string = "', '".join(self.ordinate_names)
 
         self.chart_defaults = self.skin_dict['Extras']['chart_defaults'].get('global', {})
         self.chart_series_defaults = self.skin_dict['Extras']['chart_defaults'].get('chart_type', {}).get('series', {})
@@ -920,22 +921,22 @@ class ChartGenerator(JASGenerator):
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         page_series_type = self.skin_dict['Extras']['page_definition'][page_name].get('series_type', 'single')
 
-        chart_final = '\n'
-        chart_final += '/* jas ' + VERSION + ' ' + str(self.gen_time) + ' */\n'
-        chart_final += 'utc_offset = ' + str(self.utc_offset) + ';\n'
+        chart_final = "\n"
+        chart_final += f"/* jas {VERSION} {str(self.gen_time)} */\n"
+        chart_final += f"utc_offset = {str(self.utc_offset)};\n"
 
-        chart_final += 'function simpleTooltipFormatter(args) {\n'
-        chart_final += '  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n'
-        chart_final += '  let tooltip = `<div>${dateTime}</div> `;\n'
-        chart_final += '\n'
-        chart_final += '  args.forEach(({ color, seriesName, value }) => {\n'
-        chart_final += '    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n'
-        chart_final += '    if (value != null) {tooltip += `<div style="color: ${color};">${seriesName} ${value}</div>`};\n'
-        chart_final += '  });\n'
-        chart_final += '  return tooltip;\n'
-        chart_final += '}\n'
-        chart_final += '\n'
-        chart_final += 'function setupCharts() {\n'
+        chart_final += "function simpleTooltipFormatter(args) {\n"
+        chart_final += "  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n"
+        chart_final += "  let tooltip = `<div>${dateTime}</div> `;\n"
+        chart_final += "\n"
+        chart_final += "  args.forEach(({ color, seriesName, value }) => {\n"
+        chart_final += "    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n"
+        chart_final += "    if (value != null) {tooltip += `<div style='color: ${color};'>${seriesName} ${value}</div>`};\n"
+        chart_final += "  });\n"
+        chart_final += "  return tooltip;\n"
+        chart_final += "}\n"
+        chart_final += "\n"
+        chart_final += "function setupCharts() {\n"
         chart_final += "  ordinateNames = ['" + "', '".join(self.ordinate_names) + "'];\n"
         if self.skin_dict['Extras']['pages'][page_name].get('windRose', None) is not None:
             chart_final += "  windRangeLegend = " + self._get_wind_range_legend() + ";\n"

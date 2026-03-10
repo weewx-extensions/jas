@@ -20,7 +20,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -915,7 +915,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -2027,7 +2027,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -2850,7 +2850,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
