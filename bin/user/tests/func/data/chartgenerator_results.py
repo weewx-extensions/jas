@@ -3601,14 +3601,5 @@ pageChart.series.push(seriesData);
 
 }}
 function updateChartData() {{
-  index = 0;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
 }}
 '''

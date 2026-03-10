@@ -984,7 +984,6 @@ class ChartGenerator(JASGenerator):
                 chart2 += "  var telem = document.getElementById('" + chart + page + "');\n"
                 chart2 += "  var " + chart + "chart = echarts.init(document.getElementById('" + chart + page + "'));\n"
                 chart2 += "  " + chart + "chart.setOption(option);\n"
-
                 chart2 += "  pageChart = {};\n"
 
                 if series_type == 'mqtt':
@@ -999,17 +998,19 @@ class ChartGenerator(JASGenerator):
                         else:
                             chart2 += 'seriesData.name = null;\n'
                         chart2 += 'pageChart.series.push(seriesData);\n'
+                    #chart3 += "  index += 1;\n"
                 elif series_type == 'multiple':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
+                    #chart3 += "  index += 1;\n"
                 elif series_type == 'comparison':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_comparison_chart_data(page_name, chart_def, chart_data_binding)
+                    #chart3 += "  index += 1;\n"
                 else:
                     chart2 += "  pageChart.def = option;\n"
                     chart3 += self._gen_update_chart_data(interval, chart_def, chart_data_binding)
-
-                chart3 += "  index += 1;\n"
+                    #chart3 += "  index += 1;\n"
 
                 chart2 += "  pageChart.chart = " + chart + "chart;\n"
                 chart2 += "  pageCharts.push(pageChart);\n"
@@ -1017,12 +1018,14 @@ class ChartGenerator(JASGenerator):
 
         chart2 += "}\n"
 
-        chart4 = "function updateChartData() {\n"
-        chart4 += "  index = 0;\n"
-        chart4 += chart3
+        chart4 = ""
+        chart4 += "function updateChartData() {\n"
+        if series_type != 'mqtt':
+            chart4 += "  index = 0;\n"
+            chart4 += chart3
         chart4 += "}\n"
-
         chart2 += chart4
+
         chart_final += chart2
 
         elapsed_time = time.time() - start_time
@@ -1049,6 +1052,7 @@ class ChartGenerator(JASGenerator):
         chart3 += "  ]};\n"
         chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
         chart3 += "  pageCharts[index].option = series_option;\n"
+        chart3 += "  index += 1;\n"
 
         return chart3
 
@@ -1070,6 +1074,7 @@ class ChartGenerator(JASGenerator):
         chart3 += "  ]};\n"
         chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
         chart3 += "  pageCharts[index].option = series_option;\n"
+        chart3 += "  index += 1;\n"
 
         return chart3
 
@@ -1091,6 +1096,7 @@ class ChartGenerator(JASGenerator):
         chart3 += "  ]};\n"
         chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
         chart3 += "  pageCharts[index].option = series_option;\n"
+        chart3 += "  index += 1;\n"
 
         return chart3
 
