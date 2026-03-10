@@ -1001,61 +1001,13 @@ class ChartGenerator(JASGenerator):
                         chart2 += 'pageChart.series.push(seriesData);\n'
                 elif series_type == 'multiple':
                     chart2 += "pageChart.def = option;\n"
-                    chart3 += "  series_option = {\n"
-                    chart3 += "    series: [\n"
-                    for obs in chart_def['series']:
-                        aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                        obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-                        chart3 += "      {name: " + chart_def['series'][obs].get('name', 'getLabel(' + "'" + obs + "')") + ",\n"
-                        chart3 += "       data: [\n"
-                        (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
-                                                                 self.skin_dict['Extras']['pages'][page_name].get('end', None),
-                                                                 chart_data_binding)
-                        for year in range(start_year, end_year):
-                            chart3 += "               ...year" + str(year) + "_" + aggregate_type \
-                                      + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + ",\n"
-                        chart3 += "             ]},\n"
-                    chart3 += "  ]};\n"
-                    chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-                    chart3 += "  pageCharts[index].option = series_option;\n"
+                    chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
                 elif series_type == 'comparison':
                     chart2 += "pageChart.def = option;\n"
-                    chart3 += "  series_option = {\n"
-                    chart3 += "    series: [\n"
-                    obs = next(iter(chart_def['series']))
-                    obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-                    aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                    (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
-                                                             self.skin_dict['Extras']['pages'][page_name].get('end', None),
-                                                             chart_data_binding)
-                    for year in range(start_year, end_year):
-                        chart3 += "      {name: '" + str(year) + "',\n"
-                        chart3 += "       data: year" + str(year) + "_" + aggregate_type \
-                                + "." + obs + "_"  + obs_data_binding \
-                                + ".map(arr => [moment.unix(arr[0] / 1000).utcOffset(" + str(self.utc_offset) \
-                                + ").format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])},\n"
-                    chart3 += "  ]};\n"
-                    chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-                    chart3 += "  pageCharts[index].option = series_option;\n"
+                    chart3 += self._gen_update_comparison_chart_data(page_name, chart_def, chart_data_binding)
                 else:
                     chart2 += "  pageChart.def = option;\n"
-                    chart3 += "  series_option = {\n"
-                    chart3 += "    series: [\n"
-                    for obs in chart_def['series']:
-                        aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                        obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-                        unit_name = chart_def['series'][obs].get('weewx', {}).get('unit', None)
-                        obs_data_unit = ""
-                        if unit_name is not None:
-                            obs_data_unit = "_" + unit_name
-                        chart3 += "      {name: " + chart_def['series'][obs].get('name', "getLabel('" + obs + "')") + ",\n"
-                        chart3 += "       data: " \
-                                + interval + "_" + aggregate_type \
-                                + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + obs_data_unit \
-                                + "},\n"
-                    chart3 += "  ]};\n"
-                    chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-                    chart3 += "  pageCharts[index].option = series_option;\n"
+                    chart3 += self._gen_update_chart_data(interval, chart_def, chart_data_binding)
 
                 chart3 += "  index += 1;\n"
 
@@ -1064,7 +1016,7 @@ class ChartGenerator(JASGenerator):
                 chart2 += "\n"
 
         chart2 += "}\n"
-    
+
         chart4 = "function updateChartData() {\n"
         chart4 += "  index = 0;\n"
         chart4 += chart3
@@ -1078,6 +1030,69 @@ class ChartGenerator(JASGenerator):
         if to_bool(self.skin_dict['Extras'].get('log_times', True)):
             logdbg(log_msg)
         return chart_final
+
+    def _gen_update_multiple_chart_data(self, page_name, chart_def, chart_data_binding):
+        chart3 = "  series_option = {\n"
+        chart3 += "    series: [\n"
+        for obs in chart_def['series']:
+            aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
+            obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+            chart3 += "      {name: " + chart_def['series'][obs].get('name', 'getLabel(' + "'" + obs + "')") + ",\n"
+            chart3 += "       data: [\n"
+            (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
+                                                        self.skin_dict['Extras']['pages'][page_name].get('end', None),
+                                                        chart_data_binding)
+            for year in range(start_year, end_year):
+                chart3 += "               ...year" + str(year) + "_" + aggregate_type \
+                            + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + ",\n"
+            chart3 += "             ]},\n"
+        chart3 += "  ]};\n"
+        chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
+        chart3 += "  pageCharts[index].option = series_option;\n"
+
+        return chart3
+
+    def _gen_update_comparison_chart_data(self, page_name, chart_def, chart_data_binding):
+        chart3 = "  series_option = {\n"
+        chart3 += "    series: [\n"
+        obs = next(iter(chart_def['series']))
+        obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+        aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
+        (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
+                                                    self.skin_dict['Extras']['pages'][page_name].get('end', None),
+                                                    chart_data_binding)
+        for year in range(start_year, end_year):
+            chart3 += "      {name: '" + str(year) + "',\n"
+            chart3 += "       data: year" + str(year) + "_" + aggregate_type \
+                    + "." + obs + "_"  + obs_data_binding \
+                    + ".map(arr => [moment.unix(arr[0] / 1000).utcOffset(" + str(self.utc_offset) \
+                    + ").format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])},\n"
+        chart3 += "  ]};\n"
+        chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
+        chart3 += "  pageCharts[index].option = series_option;\n"
+
+        return chart3
+
+    def _gen_update_chart_data(self, interval, chart_def, chart_data_binding):
+        chart3 = "  series_option = {\n"
+        chart3 += "    series: [\n"
+        for obs in chart_def['series']:
+            aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
+            obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+            unit_name = chart_def['series'][obs].get('weewx', {}).get('unit', None)
+            obs_data_unit = ""
+            if unit_name is not None:
+                obs_data_unit = "_" + unit_name
+            chart3 += "      {name: " + chart_def['series'][obs].get('name', "getLabel('" + obs + "')") + ",\n"
+            chart3 += "       data: " \
+                    + interval + "_" + aggregate_type \
+                    + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + obs_data_unit \
+                    + "},\n"
+        chart3 += "  ]};\n"
+        chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
+        chart3 += "  pageCharts[index].option = series_option;\n"
+
+        return chart3
 
     def _gen_aggregate_interval(self, page, chart, series_type, value):
         # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
