@@ -988,17 +988,17 @@ class ChartGenerator(JASGenerator):
                 chart2 += "  pageChart = {};\n"
 
                 if series_type == 'mqtt':
-                    chart2 += 'pageChart.option = null;\n'
-                    chart2 += 'pageChart.series = [];\n'
+                    chart2 += "pageChart.option = null;\n"
+                    chart2 += "pageChart.series = [];\n"
                     for obs in chart_def['series']:
-                        chart2 += 'seriesData = {};\n'
-                        chart2 += 'seriesData.obs = "' + obs + '";\n'
+                        chart2 += "seriesData = {};\n"
+                        chart2 += f"seriesData.obs = '{obs}';\n"
                         name = chart_def['series'][obs].get('name', None)
                         if name is not None:
-                            chart2 += 'seriesData.name = "' + name + '";\n'
+                            chart2 += f"seriesData.name = '{name}';\n"
                         else:
-                            chart2 += 'seriesData.name = null;\n'
-                        chart2 += 'pageChart.series.push(seriesData);\n'
+                            chart2 += "seriesData.name = null;\n"
+                        chart2 += "pageChart.series.push(seriesData);\n"
                 elif series_type == 'multiple':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
