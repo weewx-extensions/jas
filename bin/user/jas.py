@@ -724,9 +724,9 @@ class ChartGenerator(JASGenerator):
         self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
         self.wind_ranges_count = 7
 
-        self.ordinate_names = copy.deepcopy(self.formatter.ordinate_names)
-        del self.ordinate_names[-1]
-        self.ordinate_names_string = "', '".join(self.ordinate_names)
+        ordinate_names = copy.deepcopy(self.formatter.ordinate_names)
+        del ordinate_names[-1]
+        self.ordinate_names_string = "', '".join(ordinate_names)
 
         self.chart_defaults = self.skin_dict['Extras']['chart_defaults'].get('global', {})
         self.chart_series_defaults = self.skin_dict['Extras']['chart_defaults'].get('chart_type', {}).get('series', {})
@@ -920,27 +920,28 @@ class ChartGenerator(JASGenerator):
         start_time = time.time()
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         page_series_type = self.skin_dict['Extras']['page_definition'][page_name].get('series_type', 'single')
-
-        chart_final = "\n"
-        chart_final += f"/* jas {VERSION} {str(self.gen_time)} */\n"
-        chart_final += f"utc_offset = {str(self.utc_offset)};\n"
-
-        chart_final += "function simpleTooltipFormatter(args) {\n"
-        chart_final += "  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n"
-        chart_final += "  let tooltip = `<div>${dateTime}</div> `;\n"
-        chart_final += "\n"
-        chart_final += "  args.forEach(({ color, seriesName, value }) => {\n"
-        chart_final += "    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n"
-        chart_final += "    if (value != null) {tooltip += `<div style='color: ${color};'>${seriesName} ${value}</div>`};\n"
-        chart_final += "  });\n"
-        chart_final += "  return tooltip;\n"
-        chart_final += "}\n"
-        chart_final += "\n"
-        chart_final += "function setupCharts() {\n"
-        chart_final += f"  ordinateNames = ['{self.ordinate_names_string}'];\n"
+        wind_range_legend = ''
         if self.skin_dict['Extras']['pages'][page_name].get('windRose', None) is not None:
-            chart_final += f"  windRangeLegend = {self._get_wind_range_legend()};\n"
-        chart_final += "\n"
+            wind_range_legend += f"  windRangeLegend = {self._get_wind_range_legend()};\n"
+
+        chart_final = ("\n"
+                       f"/* jas {VERSION} {str(self.gen_time)} */\n"
+                      f"utc_offset = {str(self.utc_offset)};\n"
+                      "function simpleTooltipFormatter(args) {\n"
+                      "  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n"
+                      "  let tooltip = `<div>${dateTime}</div> `;\n"
+                      "\n"
+                      "  args.forEach(({ color, seriesName, value }) => {\n"
+                      "    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n"
+                      "    if (value != null) {tooltip += `<div style='color: ${color};'>${seriesName} ${value}</div>`};\n"
+                      "  });\n"
+                      "  return tooltip;\n"
+                      "}\n"
+                      "\n"
+                      "function setupCharts() {\n"
+                      f"  ordinateNames = ['{self.ordinate_names_string}'];\n"
+                      f"{wind_range_legend}"
+                      "\n")
 
         chart2 = ""
         chart3 = ""
@@ -973,32 +974,28 @@ class ChartGenerator(JASGenerator):
                 elif series_type not in self.charts_javascript[chart]:
                     self.charts_javascript[chart][series_type] = self._gen_chart_common(chart, chart_def)
 
-                chart2 += self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])
-
-                chart2 += "  var option = {\n"
-                chart2 += self._gen_series('    ', page_name, series_type, chart_def['series'], chart_data_binding)
-                chart2 += self.charts_javascript[chart][series_type]
-                chart2 += "  };\n"
-                chart2 += "\n"
-
-                chart2 += "  pageIndex['" + chart + page + "'] = Object.keys(pageIndex).length;\n"
-                chart2 += "  var telem = document.getElementById('" + chart + page + "');\n"
-                chart2 += "  var " + chart + "chart = echarts.init(document.getElementById('" + chart + page + "'));\n"
-                chart2 += "  " + chart + "chart.setOption(option);\n"
-                chart2 += "  pageChart = {};\n"
+                chart2 += (f"{self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])}"
+                           "  var option = {\n"
+                           f"{self._gen_series('    ', page_name, series_type, chart_def['series'], chart_data_binding)}"
+                           f"{self.charts_javascript[chart][series_type]}"
+                           "  };\n"
+                           "\n"
+                           f"  pageIndex['{chart}{page}'] = Object.keys(pageIndex).length;\n"
+                           f"  var telem = document.getElementById('{chart}{page}');\n"
+                           f"  var {chart}chart = echarts.init(document.getElementById('{chart}{page}'));\n"
+                           f"  {chart}chart.setOption(option);\n"
+                           "  pageChart = {};\n")
 
                 if series_type == 'mqtt':
                     chart2 += "pageChart.option = null;\n"
                     chart2 += "pageChart.series = [];\n"
                     for obs in chart_def['series']:
-                        chart2 += "seriesData = {};\n"
-                        chart2 += f"seriesData.obs = '{obs}';\n"
                         name = chart_def['series'][obs].get('name', None)
-                        if name is not None:
-                            chart2 += f"seriesData.name = '{name}';\n"
-                        else:
-                            chart2 += "seriesData.name = null;\n"
-                        chart2 += "pageChart.series.push(seriesData);\n"
+                        name = "'name'" if name is not None else "null"
+                        chart2 += ("seriesData = {};\n"
+                                   f"seriesData.obs = '{obs}';\n"
+                                  f"seriesData.name = {name};\n"
+                                  "pageChart.series.push(seriesData);\n")
                 elif series_type == 'multiple':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
@@ -1009,9 +1006,9 @@ class ChartGenerator(JASGenerator):
                     chart2 += "  pageChart.def = option;\n"
                     chart3 += self._gen_update_chart_data(interval, chart_def, chart_data_binding)
 
-                chart2 += "  pageChart.chart = " + chart + "chart;\n"
-                chart2 += "  pageCharts.push(pageChart);\n"
-                chart2 += "\n"
+                chart2 += (f"  pageChart.chart = {chart}chart;\n"
+                           "  pageCharts.push(pageChart);\n"
+                           "\n")
 
         chart2 += "}\n"
         chart_final += chart2
