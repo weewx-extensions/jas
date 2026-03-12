@@ -963,7 +963,7 @@ class ChartGenerator(JASGenerator):
 
                 chart2 += (f"{self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])}"
                            "  var option = {\n"
-                           f"{self._gen_series('    ', page_name, series_type, chart_def['series'], chart_data_binding)}"
+                           f"{self._gen_series(page_name, series_type, chart_def['series'], chart_data_binding)}"
                            f"{self.charts_javascript[chart][series_type]}"
                            "  };\n"
                            "\n"
@@ -1096,11 +1096,11 @@ class ChartGenerator(JASGenerator):
 
         return ''
 
-    def _gen_series(self, indent, page, series_type, value, chart_data_binding):
+    def _gen_series(self, page, series_type, value, chart_data_binding):
         chart2 = ''
 
         if isinstance(value, dict):
-            chart2 += indent + "series: [\n"
+            chart2 = "    series: [\n"
 
             if series_type == 'comparison':
                 obs = next(iter(value))
@@ -1108,19 +1108,19 @@ class ChartGenerator(JASGenerator):
                                                             self.skin_dict['Extras']['pages'][page].get('end', None),
                                                             chart_data_binding)
                 for year in range(start_year, end_year):
-                    chart2 += indent + " {\n"
-                    chart2 += indent + "name: '" + str(year) + "',\n"
-                    chart2 += self._iterdict(indent + '  ', value[obs])
-                    chart2 += indent + "  },\n"
+                    chart2 += ("     {\n"
+                               f"    name: '{str(year)}',\n"
+                               f"{self._iterdict('      ', value[obs])}"
+                               "      },\n")
             else:
                 for obs in value:
-                    chart2 += indent + "{\n"
-                    chart2 += self._iterdict(indent + '  ', value[obs])
-                    chart2 += indent + "},\n"
+                    chart2 += ("    {\n"
+                               f"{self._iterdict('      ', value[obs])}"
+                               "    },\n")
 
-            chart2 += indent +"],\n"
+            chart2 += "    ],\n"
         else:
-            chart2 += indent + 'series' + ": " + value + ",\n"
+            chart2 = "    series:" + value + ",\n"
 
         return chart2
 
@@ -1154,14 +1154,14 @@ class ChartGenerator(JASGenerator):
                         name_js = f"      name:' {y_axis_label}',\n"
                         del y_axis_default['name']
 
-                    y_axis_values_js += '    {\n'
+                    y_axis_values_js += "    {\n"
                     y_axis_values_js += name_js
                     y_axis_values_js += self._iterdict('      ', y_axis_default)
-                    y_axis_values_js += '    },\n'
+                    y_axis_values_js += "    },\n"
 
-            y_axis_js = '    yAxis: [\n'
+            y_axis_js = "    yAxis: [\n"
             y_axis_js += y_axis_values_js
-            y_axis_js += '  ],\n'
+            y_axis_js += "  ],\n"
 
         chart_js = self._iterdict('    ', chart_def)
         chart_js += y_axis_js
