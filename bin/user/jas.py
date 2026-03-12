@@ -181,6 +181,17 @@ import user.jas_templates
 
 VERSION = "1.2.0-rc03"
 
+wind_ranges = {}
+wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
+wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
+wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
+wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
+wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
+wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
+wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
+wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
+wind_ranges_count = len(wind_ranges) - 1
+
 class JAS(SearchList):
     """ Implement tags used by templates in the skin. """
     def __init__(self, generator):
@@ -209,18 +220,6 @@ class JAS(SearchList):
         self.wind_observations = ['windCompassAverage', 'windCompassMaximum',
                                   'windCompassRange0', 'windCompassRange1', 'windCompassRange2',
                                   'windCompassRange3', 'windCompassRange4', 'windCompassRange5', 'windCompassRange6']
-
-        # todo duplicate code
-        self.wind_ranges = {}
-        self.wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges_count = 7
 
         self.skin_dict = generator.skin_dict
         report_dict = self.generator.config_dict.get('StdReport', {})
@@ -712,18 +711,6 @@ class ChartGenerator(JASGenerator):
         self.utc_offset = (datetime.datetime.fromtimestamp(now) -
                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
-        # todo duplicate code
-        self.wind_ranges = {}
-        self.wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges_count = 7
-
         ordinate_names = copy.deepcopy(self.formatter.ordinate_names)
         del ordinate_names[-1]
         self.ordinate_names_string = "', '".join(ordinate_names)
@@ -1184,10 +1171,10 @@ class ChartGenerator(JASGenerator):
     def _get_wind_range_legend(self):
         wind_speed_unit = self.skin_dict["Units"]["Groups"]["group_speed"]
         wind_speed_unit_label = self.skin_dict["Units"]["Labels"][wind_speed_unit]
-        low_range = self.wind_ranges[wind_speed_unit][0]
-        high_range = self.wind_ranges[wind_speed_unit][len(self.wind_ranges[wind_speed_unit]) - 1]
+        low_range = wind_ranges[wind_speed_unit][0]
+        high_range = wind_ranges[wind_speed_unit][len(wind_ranges[wind_speed_unit]) - 1]
         wind_range_legend = F"['<{low_range} {wind_speed_unit_label}', "
-        for high_range in self.wind_ranges[wind_speed_unit][1:]:
+        for high_range in wind_ranges[wind_speed_unit][1:]:
             wind_range_legend += F"'{low_range}-{high_range} {wind_speed_unit_label}', "
             low_range = high_range
 
@@ -1212,17 +1199,6 @@ class DataGenerator(JASGenerator):
         now = time.time()
         self.utc_offset = (datetime.datetime.fromtimestamp(now) -
                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
-
-        self.wind_ranges = {}
-        self.wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges_count = 7
 
         self.wind_observations = ['windCompassAverage', 'windCompassMaximum',
                                   'windCompassRange0', 'windCompassRange1', 'windCompassRange2',
@@ -1680,7 +1656,7 @@ class DataGenerator(JASGenerator):
             wind_data[ordinate_name]['max'] = 0
             wind_data[ordinate_name]['speed_data'] = []
             j = 0
-            while j < self.wind_ranges_count:
+            while j < wind_ranges_count:
                 wind_data[ordinate_name]['speed_data'].append(0)
                 j += 1
             i += 1
@@ -1699,7 +1675,7 @@ class DataGenerator(JASGenerator):
                     wind_data[ordinate_name]['max'] = wind_gust_data[0][i]
 
                 j = 0
-                for wind_range in self.wind_ranges[wind_unit]:
+                for wind_range in wind_ranges[wind_unit]:
                     if wind_speed < wind_range:
                         wind_data[ordinate_name]['speed_data'][j] += 1
                         break
@@ -1719,7 +1695,7 @@ class DataGenerator(JASGenerator):
         wind_compass_max = []
         wind_compass_speeds = []
         j = 0
-        while j < self.wind_ranges_count:
+        while j < wind_ranges_count:
             wind_compass_speeds.append([])
             j += 1
 
