@@ -894,9 +894,7 @@ class ChartGenerator(JASGenerator):
                     continue
 
                 dict_js += f"{indent}{key}: {{\n"
-                javascript = self._iterdict(f"{indent}  ",
-                                        value
-                                        )
+                javascript = self._iterdict(f"{indent}  ", value)
                 dict_js += f"{javascript}"
                 dict_js += f"{indent}}},\n"
             else:
@@ -974,8 +972,8 @@ class ChartGenerator(JASGenerator):
                            "  pageChart = {};\n")
 
                 if series_type == 'mqtt':
-                    chart2 += "pageChart.option = null;\n"
-                    chart2 += "pageChart.series = [];\n"
+                    chart2 += ("pageChart.option = null;\n"
+                               "pageChart.series = [];\n")
                     for obs in chart_def['series']:
                         name = chart_def['series'][obs].get('name', None)
                         name = "'name'" if name is not None else "null"
