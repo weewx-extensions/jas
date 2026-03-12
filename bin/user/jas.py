@@ -1057,8 +1057,8 @@ class ChartGenerator(JASGenerator):
         return chart3
 
     def _gen_update_chart_data(self, interval, chart_def, chart_data_binding):
-        chart3 = "  series_option = {\n"
-        chart3 += "    series: [\n"
+        chart3 = ("  series_option = {\n"
+                  "    series: [\n")
         for obs in chart_def['series']:
             weewx_observation = chart_def['series'][obs]['weewx']['observation']
             aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
@@ -1068,15 +1068,12 @@ class ChartGenerator(JASGenerator):
             obs_data_unit = ""
             if unit_name is not None:
                 obs_data_unit = "_" + unit_name
-            chart3 += "      {name: " + chart_def['series'][obs].get('name', "getLabel('" + obs + "')") + ",\n"
-            chart3 += "       data: " \
-                    + interval + "_" + aggregate_type \
-                    + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + obs_data_unit \
-                    + "},\n"
-        chart3 += "  ]};\n"
-        chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-        chart3 += "  pageCharts[index].option = series_option;\n"
-        chart3 += "  index += 1;\n"
+            chart3 += (f"      {{name: {name},\n"
+                       f"       data: {interval}_{aggregate_type}.{weewx_observation}_{obs_data_binding}{obs_data_unit}}},\n")
+        chart3 += ("  ]};\n"
+                   "  pageCharts[index].chart.setOption(series_option);\n"
+                   "  pageCharts[index].option = series_option;\n"
+                   "  index += 1;\n")
 
         return chart3
 
