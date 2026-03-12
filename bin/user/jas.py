@@ -1013,30 +1013,31 @@ class ChartGenerator(JASGenerator):
         return chart_final
 
     def _gen_update_multiple_chart_data(self, page_name, chart_def, chart_data_binding):
-        chart3 = "  series_option = {\n"
-        chart3 += "    series: [\n"
+        chart3 = ("  series_option = {\n"
+                  "    series: [\n")
         for obs in chart_def['series']:
+            weewx_observation = chart_def['series'][obs]['weewx']['observation']
             aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
             obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-            chart3 += "      {name: " + chart_def['series'][obs].get('name', 'getLabel(' + "'" + obs + "')") + ",\n"
-            chart3 += "       data: [\n"
+            name = chart_def['series'][obs].get('name', f"getLabel('{obs}')")
+            chart3 += ("      {name: " + name + ",\n"
+                       "       data: [\n")
             (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
                                                         self.skin_dict['Extras']['pages'][page_name].get('end', None),
                                                         chart_data_binding)
             for year in range(start_year, end_year):
-                chart3 += "               ...year" + str(year) + "_" + aggregate_type \
-                            + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + ",\n"
+                chart3 += f"               ...year{str(year)}_{aggregate_type}.{weewx_observation}_{obs_data_binding},\n"
             chart3 += "             ]},\n"
-        chart3 += "  ]};\n"
-        chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-        chart3 += "  pageCharts[index].option = series_option;\n"
-        chart3 += "  index += 1;\n"
+        chart3 += ("  ]};\n"
+                   "  pageCharts[index].chart.setOption(series_option);\n"
+                   "  pageCharts[index].option = series_option;\n"
+                   "  index += 1;\n")
 
         return chart3
 
     def _gen_update_comparison_chart_data(self, page_name, chart_def, chart_data_binding):
-        chart3 = "  series_option = {\n"
-        chart3 += "    series: [\n"
+        chart3 = ("  series_option = {\n"
+                  "    series: [\n")
         obs = next(iter(chart_def['series']))
         obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
         aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
@@ -1044,15 +1045,14 @@ class ChartGenerator(JASGenerator):
                                                     self.skin_dict['Extras']['pages'][page_name].get('end', None),
                                                     chart_data_binding)
         for year in range(start_year, end_year):
-            chart3 += "      {name: '" + str(year) + "',\n"
-            chart3 += "       data: year" + str(year) + "_" + aggregate_type \
-                    + "." + obs + "_"  + obs_data_binding \
-                    + ".map(arr => [moment.unix(arr[0] / 1000).utcOffset(" + str(self.utc_offset) \
-                    + ").format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])},\n"
-        chart3 += "  ]};\n"
-        chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-        chart3 += "  pageCharts[index].option = series_option;\n"
-        chart3 += "  index += 1;\n"
+            chart3 += (f"      {{name: '{str(year)}',\n"
+                       f"       data: year{str(year)}_{aggregate_type}.{obs}_{obs_data_binding}"
+                       f".map(arr => [moment.unix(arr[0] / 1000).utcOffset({(self.utc_offset)}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},\n")
+
+        chart3 += ("  ]};\n"
+                   "  pageCharts[index].chart.setOption(series_option);\n"
+                   "  pageCharts[index].option = series_option;\n"
+                   "  index += 1;\n")
 
         return chart3
 
@@ -1060,8 +1060,10 @@ class ChartGenerator(JASGenerator):
         chart3 = "  series_option = {\n"
         chart3 += "    series: [\n"
         for obs in chart_def['series']:
+            weewx_observation = chart_def['series'][obs]['weewx']['observation']
             aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
             obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+            name = chart_def['series'][obs].get('name', f"getLabel('{obs}')")
             unit_name = chart_def['series'][obs].get('weewx', {}).get('unit', None)
             obs_data_unit = ""
             if unit_name is not None:
