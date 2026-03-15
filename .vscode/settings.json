@@ -7,5 +7,6 @@
         "bin"
     ],
     
-    "git.autofetch": true
+    "git.autofetch": true,
+    "terminal.integrated.scrollback": 10000
 }

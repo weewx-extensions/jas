@@ -20,7 +20,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -29,8 +29,6 @@ function setupCharts() {{
   ordinateNames = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
   windRangeLegend = ['<1  mph', '1-4  mph', '4-8  mph', '8-13  mph', '13-19  mph', '19-25  mph', '25-32  mph', '>32  mph'];
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -118,8 +116,6 @@ function setupCharts() {{
   pageChart.chart = outTempchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -294,7 +290,6 @@ function setupCharts() {{
   pageCharts.push(pageChart);
 
   aggregate_interval = 'none'
-  aggregate_interval = 'none'
   var option = {{
     series: [
     {{
@@ -385,8 +380,6 @@ function setupCharts() {{
   pageChart.chart = rainchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -483,12 +476,6 @@ function setupCharts() {{
   pageChart.chart = windchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
-  aggregate_interval = 'none'
   aggregate_interval = 'none'
   var option = {{
     series: [
@@ -928,7 +915,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -2040,7 +2027,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -2048,9 +2035,6 @@ function simpleTooltipFormatter(args) {{
 function setupCharts() {{
   ordinateNames = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   aggregate_interval = 'multiyear'
   var option = {{
     series: [
@@ -2221,9 +2205,6 @@ pageChart.def = option;
   pageCharts.push(pageChart);
 
   aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   var option = {{
     series: [
     {{
@@ -2325,7 +2306,6 @@ pageChart.def = option;
   pageCharts.push(pageChart);
 
   aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   var option = {{
     series: [
     {{
@@ -2416,8 +2396,6 @@ pageChart.def = option;
   pageChart.chart = rainchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'multiyear'
-  aggregate_interval = 'multiyear'
   aggregate_interval = 'multiyear'
   var option = {{
     series: [
@@ -2872,7 +2850,7 @@ function simpleTooltipFormatter(args) {{
 
   args.forEach(({{ color, seriesName, value }}) => {{
     value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];
-    if (value != null) {{tooltip += `<div style="color: ${{color}};">${{seriesName}} ${{value}}</div>`}};
+    if (value != null) {{tooltip += `<div style='color: ${{color}};'>${{seriesName}} ${{value}}</div>`}};
   }});
   return tooltip;
 }}
@@ -2880,8 +2858,6 @@ function simpleTooltipFormatter(args) {{
 function setupCharts() {{
   ordinateNames = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 
-  aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   aggregate_interval = 'mqtt'
   var option = {{
     series: [
@@ -2968,22 +2944,20 @@ function setupCharts() {{
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "outTemp_celsius";
+seriesData.obs = 'outTemp_celsius';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "windchill";
+seriesData.obs = 'windchill';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "heatindex";
+seriesData.obs = 'heatindex';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = outTempchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   aggregate_interval = 'mqtt'
   var option = {{
     series: [
@@ -3080,15 +3054,15 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "dewpoint";
+seriesData.obs = 'dewpoint';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "outHumidity";
+seriesData.obs = 'outHumidity';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "outTemp";
+seriesData.obs = 'outTemp';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = outHumiditychart;
@@ -3169,13 +3143,12 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "barometer";
+seriesData.obs = 'barometer';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = barometerchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'mqtt'
   aggregate_interval = 'mqtt'
   var option = {{
     series: [
@@ -3266,18 +3239,16 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "rainRate";
+seriesData.obs = 'rainRate';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "rain";
+seriesData.obs = 'rain';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = rainchart;
   pageCharts.push(pageChart);
 
-  aggregate_interval = 'mqtt'
-  aggregate_interval = 'mqtt'
   aggregate_interval = 'mqtt'
   var option = {{
     series: [
@@ -3373,15 +3344,15 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "windSpeed";
+seriesData.obs = 'windSpeed';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "windGust";
+seriesData.obs = 'windGust';
 seriesData.name = null;
 pageChart.series.push(seriesData);
 seriesData = {{}};
-seriesData.obs = "windDir";
+seriesData.obs = 'windDir';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = windchart;
@@ -3460,7 +3431,7 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "ET";
+seriesData.obs = 'ET';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = ETchart;
@@ -3541,7 +3512,7 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "UV";
+seriesData.obs = 'UV';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = UVchart;
@@ -3622,7 +3593,7 @@ pageChart.series.push(seriesData);
 pageChart.option = null;
 pageChart.series = [];
 seriesData = {{}};
-seriesData.obs = "radiation";
+seriesData.obs = 'radiation';
 seriesData.name = null;
 pageChart.series.push(seriesData);
   pageChart.chart = radiationchart;
@@ -3630,14 +3601,5 @@ pageChart.series.push(seriesData);
 
 }}
 function updateChartData() {{
-  index = 0;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
-  index += 1;
 }}
 '''

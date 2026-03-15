@@ -181,6 +181,17 @@ import user.jas_templates
 
 VERSION = "1.2.0-rc03"
 
+wind_ranges = {}
+wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
+wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
+wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
+wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
+wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
+wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
+wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
+wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
+wind_ranges_count = len(wind_ranges) - 1
+
 class JAS(SearchList):
     """ Implement tags used by templates in the skin. """
     def __init__(self, generator):
@@ -209,18 +220,6 @@ class JAS(SearchList):
         self.wind_observations = ['windCompassAverage', 'windCompassMaximum',
                                   'windCompassRange0', 'windCompassRange1', 'windCompassRange2',
                                   'windCompassRange3', 'windCompassRange4', 'windCompassRange5', 'windCompassRange6']
-
-        # todo duplicate code
-        self.wind_ranges = {}
-        self.wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges_count = 7
 
         self.skin_dict = generator.skin_dict
         report_dict = self.generator.config_dict.get('StdReport', {})
@@ -712,20 +711,9 @@ class ChartGenerator(JASGenerator):
         self.utc_offset = (datetime.datetime.fromtimestamp(now) -
                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
-        # todo duplicate code
-        self.wind_ranges = {}
-        self.wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges_count = 7
-
-        self.ordinate_names = copy.deepcopy(self.formatter.ordinate_names)
-        del self.ordinate_names[-1]
+        ordinate_names = copy.deepcopy(self.formatter.ordinate_names)
+        del ordinate_names[-1]
+        self.ordinate_names_string = "', '".join(ordinate_names)
 
         self.chart_defaults = self.skin_dict['Extras']['chart_defaults'].get('global', {})
         self.chart_series_defaults = self.skin_dict['Extras']['chart_defaults'].get('chart_type', {}).get('series', {})
@@ -898,34 +886,50 @@ class ChartGenerator(JASGenerator):
                     self.chart_defs[chart]['series'][value]['weewx'] = {}
                 weeutil.config.conditional_merge(self.chart_defs[chart]['series'][value]['weewx'], weewx_options)
 
+    def _iterdict(self, indent, dictionary):
+        dict_js = ''
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                if key in {'weewx', 'series'}:
+                    continue
+
+                dict_js += f"{indent}{key}: {{\n"
+                javascript = self._iterdict(f"{indent}  ", value)
+                dict_js += f"{javascript}"
+                dict_js += f"{indent}}},\n"
+            else:
+                dict_js += f"{indent}{key}: {value},\n"
+        return dict_js
+
     def _gen_charts(self, filename, page_name, interval, page):
         start_time = time.time()
         skin_data_binding = self.skin_dict['Extras'].get('data_binding', self.data_binding)
         page_series_type = self.skin_dict['Extras']['page_definition'][page_name].get('series_type', 'single')
-
-        chart_final = '\n'
-        chart_final += '/* jas ' + VERSION + ' ' + str(self.gen_time) + ' */\n'
-        chart_final += 'utc_offset = ' + str(self.utc_offset) + ';\n'
-
-        chart_final += 'function simpleTooltipFormatter(args) {\n'
-        chart_final += '  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n'
-        chart_final += '  let tooltip = `<div>${dateTime}</div> `;\n'
-        chart_final += '\n'
-        chart_final += '  args.forEach(({ color, seriesName, value }) => {\n'
-        chart_final += '    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n'
-        chart_final += '    if (value != null) {tooltip += `<div style="color: ${color};">${seriesName} ${value}</div>`};\n'
-        chart_final += '  });\n'
-        chart_final += '  return tooltip;\n'
-        chart_final += '}\n'
-        chart_final += '\n'
-        chart_final += 'function setupCharts() {\n'
-        chart_final += "  ordinateNames = ['" + "', '".join(self.ordinate_names) + "'];\n"
+        wind_range_legend = ''
         if self.skin_dict['Extras']['pages'][page_name].get('windRose', None) is not None:
-            chart_final += "  windRangeLegend = " + self._get_wind_range_legend() + ";\n"
-        chart_final += "\n"
+            wind_range_legend += f"  windRangeLegend = {self._get_wind_range_legend()};\n"
+
+        chart_final = ("\n"
+                       f"/* jas {VERSION} {str(self.gen_time)} */\n"
+                      f"utc_offset = {str(self.utc_offset)};\n"
+                      "function simpleTooltipFormatter(args) {\n"
+                      "  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n"
+                      "  let tooltip = `<div>${dateTime}</div> `;\n"
+                      "\n"
+                      "  args.forEach(({ color, seriesName, value }) => {\n"
+                      "    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n"
+                      "    if (value != null) {tooltip += `<div style='color: ${color};'>${seriesName} ${value}</div>`};\n"
+                      "  });\n"
+                      "  return tooltip;\n"
+                      "}\n"
+                      "\n"
+                      "function setupCharts() {\n"
+                      f"  ordinateNames = ['{self.ordinate_names_string}'];\n"
+                      f"{wind_range_legend}"
+                      "\n")
 
         chart2 = ""
-        chart3 = "  index = 0;\n"
+        chart3 = ""
         charts = self.skin_dict['Extras']['chart_definitions']
         for chart in self.skin_dict['Extras']['pages'][page_name]:
             if chart in charts.sections:
@@ -949,107 +953,56 @@ class ChartGenerator(JASGenerator):
                 # The workaround is to define a specific chart for the page
                 #self.charts_def[chart].merge(self.skin_dict['Extras']['pages'][page][chart])
 
-                chart_js = "  var option = {\n"
-                chart2 += self._gen_series('    ', page_name, chart, chart_js, series_type, chart_def['series'], chart_data_binding)
-
                 if chart not in self.charts_javascript:
                     self.charts_javascript[chart] = {}
                     self.charts_javascript[chart][series_type] = self._gen_chart_common(chart, chart_def)
                 elif series_type not in self.charts_javascript[chart]:
                     self.charts_javascript[chart][series_type] = self._gen_chart_common(chart, chart_def)
 
-                chart2 += self.charts_javascript[chart][series_type]
-
-                chart2 += "  };\n"
-                chart2 += "\n"
-                chart2 += "  pageIndex['" + chart + page + "'] = Object.keys(pageIndex).length;\n"
-                chart2 += "  var telem = document.getElementById('" + chart + page + "');\n"
-                chart2 += "  var " + chart + "chart = echarts.init(document.getElementById('" + chart + page + "'));\n"
-                chart2 += "  " + chart + "chart.setOption(option);\n"
-
-                chart2 += "  pageChart = {};\n"
+                chart2 += (f"{self._gen_aggregate_interval(page_name, chart, series_type, chart_def['series'])}"
+                           "  var option = {\n"
+                           f"{self._gen_series(page_name, series_type, chart_def['series'], chart_data_binding)}"
+                           f"{self.charts_javascript[chart][series_type]}"
+                           "  };\n"
+                           "\n"
+                           f"  pageIndex['{chart}{page}'] = Object.keys(pageIndex).length;\n"
+                           f"  var telem = document.getElementById('{chart}{page}');\n"
+                           f"  var {chart}chart = echarts.init(document.getElementById('{chart}{page}'));\n"
+                           f"  {chart}chart.setOption(option);\n"
+                           "  pageChart = {};\n")
 
                 if series_type == 'mqtt':
-                    chart2 += 'pageChart.option = null;\n'
-                    chart2 += 'pageChart.series = [];\n'
+                    chart2 += ("pageChart.option = null;\n"
+                               "pageChart.series = [];\n")
                     for obs in chart_def['series']:
-                        chart2 += 'seriesData = {};\n'
-                        chart2 += 'seriesData.obs = "' + obs + '";\n'
                         name = chart_def['series'][obs].get('name', None)
-                        if name is not None:
-                            chart2 += 'seriesData.name = "' + name + '";\n'
-                        else:
-                            chart2 += 'seriesData.name = null;\n'
-                        chart2 += 'pageChart.series.push(seriesData);\n'
+                        name = "'name'" if name is not None else "null"
+                        chart2 += ("seriesData = {};\n"
+                                   f"seriesData.obs = '{obs}';\n"
+                                  f"seriesData.name = {name};\n"
+                                  "pageChart.series.push(seriesData);\n")
                 elif series_type == 'multiple':
-                    chart3 += "  series_option = {\n"
-                    chart3 += "    series: [\n"
-                    for obs in chart_def['series']:
-                        aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                        obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-                        chart3 += "      {name: " + chart_def['series'][obs].get('name', 'getLabel(' + "'" + obs + "')") + ",\n"
-                        chart3 += "       data: [\n"
-                        (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
-                                                                 self.skin_dict['Extras']['pages'][page_name].get('end', None),
-                                                                 chart_data_binding)
-                        for year in range(start_year, end_year):
-                            chart3 += "               ...year" + str(year) + "_" + aggregate_type \
-                                      + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + ",\n"
-                        chart3 += "             ]},\n"
-                    chart3 += "  ]};\n"
-                    chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-                    chart3 += "  pageCharts[index].option = series_option;\n"
                     chart2 += "pageChart.def = option;\n"
+                    chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
                 elif series_type == 'comparison':
-                    chart3 += "  series_option = {\n"
-                    chart3 += "    series: [\n"
-                    obs = next(iter(chart_def['series']))
-                    obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-                    aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                    (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
-                                                             self.skin_dict['Extras']['pages'][page_name].get('end', None),
-                                                             chart_data_binding)
-                    for year in range(start_year, end_year):
-                        chart3 += "      {name: '" + str(year) + "',\n"
-                        chart3 += "       data: year" + str(year) + "_" + aggregate_type \
-                                + "." + obs + "_"  + obs_data_binding \
-                                + ".map(arr => [moment.unix(arr[0] / 1000).utcOffset(" + str(self.utc_offset) \
-                                + ").format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])},\n"
-                    chart3 += "  ]};\n"
-                    chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-                    chart3 += "  pageCharts[index].option = series_option;\n"
                     chart2 += "pageChart.def = option;\n"
+                    chart3 += self._gen_update_comparison_chart_data(page_name, chart_def, chart_data_binding)
                 else:
-                    chart3 += "  series_option = {\n"
-                    chart3 += "    series: [\n"
-                    for obs in chart_def['series']:
-                        aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
-                        obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
-                        unit_name = chart_def['series'][obs].get('weewx', {}).get('unit', None)
-                        obs_data_unit = ""
-                        if unit_name is not None:
-                            obs_data_unit = "_" + unit_name
-                        chart3 += "      {name: " + chart_def['series'][obs].get('name', "getLabel('" + obs + "')") + ",\n"
-                        chart3 += "       data: " \
-                                + interval + "_" + aggregate_type \
-                                + "." + chart_def['series'][obs]['weewx']['observation'] + "_"  + obs_data_binding + obs_data_unit \
-                                + "},\n"
-                    chart3 += "  ]};\n"
-                    chart3 += "  pageCharts[index].chart.setOption(series_option);\n"
-                    chart3 += "  pageCharts[index].option = series_option;\n"
                     chart2 += "  pageChart.def = option;\n"
+                    chart3 += self._gen_update_chart_data(interval, chart_def, chart_data_binding)
 
-                chart3 += "  index += 1;\n"
+                chart2 += (f"  pageChart.chart = {chart}chart;\n"
+                           "  pageCharts.push(pageChart);\n"
+                           "\n")
 
-                chart2 += "  pageChart.chart = " + chart + "chart;\n"
-                chart2 += "  pageCharts.push(pageChart);\n"
-                chart2 += "\n"
-
-        chart2 += "}\n"
-        chart2 += "function updateChartData() {\n"
-        chart2 += chart3
         chart2 += "}\n"
         chart_final += chart2
+
+        chart_final += "function updateChartData() {\n"
+        if series_type != 'mqtt':
+            chart_final += "  index = 0;\n"
+            chart_final += chart3
+        chart_final += "}\n"
 
         elapsed_time = time.time() - start_time
         log_msg = "Generated " + filename + " in " + str(elapsed_time)
@@ -1057,11 +1010,95 @@ class ChartGenerator(JASGenerator):
             logdbg(log_msg)
         return chart_final
 
+    def _gen_update_multiple_chart_data(self, page_name, chart_def, chart_data_binding):
+        chart3 = ("  series_option = {\n"
+                  "    series: [\n")
+        for obs in chart_def['series']:
+            weewx_observation = chart_def['series'][obs]['weewx']['observation']
+            aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
+            obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+            name = chart_def['series'][obs].get('name', f"getLabel('{obs}')")
+            chart3 += ("      {name: " + name + ",\n"
+                       "       data: [\n")
+            (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
+                                                        self.skin_dict['Extras']['pages'][page_name].get('end', None),
+                                                        chart_data_binding)
+            for year in range(start_year, end_year):
+                chart3 += f"               ...year{str(year)}_{aggregate_type}.{weewx_observation}_{obs_data_binding},\n"
+            chart3 += "             ]},\n"
+        chart3 += ("  ]};\n"
+                   "  pageCharts[index].chart.setOption(series_option);\n"
+                   "  pageCharts[index].option = series_option;\n"
+                   "  index += 1;\n")
 
-    def _gen_series(self, indent, page, chart, chart_js, series_type, value, chart_data_binding):
-        chart2 = chart_js
+        return chart3
+
+    def _gen_update_comparison_chart_data(self, page_name, chart_def, chart_data_binding):
+        chart3 = ("  series_option = {\n"
+                  "    series: [\n")
+        obs = next(iter(chart_def['series']))
+        obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+        aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
+        (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
+                                                    self.skin_dict['Extras']['pages'][page_name].get('end', None),
+                                                    chart_data_binding)
+        for year in range(start_year, end_year):
+            chart3 += (f"      {{name: '{str(year)}',\n"
+                       f"       data: year{str(year)}_{aggregate_type}.{obs}_{obs_data_binding}"
+                       f".map(arr => [moment.unix(arr[0] / 1000).utcOffset({(self.utc_offset)}).format(dateTimeFormat[lang].chart.yearToYearXaxis), arr[1]])}},\n")
+
+        chart3 += ("  ]};\n"
+                   "  pageCharts[index].chart.setOption(series_option);\n"
+                   "  pageCharts[index].option = series_option;\n"
+                   "  index += 1;\n")
+
+        return chart3
+
+    def _gen_update_chart_data(self, interval, chart_def, chart_data_binding):
+        chart3 = ("  series_option = {\n"
+                  "    series: [\n")
+        for obs in chart_def['series']:
+            weewx_observation = chart_def['series'][obs]['weewx']['observation']
+            aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
+            obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
+            name = chart_def['series'][obs].get('name', f"getLabel('{obs}')")
+            unit_name = chart_def['series'][obs].get('weewx', {}).get('unit', None)
+            obs_data_unit = ""
+            if unit_name is not None:
+                obs_data_unit = "_" + unit_name
+            chart3 += (f"      {{name: {name},\n"
+                       f"       data: {interval}_{aggregate_type}.{weewx_observation}_{obs_data_binding}{obs_data_unit}}},\n")
+        chart3 += ("  ]};\n"
+                   "  pageCharts[index].chart.setOption(series_option);\n"
+                   "  pageCharts[index].option = series_option;\n"
+                   "  index += 1;\n")
+
+        return chart3
+
+    def _gen_aggregate_interval(self, page, chart, series_type, value):
+        # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
+        # Note, this means the first observation's aggregate type will be used to determine the aggregate interval
+        obs = next(iter(value), None)
+        if obs and series_type != 'comparison':
+            aggregate_type = self.chart_defs[chart]['series'][obs]['weewx']['aggregate_type']
+            aggregate_interval = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}) \
+                                .get(aggregate_type, 'none')
+
+            if series_type == 'multiple':
+                return "  aggregate_interval = 'multiyear'\n"
+
+            if series_type == 'mqtt':
+                return "  aggregate_interval = 'mqtt'\n"
+
+            return "  aggregate_interval = '" + aggregate_interval + "'\n"
+
+        return ''
+
+    def _gen_series(self, page, series_type, value, chart_data_binding):
+        chart2 = ''
+
         if isinstance(value, dict):
-            chart2 += indent + "series: [\n"
+            chart2 = "    series: [\n"
 
             if series_type == 'comparison':
                 obs = next(iter(value))
@@ -1069,74 +1106,42 @@ class ChartGenerator(JASGenerator):
                                                             self.skin_dict['Extras']['pages'][page].get('end', None),
                                                             chart_data_binding)
                 for year in range(start_year, end_year):
-                    chart2 += indent + " {\n"
-                    chart2 += "    name: '" + str(year) + "',\n"
-                    chart2 += self._iterdict(indent + '  ', value[obs])
-                    chart2 += indent + "  },\n"
+                    chart2 += ("     {\n"
+                               f"    name: '{str(year)}',\n"
+                               f"{self._iterdict('      ', value[obs])}"
+                               "      },\n")
             else:
                 for obs in value:
-                    aggregate_type = self.chart_defs[chart]['series'][obs]['weewx']['aggregate_type']
-                    aggregate_interval = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}) \
-                                        .get(aggregate_type, 'none')
+                    chart2 += ("    {\n"
+                               f"{self._iterdict('      ', value[obs])}"
+                               "    },\n")
 
-                    # set the aggregate_interval at the beginning of the chart definition, so it can be used in the chart
-                    # Note, this means the last observation's aggregate type will be used to determine the aggregate interval
-                    if series_type == 'multiple':
-                        chart2 = "  aggregate_interval = 'multiyear'\n" + chart2
-                    elif series_type == 'mqtt':
-                        chart2 = "  aggregate_interval = 'mqtt'\n" + chart2
-                    else:
-                        chart2 = "  aggregate_interval = '" + aggregate_interval + "'\n" + chart2
-
-                    chart2 += indent + "{\n"
-                    chart2 += self._iterdict(indent + '  ', value[obs])
-
-                    chart2 += indent + "},\n"
-
-            chart2 += indent +"],\n"
+            chart2 += "    ],\n"
         else:
-            chart2 += indent + 'series' + ": " + value + ",\n"
+            chart2 = "    series:" + value + ",\n"
+
         return chart2
 
-    def _iterdict(self, indent, dictionary):
-        dict_js = ''
-        for key, value in dictionary.items():
-            if isinstance(value, dict):
-                if key in {'weewx', 'series'}:
-                    continue
-
-                dict_js += f"{indent}{key}: {{\n"
-                javascript = self._iterdict(f"{indent}  ",
-                                        value
-                                        )
-                dict_js += f"{javascript}"
-                dict_js += f"{indent}}},\n"
-            else:
-                dict_js += f"{indent}{key}: {value},\n"
-        return dict_js
-
-    def _gen_chart_common(self, chart, chart_def):
-        chart2 = ''
-        chart2 += self._iterdict('    ', chart_def)
-
+    def _gen_chart_common(self, chart_name, chart_def):
         # ToDo: do not hard code 'grid'
-        if 'polar' in self.skin_dict['Extras']['chart_definitions'][chart]:
+        if 'polar' in self.skin_dict['Extras']['chart_definitions'][chart_name]:
             coordinate_type = 'polar'
-        elif 'grid' in self.skin_dict['Extras']['chart_definitions'][chart]:
+        elif 'grid' in self.skin_dict['Extras']['chart_definitions'][chart_name]:
             coordinate_type = 'grid'
         else:
             coordinate_type = 'grid'
 
         default_grid_properties = self.skin_dict['Extras']['chart_defaults'].get('properties', {}).get('grid', None)
+        y_axis_js = ''
         if 'yAxis' not in chart_def and coordinate_type == 'grid':
-            chart2 += '    yAxis: [\n'
+            y_axis_values_js = ''
             for i in range(0, len(chart_def['weewx']['yAxis'])):
                 i_str = str(i)
                 y_axis_default = copy.deepcopy(default_grid_properties['yAxis'])
                 if i_str in chart_def['weewx']['yAxis']:
                     y_axis_default.merge(chart_def['weewx']['yAxis'][str(i)])
-                    chart2 += '    {\n'
 
+                    name_js = ''
                     if 'name' in y_axis_default and y_axis_default['name'] == 'weewx_unit_label':
                         unit_name = chart_def['weewx']['yAxis'][i_str]['weewx'].get('unit', None)
                         if unit_name is not None:
@@ -1144,22 +1149,29 @@ class ChartGenerator(JASGenerator):
                         else:
                             y_axis_label = self._get_obs_unit_label( chart_def['weewx']['yAxis'][i_str]['weewx']['obs'])
 
-                        chart2 += "      name:' " + y_axis_label + "',\n"
+                        name_js = f"      name:' {y_axis_label}',\n"
                         del y_axis_default['name']
 
-                chart2 += self._iterdict('      ', y_axis_default)
-                chart2 += '    },\n'
-            chart2 += '  ],\n'
+                    y_axis_values_js += "    {\n"
+                    y_axis_values_js += name_js
+                    y_axis_values_js += self._iterdict('      ', y_axis_default)
+                    y_axis_values_js += "    },\n"
 
-        return chart2
+            y_axis_js = "    yAxis: [\n"
+            y_axis_js += y_axis_values_js
+            y_axis_js += "  ],\n"
+
+        chart_js = self._iterdict('    ', chart_def)
+        chart_js += y_axis_js
+        return chart_js
 
     def _get_wind_range_legend(self):
         wind_speed_unit = self.skin_dict["Units"]["Groups"]["group_speed"]
         wind_speed_unit_label = self.skin_dict["Units"]["Labels"][wind_speed_unit]
-        low_range = self.wind_ranges[wind_speed_unit][0]
-        high_range = self.wind_ranges[wind_speed_unit][len(self.wind_ranges[wind_speed_unit]) - 1]
+        low_range = wind_ranges[wind_speed_unit][0]
+        high_range = wind_ranges[wind_speed_unit][len(wind_ranges[wind_speed_unit]) - 1]
         wind_range_legend = F"['<{low_range} {wind_speed_unit_label}', "
-        for high_range in self.wind_ranges[wind_speed_unit][1:]:
+        for high_range in wind_ranges[wind_speed_unit][1:]:
             wind_range_legend += F"'{low_range}-{high_range} {wind_speed_unit_label}', "
             low_range = high_range
 
@@ -1184,17 +1196,6 @@ class DataGenerator(JASGenerator):
         now = time.time()
         self.utc_offset = (datetime.datetime.fromtimestamp(now) -
                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
-
-        self.wind_ranges = {}
-        self.wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['mile_per_hour2'] = [1, 4, 8, 13, 19, 25, 32]
-        self.wind_ranges['km_per_hour'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['km_per_hour2'] = [.5, 6, 12, 20, 29, 39, 50]
-        self.wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
-        self.wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-        self.wind_ranges_count = 7
 
         self.wind_observations = ['windCompassAverage', 'windCompassMaximum',
                                   'windCompassRange0', 'windCompassRange1', 'windCompassRange2',
@@ -1652,7 +1653,7 @@ class DataGenerator(JASGenerator):
             wind_data[ordinate_name]['max'] = 0
             wind_data[ordinate_name]['speed_data'] = []
             j = 0
-            while j < self.wind_ranges_count:
+            while j < wind_ranges_count:
                 wind_data[ordinate_name]['speed_data'].append(0)
                 j += 1
             i += 1
@@ -1671,7 +1672,7 @@ class DataGenerator(JASGenerator):
                     wind_data[ordinate_name]['max'] = wind_gust_data[0][i]
 
                 j = 0
-                for wind_range in self.wind_ranges[wind_unit]:
+                for wind_range in wind_ranges[wind_unit]:
                     if wind_speed < wind_range:
                         wind_data[ordinate_name]['speed_data'][j] += 1
                         break
@@ -1691,7 +1692,7 @@ class DataGenerator(JASGenerator):
         wind_compass_max = []
         wind_compass_speeds = []
         j = 0
-        while j < self.wind_ranges_count:
+        while j < wind_ranges_count:
             wind_compass_speeds.append([])
             j += 1
 
