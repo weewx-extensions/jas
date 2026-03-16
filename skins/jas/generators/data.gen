@@ -225,7 +225,7 @@ var updateDate;
         #end if
 
         #if type_value == 'rise'
-            ## todo this is a place holder and needs work
+            ## ToDo: this is a place holder and needs work
             ##set observation_value = '"' + str($getattr($almanac, $observation + 'rise')) + '";'
             #set $observation_unit = " "
             ##label = 'foo'

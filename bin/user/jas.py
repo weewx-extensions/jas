@@ -5,9 +5,11 @@
 
 """
 This search list extension provides the following tags:
-  aggregate_types
+  $aggregate_types
     Returns:
       A dictionary of all aggregate types (avg, max, min, sum, etc.) used.
+
+  $databinding
 
   $dateTimeFormats
     Arguments:
@@ -15,32 +17,48 @@ This search list extension provides the following tags:
     Returns:
       The formats.
 
-  $forecasts
-    Returns:
-      A list of dictionaries containing forecastdata.
-      ToDo: determine and document what forecast data is returned.
-
-  $genCharts
+  $genJs
     Arguments:
-      page: The page to generate the charts for
-      interval: The time interval to generate the chart for (day, yesterday, 2000, 200001, etc)
+      filename: The filename to write the javascript to.
+      page: The page definition the javascript is for.
+      page_name: The page name.
+      year: The year or None.
+      month: The month or None.
+      interval: The interval name.
     Returns:
-      The charts for the page.
+      The javascript
+        
+  $genJasOptions
+    Arguments:
+      filename: The filename to write the options to.
+      page: The page content the opitons are for.
+    Returns:
+      The options.
+    
+  $genTime
+    Returns:
+      The current timestamp.
+    
+  $getRange
+    Arguments:
+      start: The starting year.
+      end: The end year.
+      data_binding: The WeeWX data binding.
+    Returns:
+      A tuple of the first and last year.
+    
+        Input years can be the year, for example 1999.
+        Or an offset from the first year in the database, +2.
+        Or an offset from the last year in the database, -2.
+
+  $getUnitLabel
+    Arguments:
+      unit: The WeeWX unit to get the label for.
+    Returns:
+      The label
 
   $languages
     The languages supported by the skin
-
-  $last24hours
-    A WeeWX timespanBinder for the last 24 hours.
-
-  $last7days
-     A WeeWX timespanBinder for the last 7 days.
-
-  $last31days
-    A WeeWX timespanBinder for the last 31 days.
-
-  $last366days
-    A WeeWX timespanBinder for the last 366 days.
 
   $logdbg(message)
     A method to log debug messages.
@@ -52,7 +70,8 @@ This search list extension provides the following tags:
     A method to log warning messages.
 
   $observations
-    A dictionary of all the observations that will be charted.
+    Returns:
+      A dictionary of all the observations that will be charted.
 
   $observationLabels
     Arguments:
@@ -60,20 +79,11 @@ This search list extension provides the following tags:
     Returns:
       The labels.
 
-  $ordinateNames
-    The names of the compass ordinates.
-
-  $skinDebug
-    The skin debug option.
-
   $textLabels
     Arguments:
       language: The language to get the labels.
     Returns:
       The labels.
-
-  $utcOffset
-    The UTC offset in minutes.
 
   $version
     Returns:
@@ -83,19 +93,8 @@ This search list extension provides the following tags:
     Returns:
       The version of WeeWX.
 
-  $windCompass(start_offset, end_offset)
-    Arguments:
-      start_offset: The starting time offset from the current time. Default is 86400, 24 hours.
-      end_offset: The ending time offset from the current time. Default is 0, 'now'.
-    Returns:
-      A tuple consisting of:
-        average: A list of wind speed averages for the compass ordinals.
-        maximum: A list of wind speed maximums for the compass ordinals.
-        speed_ranges: A list of lists. Each primary list is a speed range that contains a list
-          of the counts of that speed for each compass ordinal.
-
-
-https://groups.google.com/g/weewx-development/c/QRHGtzpKV_4/m/lrNSWxNhAwAJ
+IMPORTANT WeeWX processing note:
+ttps://groups.google.com/g/weewx-development/c/QRHGtzpKV_4/m/lrNSWxNhAwAJ
 The member function get_extension_list() will be called for each template.
 So, if you have 10 templates, it will get called 10 times.
 If there is an expensive calculation that does not depend on the timespan that needs to be done,
@@ -258,23 +257,16 @@ class JAS(SearchList):
                                  'genJs': self._gen_js,
                                  'genJasOptions': self._gen_jas_options,
                                  'genTime': self.gen_time,
-                                 'getObsUnitLabel': self._get_obs_unit_label,
                                  'getRange': self._get_range,
                                  'getUnitLabel': self._get_unit_label,
                                  'languages': self.languages,
-                                 'last24hours': self._get_last24hours,
-                                 'last7days': self._get_last_7_days,
-                                 'last31days': self._get_last_31_days,
-                                 'last366days': self._get_last_366_days,
                                  'logdbg': logdbg,
                                  'loginf': loginf,
                                  'logerr': logerr,
                                  'observations': self.observations,
                                  'observationLabels': self._get_observation_labels,
-                                 #'ordinateNames': self.ordinate_names,
-                                 'skinDebug': self._skin_debug,
                                  'textLabels': self._get_text_labels,
-                                 'utcOffset': self.utc_offset,
+                                 '#utcOffset': self.utc_offset,
                                  'version': VERSION,
                                  'weewx_version': weewx.__version__,
                                 }
@@ -285,7 +277,7 @@ class JAS(SearchList):
         if self.skin_debug:
             logdbg(msg)
 
-# Todo - this code is duplicated
+    # ToDo: this code is duplicated
     def _get_observations_information(self):
         observations = {}
         aggregate_types = {}
@@ -442,28 +434,6 @@ class JAS(SearchList):
 
         return date_time_formats
 
-    def _get_last24hours(self, data_binding=None):
-        dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
-        end_ts = dbm.lastGoodStamp()
-        start_timestamp = end_ts - 86400
-        last24hours = TimespanBinder(TimeSpan(start_timestamp, end_ts),
-                                     self.generator.db_binder.bind_default(data_binding),
-                                     data_binding=data_binding,
-                                     context='last24hours',
-                                     formatter=self.generator.formatter,
-                                     converter=self.generator.converter)
-
-        return last24hours
-
-    def _get_last_7_days(self, data_binding=None):
-        return  self._get_last_n_days(7, data_binding=data_binding)
-
-    def _get_last_31_days(self, data_binding=None):
-        return  self._get_last_n_days(31, data_binding=data_binding)
-
-    def _get_last_366_days(self, data_binding=None):
-        return  self._get_last_n_days(366, data_binding=data_binding)
-
     def _get_last_n_days(self, days, data_binding=None):
         dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
         end_ts = dbm.lastGoodStamp()
@@ -478,14 +448,11 @@ class JAS(SearchList):
 
         return last_n_days
 
-    def _get_obs_unit_label(self, observation):
-        # For now, return label for first observations unit. ToDo: possibly change to return all?
-        return get_label_string(self.generator.formatter, self.generator.converter, observation, plural=False)
-
+    # ToDo: duplicate code
     def _get_unit_label(self, unit):
         return self.generator.formatter.get_label_string(unit, plural=False)
 
-    # to do duplicate code
+    # ToDo: duplicate code
     def _get_range(self, start, end, data_binding):
         dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
         first_year = int(datetime.datetime.fromtimestamp(dbm.firstGoodStamp()).strftime('%Y'))
@@ -764,7 +731,7 @@ class ChartGenerator(JASGenerator):
                 else:
                     _spangen = self._spangen
                 for timespan in _spangen(start_ts, stop_ts):
-                    #self.timespan = timespan # todo
+                    #self.timespan = timespan # ToDo
                     start_tt = time.localtime(timespan.start)
                     #stop_tt = time.localtime(timespan.stop)
                     if page_name == 'archive-year':
@@ -2209,7 +2176,7 @@ class DataGenerator(JASGenerator):
             unit_name = self.skin_dict['Extras']['current']['observations'][observation].get('unit', "default")
 
             if type_value == 'rise':
-                 # todo this is a place holder and needs work
+                 # ToDo: this is a place holder and needs work
                 #set observation_value = '"' + str($getattr($almanac, $observation + 'rise')) + '";'
                 observation_value = 'bar'
                 #label = 'foo'
