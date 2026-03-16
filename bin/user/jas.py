@@ -266,7 +266,7 @@ class JAS(SearchList):
                                  'observations': self.observations,
                                  'observationLabels': self._get_observation_labels,
                                  'textLabels': self._get_text_labels,
-                                 '#utcOffset': self.utc_offset,
+                                 #'utcOffset': self.utc_offset,
                                  'version': VERSION,
                                  'weewx_version': weewx.__version__,
                                 }
