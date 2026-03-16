@@ -211,7 +211,7 @@ class JAS(SearchList):
         if 'lang' not in self.skin_dict:
             raise AttributeError("'lang' setting is required.")
 
-        self.unit = weewx.units.UnitInfoHelper(generator.formatter, generator.converter)
+        #self.unit = weewx.units.UnitInfoHelper(generator.formatter, generator.converter)
 
         self.utc_offset = (datetime.datetime.fromtimestamp(self.gen_time) -
                            datetime.datetime.utcfromtimestamp(self.gen_time)).total_seconds()/60
@@ -239,10 +239,10 @@ class JAS(SearchList):
             self.generator.config_dict['WEEWX_ROOT'], html_root)
         self.html_root = html_root
 
-        if 'topic' in self.skin_dict['Extras']['mqtt']:
+        if 'topic' in self.skin_dict['Extras'].get('mqtt', {}):
             logerr("'topic' is deprecated, use '[[[[[topics]]]]]'")
 
-        if 'fields' in self.skin_dict['Extras']['mqtt']:
+        if 'fields' in self.skin_dict['Extras'].get('mqtt', {}):
             logerr("'[[[[[fields.unused]]]]]' is deprecated, use '[[[[[topics]]]]] [[[[[[[fields]]]]]]]'")
 
     def get_extension_list(self, timespan, db_lookup):
@@ -588,7 +588,8 @@ class JAS(SearchList):
         else:
             data += "jasOptions.thisdate = false;\n"
 
-        if to_bool(self.skin_dict['Extras']['pages'][page].get('mqtt', True)) and to_bool(self.skin_dict['Extras']['mqtt'].get('enable', False)) or page == "debug":
+        if to_bool(self.skin_dict['Extras']['pages'][page].get('mqtt', True)) \
+             and to_bool(self.skin_dict['Extras'].get('mqtt', {}).get('enable', False)) or page == "debug":
             data += "jasOptions.MQTTConfig = true;\n"
         else:
             data += "jasOptions.MQTTConfig = false;\n"
@@ -731,7 +732,7 @@ class ChartGenerator(JASGenerator):
                 else:
                     _spangen = self._spangen
                 for timespan in _spangen(start_ts, stop_ts):
-                    #self.timespan = timespan # ToDo
+                    #self.timespan = timespan # ToDo:
                     start_tt = time.localtime(timespan.start)
                     #stop_tt = time.localtime(timespan.stop)
                     if page_name == 'archive-year':

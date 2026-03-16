@@ -1,4 +1,4 @@
-#    Copyright (c) 2025 Rich Bell <bellrichm@gmail.com>
+#    Copyright (c) 2025-2026 Rich Bell <bellrichm@gmail.com>
 #
 #    See the file LICENSE.txt for your full rights.
 #
@@ -11,9 +11,10 @@ import string
 import sys
 import unittest
 
-def random_string(length=32):
+def random_string(string_value=None, length=32):
+    if string_value:
+        return string_value
     return ''.join([random.choice(string.ascii_letters + string.digits) for n in range(length)])
-
 
 def run_tests():
     if len(sys.argv) == 1:
