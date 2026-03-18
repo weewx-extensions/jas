@@ -23,11 +23,11 @@
             "name": "Specific test",
             "type": "debugpy",
             "request": "launch",
-            "program": "bin/user/tests/func/test_chartgenerator.py",
+            "program": "bin/user/tests/unit/test_jas.py",
             "console": "integratedTerminal",
             "args": [
-                "TestChartGenerator",
-                "test_gen_it"
+                "TestExtensions",
+                "testX"
             ]
         },
         {
