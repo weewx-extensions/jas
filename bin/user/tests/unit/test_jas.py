@@ -126,8 +126,8 @@ class TestExtensions(unittest.TestCase):
                     'loginf': user.jas.loginf,
                     'logerr': user.jas.logerr,
                     'observations': SUT.observations,
-                    'observationLabels': SUT._get_observation_labels,
-                    'textLabels': SUT._get_text_labels,
+                    'observationLabels': SUT.get_observation_labels,
+                    'textLabels': SUT.get_text_labels,
                     'version': user.jas.VERSION,
                     'weewx_version': weewx_version,
                 }

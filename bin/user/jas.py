@@ -264,8 +264,8 @@ class JAS(SearchList):
                                  'loginf': loginf,
                                  'logerr': logerr,
                                  'observations': self.observations,
-                                 'observationLabels': self._get_observation_labels,
-                                 'textLabels': self._get_text_labels,
+                                 'observationLabels': self.get_observation_labels,
+                                 'textLabels': self.get_text_labels,
                                  #'utcOffset': self.utc_offset,
                                  'version': VERSION,
                                  'weewx_version': weewx.__version__,
@@ -393,14 +393,14 @@ class JAS(SearchList):
         self.skin_dicts[language]['Labels']['Generic'].merge((self.skin_dict['Extras'].get('lang', {}).get(language, {}).get('Labels', {}).get('Generic', {})))
         self.skin_dicts[language]['Texts'].merge((self.skin_dict['Extras'].get('lang', {}).get(language, {}).get('Texts', {})))
 
-    def _get_observation_labels(self, language):
+    def get_observation_labels(self, language):
         if language not in self.skin_dicts:
             if language in self.languages:
                 self.build_skin_lang_dict(language)
 
         return self.skin_dicts[language]['Labels']['Generic']
 
-    def _get_text_labels(self, language):
+    def get_text_labels(self, language):
         if language not in self.skin_dicts:
             if language in self.languages:
                 self.build_skin_lang_dict(language)
