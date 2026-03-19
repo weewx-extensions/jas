@@ -578,48 +578,51 @@ class JAS(SearchList):
         start_time = time.time()
         data = ""
 
-        data += "/* jas " + VERSION + " " + str(self.gen_time) + " */\n"
-
-        data += "jasOptions = {};\n"
-
-        data += "jasOptions.pageMQTT = " + self.skin_dict['Extras']['pages'][page].get('mqtt', 'true').lower() + ";\n"
-        data += "jasOptions.displayAerisObservation = -" + self.skin_dict['Extras'].get('display_aeris_observation', 'false').lower() + ";\n"
-        data += "jasOptions.displayAerisAQI = -" + self.skin_dict['Extras'].get('display_aeris_aqi', 'false').lower() + ";\n"
-        data += "jasOptions.displayAerisAlert = -" + self.skin_dict['Extras'].get('display_aeris_alert', 'false').lower() + ";\n"
-        data += "jasOptions.refresh = " + self.skin_dict['Extras']['pages'][page].get('reload', 'false').lower() + ";\n"
-        data += "jasOptions.zoomcontrol = " + self.skin_dict['Extras']['pages'][page].get('zoomControl', 'false').lower() + ";\n"
-
-        data += "jasOptions.currentHeader = null;\n"
-
+        current_header = ""
         if self.skin_dict['Extras'].get('current', {}).get('observation', False):
-            data += "jasOptions.currentHeader = '" + self.skin_dict['Extras']['current']['observation'] + "';\n"
+            current_header = f"jasOptions.currentHeader = '{self.skin_dict['Extras']['current']['observation']}';\n"
 
         if "current" in self.skin_dict['Extras']['pages'][page]:
-            data += "jasOptions.current = true;\n"
+            current = "true"
         else:
-            data += "jasOptions.current = false;\n"
+            current = "false"
 
         if "forecast" in self.skin_dict['Extras']['pages'][page]:
-            data += "jasOptions.forecast = true;\n"
+            forecast = "true"
         else:
-            data += "jasOptions.forecast = false;\n"
+            forecast = "false"
 
         if "minmax" in self.skin_dict['Extras']['pages'][page]:
-            data += "jasOptions.minmax = true;\n"
+            min_max = "true"
         else:
-            data += "jasOptions.minmax = false;\n"
+            min_max = "false"
 
         if "thisdate" in self.skin_dict['Extras']['pages'][page]:
-            data += "jasOptions.thisdate = true;\n"
+            this_date = "true"
         else:
-            data += "jasOptions.thisdate = false;\n"
+            this_date = "false"
 
         if to_bool(self.skin_dict['Extras']['pages'][page].get('mqtt', True)) \
              and to_bool(self.skin_dict['Extras'].get('mqtt', {}).get('enable', False)) or page == "debug":
-            data += "jasOptions.MQTTConfig = true;\n"
+            mqtt = "true"
         else:
-            data += "jasOptions.MQTTConfig = false;\n"
+            mqtt = "false"
 
+        data += f"/* jas {VERSION} {self.gen_time} */\n"
+        data += "jasOptions = {};\n"
+        data += f"jasOptions.pageMQTT = {self.skin_dict['Extras']['pages'][page].get('mqtt', 'true').lower()};\n"
+        data += f"jasOptions.displayAerisObservation = -{self.skin_dict['Extras'].get('display_aeris_observation', 'false').lower()};\n"
+        data += f"jasOptions.displayAerisAQI = -{self.skin_dict['Extras'].get('display_aeris_aqi', 'false').lower()};\n"
+        data += f"jasOptions.displayAerisAlert = -{self.skin_dict['Extras'].get('display_aeris_alert', 'false').lower()};\n"
+        data += f"jasOptions.refresh = {self.skin_dict['Extras']['pages'][page].get('reload', 'false').lower()};\n"
+        data += f"jasOptions.zoomcontrol = {self.skin_dict['Extras']['pages'][page].get('zoomControl', 'false').lower()};\n"
+        data += "jasOptions.currentHeader = null;\n"
+        data += current_header
+        data += f"jasOptions.current = {current};\n"
+        data += f"jasOptions.forecast = {forecast};\n"
+        data += f"jasOptions.minmax = {min_max};\n"
+        data += f"jasOptions.thisdate = {this_date};\n"
+        data += f"jasOptions.MQTTConfig = {mqtt};\n"
         data += "\n"
 
         elapsed_time = time.time() - start_time
