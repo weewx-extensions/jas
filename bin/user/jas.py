@@ -456,26 +456,12 @@ class JAS(SearchList):
 
         return datetime_formats
 
-    def _get_last_n_days(self, days, data_binding=None):
-        dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
-        end_ts = dbm.lastGoodStamp()
-        start_date = datetime.date.fromtimestamp(end_ts) - datetime.timedelta(days=days)
-        start_timestamp = time.mktime(start_date.timetuple())
-        last_n_days = TimespanBinder(TimeSpan(start_timestamp, end_ts),
-                                     self.generator.db_binder.bind_default(data_binding),
-                                     data_binding=data_binding,
-                                     context='last_n_hours',
-                                     formatter=self.generator.formatter,
-                                     converter=self.generator.converter)
-
-        return last_n_days
-
     # ToDo: duplicate code
     def _get_unit_label(self, unit):
         return self.generator.formatter.get_label_string(unit, plural=False)
 
     # ToDo: duplicate code
-    def get_range(self, start: int, end: int, data_binding: str) -> (int, int):
+    def get_range(self, start: int, end: int, data_binding: str) -> tuple[int, int]:
         dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
         first_year = int(datetime.datetime.fromtimestamp(dbm.firstGoodStamp()).strftime('%Y'))
         last_year = int(datetime.datetime.fromtimestamp(dbm.lastGoodStamp()).strftime('%Y'))
