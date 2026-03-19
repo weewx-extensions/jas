@@ -257,7 +257,7 @@ class JAS(SearchList):
                                  'genJs': self.gen_js,
                                  'genJasOptions': self.gen_jas_options,
                                  'genTime': self.gen_time,
-                                 'getRange': self._get_range,
+                                 'getRange': self.get_range,
                                  'getUnitLabel': self._get_unit_label,
                                  'languages': self.languages,
                                  'logdbg': logdbg,
@@ -475,7 +475,7 @@ class JAS(SearchList):
         return self.generator.formatter.get_label_string(unit, plural=False)
 
     # ToDo: duplicate code
-    def _get_range(self, start, end, data_binding):
+    def get_range(self, start: int, end: int, data_binding: str) -> (int, int):
         dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
         first_year = int(datetime.datetime.fromtimestamp(dbm.firstGoodStamp()).strftime('%Y'))
         last_year = int(datetime.datetime.fromtimestamp(dbm.lastGoodStamp()).strftime('%Y'))

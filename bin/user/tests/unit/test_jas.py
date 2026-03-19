@@ -10,6 +10,7 @@
 import configobj
 import datetime
 import os
+import random
 import time
 
 import unittest
@@ -114,7 +115,7 @@ class TestExtensions(unittest.TestCase):
                     'genJs': SUT.gen_js,
                     'genJasOptions': SUT.gen_jas_options,
                     'genTime': SUT.gen_time,
-                    'getRange': SUT._get_range,
+                    'getRange': SUT.get_range,
                     'getUnitLabel': SUT._get_unit_label,
                     'languages': SUT.languages,
                     'logdbg': user.jas.logdbg,
@@ -242,10 +243,19 @@ class TestExtensions(unittest.TestCase):
         self.maxDiff = None
 
         now = int(time.time())
+        first_timestamp = random.randint(0,0)
+        last_timestamp = now
+        first_year = int(datetime.datetime.fromtimestamp(first_timestamp).strftime('%Y'))
+        last_year = int(datetime.datetime.fromtimestamp(last_timestamp).strftime('%Y')) + 1
 
         mock_generator = mock.Mock()
         mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
         mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
+
+        mock_dbm = mock.Mock()
+        mock_dbm.firstGoodStamp.return_value = first_timestamp
+        mock_dbm.lastGoodStamp.return_value = last_timestamp
+        mock_generator.db_binder.get_manager.return_value = mock_dbm
 
         with mock.patch('user.jas.time') as mock_time:
             with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
@@ -260,7 +270,8 @@ class TestExtensions(unittest.TestCase):
                 SUT = user.jas.JAS(mock_generator)
                 extension_list = SUT.get_extension_list(None, None)[0]
 
-                # SUT._get_range(None, None, None)
+                range = extension_list['getRange'] = SUT.get_range(None, None, None)
+                self.assertEqual(range, (first_year, last_year))
 
         print("end")
 
