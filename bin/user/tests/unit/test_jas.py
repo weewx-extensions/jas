@@ -48,6 +48,10 @@ class TestExtensions(unittest.TestCase):
         },
     }
 
+    def __init__(self, *args, **kwargs):
+        super(TestExtensions, self).__init__(*args, **kwargs)
+        self.expected_date_formats = None
+
     def merge_language(self, _language, _config_dict, _report_name, lang_dict):
         lang_data = {
             'Labels': {
@@ -224,10 +228,6 @@ class TestExtensions(unittest.TestCase):
 
         with mock.patch('user.jas.time') as mock_time:
             with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
-                os.environ['TZ'] = 'America/New_York'
-                time.tzset()
-
-                now = int(time.time())
 
                 mock_time.time.return_value = now
                 mock_get_languages.return_value = None
@@ -238,8 +238,7 @@ class TestExtensions(unittest.TestCase):
                 jas_options = extension_list['genJasOptions'](helpers.random_string(), TestExtensions.page_name)
                 self.assertEqual(jas_options, result2.format(now=now))
 
-    def testX(self):
-        print("start")
+    def test_extension_getRange(self):
         self.maxDiff = None
 
         now = int(time.time())
@@ -259,10 +258,6 @@ class TestExtensions(unittest.TestCase):
 
         with mock.patch('user.jas.time') as mock_time:
             with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
-                os.environ['TZ'] = 'America/New_York'
-                time.tzset()
-
-                now = int(time.time())
 
                 mock_time.time.return_value = now
                 mock_get_languages.return_value = None
@@ -270,10 +265,60 @@ class TestExtensions(unittest.TestCase):
                 SUT = user.jas.JAS(mock_generator)
                 extension_list = SUT.get_extension_list(None, None)[0]
 
-                range = extension_list['getRange'] = SUT.get_range(None, None, None)
-                self.assertEqual(range, (first_year, last_year))
+                result = extension_list['getRange'] = SUT.get_range(None, None, None)
+                self.assertEqual(result, (first_year, last_year))
 
-        print("end")
+    def test_extension_observationLabels(self):
+        self.maxDiff = None
+
+        now = int(time.time())
+
+        language = TestExtensions.skin_dict['lang']
+
+        mock_generator = mock.Mock()
+        mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
+        mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
+
+        with mock.patch('user.jas.time') as mock_time:
+            with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
+                with mock.patch('user.jas.merge_lang') as mock_merge_lang:
+
+                    mock_time.time.return_value = now
+                    mock_get_languages.return_value = [language]
+
+                    mock_merge_lang.side_effect = self.merge_language
+
+                    SUT = user.jas.JAS(mock_generator)
+                    extension_list = SUT.get_extension_list(None, None)[0]
+
+                    observation_labels = extension_list['observationLabels'](language)
+                    print(observation_labels)
+
+    def test_extension_textLabels(self):
+        self.maxDiff = None
+
+        now = int(time.time())
+
+        language = TestExtensions.skin_dict['lang']
+
+        mock_generator = mock.Mock()
+        mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
+        mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
+
+        with mock.patch('user.jas.time') as mock_time:
+            with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
+                with mock.patch('user.jas.merge_lang') as mock_merge_lang:
+
+                    mock_time.time.return_value = now
+                    mock_get_languages.return_value = [language]
+
+                    mock_merge_lang.side_effect = self.merge_language
+
+                    SUT = user.jas.JAS(mock_generator)
+                    extension_list = SUT.get_extension_list(None, None)[0]
+
+                    text_labels = extension_list['textLabels'](language)
+                    print(text_labels)
 
 if __name__ == '__main__':
     helpers.run_tests()
