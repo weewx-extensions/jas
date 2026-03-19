@@ -49,8 +49,9 @@ class TestExtensions(unittest.TestCase):
     }
 
     def __init__(self, *args, **kwargs):
-        super(TestExtensions, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.expected_date_formats = None
+        self.expected_observation_labels = None
 
     def merge_language(self, _language, _config_dict, _report_name, lang_dict):
         lang_data = {
@@ -92,6 +93,11 @@ class TestExtensions(unittest.TestCase):
                     'xaxis_label': self.expected_date_formats['aggregate_interval_mqtt']['xaxis_label'],
                     'label': self.expected_date_formats['aggregate_interval_mqtt']['label'],
                 },
+            }
+
+        if self.expected_observation_labels:
+            lang_data['Labels'] = {
+                'Generic': self.expected_observation_labels
             }
 
         lang_dict.merge(configobj.ConfigObj(lang_data))
@@ -279,6 +285,10 @@ class TestExtensions(unittest.TestCase):
         mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
         mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
 
+        self.expected_observation_labels = {}
+        for _ in range(1, random.randint(1, 10)):
+            self.expected_observation_labels[helpers.random_string()] = helpers.random_string()
+
         with mock.patch('user.jas.time') as mock_time:
             with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
                 with mock.patch('user.jas.merge_lang') as mock_merge_lang:
@@ -292,7 +302,7 @@ class TestExtensions(unittest.TestCase):
                     extension_list = SUT.get_extension_list(None, None)[0]
 
                     observation_labels = extension_list['observationLabels'](language)
-                    print(observation_labels)
+                    self.assertEqual(observation_labels, self.expected_observation_labels)
 
     def test_extension_textLabels(self):
         self.maxDiff = None
