@@ -608,22 +608,22 @@ class JAS(SearchList):
         else:
             mqtt = "false"
 
-        data += f"/* jas {VERSION} {self.gen_time} */\n"
-        data += "jasOptions = {};\n"
-        data += f"jasOptions.pageMQTT = {self.skin_dict['Extras']['pages'][page].get('mqtt', 'true').lower()};\n"
-        data += f"jasOptions.displayAerisObservation = -{self.skin_dict['Extras'].get('display_aeris_observation', 'false').lower()};\n"
-        data += f"jasOptions.displayAerisAQI = -{self.skin_dict['Extras'].get('display_aeris_aqi', 'false').lower()};\n"
-        data += f"jasOptions.displayAerisAlert = -{self.skin_dict['Extras'].get('display_aeris_alert', 'false').lower()};\n"
-        data += f"jasOptions.refresh = {self.skin_dict['Extras']['pages'][page].get('reload', 'false').lower()};\n"
-        data += f"jasOptions.zoomcontrol = {self.skin_dict['Extras']['pages'][page].get('zoomControl', 'false').lower()};\n"
-        data += "jasOptions.currentHeader = null;\n"
-        data += current_header
-        data += f"jasOptions.current = {current};\n"
-        data += f"jasOptions.forecast = {forecast};\n"
-        data += f"jasOptions.minmax = {min_max};\n"
-        data += f"jasOptions.thisdate = {this_date};\n"
-        data += f"jasOptions.MQTTConfig = {mqtt};\n"
-        data += "\n"
+        data += (f"/* jas {VERSION} {self.gen_time} */\n"
+                 "jasOptions = {};\n"
+                 f"jasOptions.pageMQTT = {self.skin_dict['Extras']['pages'][page].get('mqtt', 'true').lower()};\n"
+                 f"jasOptions.displayAerisObservation = -{self.skin_dict['Extras'].get('display_aeris_observation', 'false').lower()};\n"
+                 f"jasOptions.displayAerisAQI = -{self.skin_dict['Extras'].get('display_aeris_aqi', 'false').lower()};\n"
+                 f"jasOptions.displayAerisAlert = -{self.skin_dict['Extras'].get('display_aeris_alert', 'false').lower()};\n"
+                 f"jasOptions.refresh = {self.skin_dict['Extras']['pages'][page].get('reload', 'false').lower()};\n"
+                 f"jasOptions.zoomcontrol = {self.skin_dict['Extras']['pages'][page].get('zoomControl', 'false').lower()};\n"
+                 "jasOptions.currentHeader = null;\n"
+                 f"{current_header}"
+                 f"jasOptions.current = {current};\n"
+                 f"jasOptions.forecast = {forecast};\n"
+                 f"jasOptions.minmax = {min_max};\n"
+                 f"jasOptions.thisdate = {this_date};\n"
+                 f"jasOptions.MQTTConfig = {mqtt};\n"
+                 "\n")
 
         elapsed_time = time.time() - start_time
         log_msg = "Generated jasOptions for " + self.html_root + "/" + filename + " in " + str(elapsed_time)
