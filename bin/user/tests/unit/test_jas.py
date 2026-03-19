@@ -340,6 +340,5 @@ class TestExtensions(unittest.TestCase):
 
                     self.assertEqual(text_labels, self.expected_text_labels)
 
-
 if __name__ == '__main__':
     helpers.run_tests()

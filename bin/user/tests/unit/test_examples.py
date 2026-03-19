@@ -109,5 +109,53 @@ class TestTemplate(unittest.TestCase):
 
         print("end")
 
+from Cheetah.Template import Template
+
+class TestCheetahTemplate(unittest.TestCase):
+    def test_hello_world(self):
+        # 1. Define the template
+        template_def = """
+<html>
+<head><title>$title</title></head>
+<body>
+$contents
+</body>
+</html>
+        """
+
+        # 2. Define the data (namespace)
+        data = {
+            'title': 'Hello World Example',
+            'contents': 'Hello World!'
+        }
+
+        # 3. Instantiate the template and render
+        # Passing data via searchList
+        t = Template(template_def, searchList=[data])
+        actual_output = str(t).strip() # Convert to string and strip whitespace for clean comparison
+
+        # 4. Define the expected output
+        expected_output = """
+<html>
+<head><title>Hello World Example</title></head>
+<body>
+Hello World!
+</body>
+</html>
+        """.strip()
+
+        # 5. Assert the actual output matches the expected output
+        self.assertEqual(actual_output, expected_output, "Template output did not match expected output")
+
+    def test_dynamic_data(self):
+        # Test with different data to ensure flexibility
+        template_def = "User: $name, ID: $id"
+        data = {'name': 'Jane Doe', 'id': 123}
+        t = Template(template_def, searchList=[data])
+        actual_output = str(t).strip()
+        expected_output = "User: Jane Doe, ID: 123"
+
+        self.assertEqual(actual_output, expected_output)
+
 if __name__ == '__main__':
     helpers.run_tests()
