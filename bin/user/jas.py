@@ -255,7 +255,7 @@ class JAS(SearchList):
                                  'dateTimeFormats': self.get_datetime_formats,
                                  'data_binding': self.data_binding,
                                  'genJs': self.gen_js,
-                                 'genJasOptions': self._gen_jas_options,
+                                 'genJasOptions': self.gen_jas_options,
                                  'genTime': self.gen_time,
                                  'getRange': self._get_range,
                                  'getUnitLabel': self._get_unit_label,
@@ -574,7 +574,7 @@ class JAS(SearchList):
             logdbg(log_msg)
         return data
 
-    def _gen_jas_options(self, filename, page):
+    def gen_jas_options(self, filename: str, page: str) -> str:
         start_time = time.time()
         data = ""
 

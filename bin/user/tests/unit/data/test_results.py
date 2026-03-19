@@ -38,3 +38,21 @@ if (!logLevel) {{
 console.debug(Date.now().toString() + ' ending');
 // end
 '''
+
+result2 = \
+'''/* jas 1.2.0-rc03 {now} */
+jasOptions = {{}};
+jasOptions.pageMQTT = true;
+jasOptions.displayAerisObservation = -false;
+jasOptions.displayAerisAQI = -false;
+jasOptions.displayAerisAlert = -false;
+jasOptions.refresh = false;
+jasOptions.zoomcontrol = false;
+jasOptions.currentHeader = null;
+jasOptions.current = false;
+jasOptions.forecast = false;
+jasOptions.minmax = false;
+jasOptions.thisdate = false;
+jasOptions.MQTTConfig = false;
+
+'''

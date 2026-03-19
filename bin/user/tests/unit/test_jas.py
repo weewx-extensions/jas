@@ -17,7 +17,7 @@ import mock
 
 from user.tests import helpers
 import user.jas
-from user.tests.unit.data.test_results import result1
+from user.tests.unit.data.test_results import result1, result2
 
 from weewx import __version__ as weewx_version
 
@@ -112,7 +112,7 @@ class TestExtensions(unittest.TestCase):
                     'dateTimeFormats': SUT.get_datetime_formats,
                     'data_binding': SUT.data_binding,
                     'genJs': SUT.gen_js,
-                    'genJasOptions': SUT._gen_jas_options,
+                    'genJasOptions': SUT.gen_jas_options,
                     'genTime': SUT.gen_time,
                     'getRange': SUT._get_range,
                     'getUnitLabel': SUT._get_unit_label,
@@ -212,6 +212,31 @@ class TestExtensions(unittest.TestCase):
                 js = extension_list['genJs'](helpers.random_string(), TestExtensions.page_name, None, None, None, None)
                 self.assertEqual(js, result1.format(utc_offset=utc_offset, page_name=TestExtensions.page_name))
 
+    def test_extension_genJasOptions(self):
+        self.maxDiff = None
+
+        now = int(time.time())
+
+        mock_generator = mock.Mock()
+        mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
+        mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
+
+        with mock.patch('user.jas.time') as mock_time:
+            with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
+                os.environ['TZ'] = 'America/New_York'
+                time.tzset()
+
+                now = int(time.time())
+
+                mock_time.time.return_value = now
+                mock_get_languages.return_value = None
+
+                SUT = user.jas.JAS(mock_generator)
+                extension_list = SUT.get_extension_list(None, None)[0]
+
+                jas_options = extension_list['genJasOptions'](helpers.random_string(), TestExtensions.page_name)
+                self.assertEqual(jas_options, result2.format(now=now))
+
     def testX(self):
         print("start")
         self.maxDiff = None
@@ -228,8 +253,6 @@ class TestExtensions(unittest.TestCase):
                 time.tzset()
 
                 now = int(time.time())
-                utc_offset = (datetime.datetime.fromtimestamp(now) -
-                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
                 mock_time.time.return_value = now
                 mock_get_languages.return_value = None
@@ -237,6 +260,7 @@ class TestExtensions(unittest.TestCase):
                 SUT = user.jas.JAS(mock_generator)
                 extension_list = SUT.get_extension_list(None, None)[0]
 
+                # SUT._get_range(None, None, None)
 
         print("end")
 
