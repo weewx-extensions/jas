@@ -509,60 +509,64 @@ class JAS(SearchList):
         if month is not None:
             selected_month = str(month)
 
-        data = '// start\n'
-        data += 'selectedYear = "' + selected_year + '";\n'
-        data += 'selectedMonth = "' + selected_month + '";\n'
+        data = "// start\n"
+        data += f"selectedYear = '{selected_year}';\n"
+        data += f"selectedMonth = '{selected_month}';\n"
 
         # begin custom by page
+        default_theme = to_list(self.skin_dict['Extras'].get('themes', 'light'))[0]
         min_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('min', 'none')
         max_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('max', 'none')
-        data += 'minFormat = "' + min_format + '";\n'
-        data += 'maxFormat = "' + max_format + '";\n'
-        data += 'pageName = "' + page + '";\n'
-        data += 'pageName2 = "' + page_name + '";\n'
-
-        data += 'utcOffset = ' + str(self.utc_offset) + ";\n"
-        default_theme = to_list(self.skin_dict['Extras'].get('themes', 'light'))[0]
-        data +=  'defaultTheme = ' + '"' + default_theme + ';"\n'
-
         if page in self.skin_dict['Extras']['pages'] and \
           'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
-            data += 'bustCache = true;\n'
+            bust_cache = 'true'
         else:
-            data += 'bustCache = false;\n'
+            bust_cache = 'false'
+
+        data += f"minFormat = '{min_format}';\n"
+        data += f"maxFormat = '{max_format}';\n"
+        data += f"pageName = '{page}';\n"
+        data += f"pageName2 = '{page_name}';\n"
+
+        data += f"utcOffset = {self.utc_offset};\n"
+        data += f"defaultTheme = '{default_theme}';\n"
+        data += f"bustCache = {bust_cache};\n"
 
         if page in self.skin_dict['Extras']['page_definition']:
             series_type = self.skin_dict['Extras']['page_definition'][page].get('series_type', 'single')
             if series_type == 'single':
-                data += 'getDataFunction = getData' + interval_long_name + ';\n'
+                data += "getDataFunction = getData" + interval_long_name + ";\n"
             elif series_type == 'multiple':
-                data += 'getDataFunction = getDataMultiyear;\n'
+                data += "getDataFunction = getDataMultiyear;\n"
             elif series_type == 'comparison':
-                data += 'getDataFunction = getDataComparison;\n'
+                data += "getDataFunction = getDataComparison;\n"
 
         # end custom by page
-        data += 'pageLoaded = false;\n'
-        data += 'DOMLoaded = false;\n'
-        data += 'dataLoaded = false;\n'
-        data += 'traceStart = Date.now();\n'
-        data += 'console.debug(Date.now().toString() + " starting");\n'
-
         wait_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('wait_seconds', 300)) * 1000)
         delay_milliseconds = str(int(self.skin_dict['Extras']['pages'][page].get('delay_seconds', 60)) * 1000)
-        data += 'millisecondsWait = ' + wait_milliseconds + ';\n'
-        data += 'millisecondsDelay = ' + delay_milliseconds + ';\n'
+        jas_debug_level = self.skin_dict['Extras'].get('jas_debug_level', '3')
+        header_max_decimals = self.skin_dict['Extras'].get('current', {}).get('header_max_decimals', 'null')
 
-        data += 'headerMaxDecimals = ' + self.skin_dict['Extras'].get('current', {}).get('header_max_decimals', 'null') + ';\n'
+        data += "pageLoaded = false;\n"
+        data += "DOMLoaded = false;\n"
+        data += "dataLoaded = false;\n"
+        data += "traceStart = Date.now();\n"
+        data += "console.debug(Date.now().toString() + ' starting');\n"
+
+        data += f"millisecondsWait = {wait_milliseconds};\n"
+        data += f"millisecondsDelay = {delay_milliseconds};\n"
+
+        data += f"headerMaxDecimals = {header_max_decimals};\n"
         data += "logLevel = sessionStorage.getItem('logLevel');\n"
 
-        data += 'if (!logLevel) {\n'
-        data += '    logLevel = "' + self.skin_dict['Extras'].get('jas_debug_level', '3') + '";\n'
+        data += "if (!logLevel) {\n"
+        data += f"    logLevel = '{jas_debug_level}';\n"
         data += "    sessionStorage.setItem('logLevel', logLevel);\n"
-        data += '}\n'
-        data += '\n'
+        data += "}\n"
+        data += "\n"
 
-        data += 'console.debug(Date.now().toString() + " ending");\n'
-        data += '// end\n'
+        data += "console.debug(Date.now().toString() + ' ending');\n"
+        data += "// end\n"
 
         elapsed_time = time.time() - start_time
         log_msg = "Generated " + self.html_root + "/" + filename + " in " + str(elapsed_time)
@@ -572,9 +576,9 @@ class JAS(SearchList):
 
     def _gen_jas_options(self, filename, page):
         start_time = time.time()
-        data = ''
+        data = ""
 
-        data += '/* jas ' + VERSION + ' ' + str(self.gen_time) + ' */\n'
+        data += "/* jas " + VERSION + " " + str(self.gen_time) + " */\n"
 
         data += "jasOptions = {};\n"
 

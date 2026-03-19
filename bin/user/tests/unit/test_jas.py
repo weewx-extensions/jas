@@ -176,5 +176,38 @@ class TestExtensions(unittest.TestCase):
 
                     self.assertEqual(date_time_formats, self.expected_date_formats)
 
+    def testX(self):
+        print("start")
+        now = int(time.time())
+
+        mock_generator = mock.Mock()
+
+        skin_dict = {
+            'lang': helpers.random_string(),
+            'data_binding': helpers.random_string(),
+            'SKIN_ROOT': helpers.random_string(),
+            'skin': helpers.random_string(),
+            'Extras': {},
+        }
+        skin_config = configobj.ConfigObj(skin_dict)
+        mock_generator.skin_dict = skin_config
+
+        config_dict = {
+            'WEEWX_ROOT': helpers.random_string(),
+        }
+        config = configobj.ConfigObj(config_dict)
+        mock_generator.config_dict = config
+
+        with mock.patch('user.jas.time') as mock_time:
+            with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
+                mock_time.time.return_value = now
+                mock_get_languages.return_value = None
+
+                SUT = user.jas.JAS(mock_generator)
+
+                #SUT._gen_js(None, None, None, None, None, None)
+
+        print("end")
+
 if __name__ == '__main__':
     helpers.run_tests()

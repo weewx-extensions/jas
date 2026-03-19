@@ -78,7 +78,7 @@ class TestTemplate(unittest.TestCase):
 
         print("end")
 
-    def test2(self):
+    def testX(self):
         print("start")
         now = int(time.time())
 
