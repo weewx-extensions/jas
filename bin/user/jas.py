@@ -254,7 +254,7 @@ class JAS(SearchList):
                                  'aggregate_types': self.aggregate_types,
                                  'dateTimeFormats': self.get_datetime_formats,
                                  'data_binding': self.data_binding,
-                                 'genJs': self._gen_js,
+                                 'genJs': self.gen_js,
                                  'genJasOptions': self._gen_jas_options,
                                  'genTime': self.gen_time,
                                  'getRange': self._get_range,
@@ -496,7 +496,7 @@ class JAS(SearchList):
 
         return (start_year, end_year)
 
-    def _gen_js(self, filename, page, page_name, year, month, interval_long_name):
+    def gen_js(self, filename: str, page: str, page_name: str, year: str, month: str, interval_long_name: str) -> str:
         start_time = time.time()
 
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)

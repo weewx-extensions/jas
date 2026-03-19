@@ -8,6 +8,8 @@
 # pylint: disable=invalid-name
 
 import configobj
+import datetime
+import os
 import time
 
 import unittest
@@ -15,19 +17,26 @@ import mock
 
 from user.tests import helpers
 import user.jas
+from user.tests.unit.data.test_results import result1
 
 from weewx import __version__ as weewx_version
 
 
 class TestExtensions(unittest.TestCase):
     report_name = helpers.random_string()
+    page_name = helpers.random_string()
     skin_dict = {
         'lang': helpers.random_string('lang-1'),
         'data_binding': helpers.random_string(),
         'SKIN_ROOT': helpers.random_string(),
         'REPORT_NAME': report_name,
         'skin': report_name,
-        'Extras': {},
+        'Extras': {
+            'page_definition': {},
+            'pages': {
+                page_name: {},
+            },
+        },
     }
 
     config_dict = {
@@ -102,7 +111,7 @@ class TestExtensions(unittest.TestCase):
                     'aggregate_types': SUT.aggregate_types,
                     'dateTimeFormats': SUT.get_datetime_formats,
                     'data_binding': SUT.data_binding,
-                    'genJs': SUT._gen_js,
+                    'genJs': SUT.gen_js,
                     'genJasOptions': SUT._gen_jas_options,
                     'genTime': SUT.gen_time,
                     'getRange': SUT._get_range,
@@ -176,36 +185,58 @@ class TestExtensions(unittest.TestCase):
 
                     self.assertEqual(date_time_formats, self.expected_date_formats)
 
-    def testX(self):
-        print("start")
+    def test_extension_genJs(self):
+        self.maxDiff = None
+
         now = int(time.time())
 
         mock_generator = mock.Mock()
-
-        skin_dict = {
-            'lang': helpers.random_string(),
-            'data_binding': helpers.random_string(),
-            'SKIN_ROOT': helpers.random_string(),
-            'skin': helpers.random_string(),
-            'Extras': {},
-        }
-        skin_config = configobj.ConfigObj(skin_dict)
-        mock_generator.skin_dict = skin_config
-
-        config_dict = {
-            'WEEWX_ROOT': helpers.random_string(),
-        }
-        config = configobj.ConfigObj(config_dict)
-        mock_generator.config_dict = config
+        mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
+        mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
 
         with mock.patch('user.jas.time') as mock_time:
             with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
+                os.environ['TZ'] = 'America/New_York'
+                time.tzset()
+
+                now = int(time.time())
+                utc_offset = (datetime.datetime.fromtimestamp(now) -
+                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
                 mock_time.time.return_value = now
                 mock_get_languages.return_value = None
 
                 SUT = user.jas.JAS(mock_generator)
+                extension_list = SUT.get_extension_list(None, None)[0]
 
-                #SUT._gen_js(None, None, None, None, None, None)
+                js = extension_list['genJs'](helpers.random_string(), TestExtensions.page_name, None, None, None, None)
+                self.assertEqual(js, result1.format(utc_offset=utc_offset, page_name=TestExtensions.page_name))
+
+    def testX(self):
+        print("start")
+        self.maxDiff = None
+
+        now = int(time.time())
+
+        mock_generator = mock.Mock()
+        mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
+        mock_generator.config_dict = configobj.ConfigObj(TestExtensions.config_dict)
+
+        with mock.patch('user.jas.time') as mock_time:
+            with mock.patch('user.jas.weecfg.get_languages') as mock_get_languages:
+                os.environ['TZ'] = 'America/New_York'
+                time.tzset()
+
+                now = int(time.time())
+                utc_offset = (datetime.datetime.fromtimestamp(now) -
+                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+
+                mock_time.time.return_value = now
+                mock_get_languages.return_value = None
+
+                SUT = user.jas.JAS(mock_generator)
+                extension_list = SUT.get_extension_list(None, None)[0]
+
 
         print("end")
 
