@@ -2,6 +2,10 @@
     "md013": {
         "line_length": 150
     },
+
+    "md022": {
+        "lines_below": 0
+    },
     "md024": {
         "siblings_only": true
     },
