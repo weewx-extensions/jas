@@ -1479,7 +1479,8 @@ class DataGenerator(JASGenerator):
 
         return observations, aggregate_types
 
-    def _check_forecast(self):
+    # ToDo: - this was 'overridden', so should be safe to delete
+    def _check_forecast_unused(self):
         pages = self.skin_dict.get('Extras', {}).get('pages', {})
         for page in pages:
             if self.skin_dict['Extras']['pages'][page].get('enable', True) and 'forecast' in self.skin_dict['Extras']['pages'][page].sections:
