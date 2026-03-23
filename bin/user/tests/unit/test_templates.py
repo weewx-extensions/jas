@@ -66,6 +66,7 @@ class TestCheetahTemplate(unittest.TestCase):
     def testXY(self):
         page_data = types.SimpleNamespace(
             foo4 = {}
+            #foo4 = ['a']
         )
 
         extras = types.SimpleNamespace(
@@ -84,7 +85,6 @@ class TestCheetahTemplate(unittest.TestCase):
             'HTML_ROOT': 'foo',
             'filename': 'foo',
             'logdbg': mock.Mock(),
-
         }
 
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
@@ -92,9 +92,19 @@ class TestCheetahTemplate(unittest.TestCase):
         os.chdir(skin_dir)
 
         filename = 'generators/pages.gen'
+        filename = 'generators/body.inc'
 
-        template = Cheetah.Template.Template(file=filename, searchList=[data])
-        result = str(template)
+        #template = Cheetah.Template.Template(file=filename, searchList=[data])
+        #template_source = Cheetah.Template.Template.compile(file=filename, returnAClass=False)
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        class_source = Cheetah.Template.Template.generatedClassCode(template_class)
+        module_source = Cheetah.Template.Template.generatedModuleCode(template_class)
+        print('----')
+        print(module_source)
+        print('----')
+        template_instance = template_class(searchList=[data])
+
+        result = str(template_instance)
 
         print(result)
 
