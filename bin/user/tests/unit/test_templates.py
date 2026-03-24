@@ -31,11 +31,12 @@ class TestCheetahTemplate(unittest.TestCase):
         filename = skin_dir + 'manifest.json.tmpl'
 
         template = Cheetah.Template.Template(file=filename, searchList=[data])
-        result = str(template)
+        str(template)
+        #result = str(template)
 
         print("done")
 
-    def testX(self):
+    def test2(self):
         station = types.SimpleNamespace(
             location = 'foo.foo'
         )
@@ -59,11 +60,12 @@ class TestCheetahTemplate(unittest.TestCase):
         filename = skin_dir + 'index.html.tmpl'
 
         template = Cheetah.Template.Template(file=filename, searchList=[data])
-        result = str(template)
+        str(template)
+        # result = str(template)
 
         print("done")
 
-    def testXY(self):
+    def testX(self):
         page_data = types.SimpleNamespace(
             foo4 = {}
             #foo4 = ['a']
@@ -74,6 +76,7 @@ class TestCheetahTemplate(unittest.TestCase):
             chart_definitions = 'foo',
         )
 
+        mock_logdbg = mock.Mock()
         data = {
             'lang': 'foo1',
             'version': 'foo2',
@@ -84,31 +87,24 @@ class TestCheetahTemplate(unittest.TestCase):
             'page_name_global': 'foo',
             'HTML_ROOT': 'foo',
             'filename': 'foo',
-            'logdbg': mock.Mock(),
+            'logdbg': mock_logdbg,
         }
 
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
         # ToDo: wrap in a context?
+        # ToDO: Do once in class setup
         os.chdir(skin_dir)
 
         filename = 'generators/pages.gen'
         filename = 'generators/body.inc'
 
-        #template = Cheetah.Template.Template(file=filename, searchList=[data])
-        #template_source = Cheetah.Template.Template.compile(file=filename, returnAClass=False)
         template_class = Cheetah.Template.Template.compile(file=filename)
-        class_source = Cheetah.Template.Template.generatedClassCode(template_class)
-        module_source = Cheetah.Template.Template.generatedModuleCode(template_class)
-        print('----')
-        print(module_source)
-        print('----')
-        template_instance = template_class(searchList=[data])
+        print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
 
+        template_instance = template_class(searchList=[data])
         result = str(template_instance)
 
         print(result)
-
-        print('{lang} {version} {Extras} {logdbg}'.format(**data))
 
         print("done")
 
