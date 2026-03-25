@@ -23,7 +23,7 @@
             "name": "Specific test",
             "type": "debugpy",
             "request": "launch",
-            "program": "bin/user/tests/unit/test_templates.py",
+            "program": "bin/user/tests/unit/test_test.py",
             "console": "integratedTerminal",
             "args": [
                 "TestTest",
