@@ -16,56 +16,68 @@ import types
 
 from user.tests import helpers
 
-class TestCheetahTemplate(unittest.TestCase):
-    def test(self):
-        station = types.SimpleNamespace(
-            station_url = 'foo.foo'
-        )
-
-        data = {
-            'station': station,
-        }
-
+class TestTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        os.chdir(skin_dir)
 
-        filename = skin_dir + 'manifest.json.tmpl'
-
-        template = Cheetah.Template.Template(file=filename, searchList=[data])
-        str(template)
-        #result = str(template)
-
-        print("done")
-
-    def test2(self):
-        station = types.SimpleNamespace(
-            location = 'foo.foo'
-        )
-
+    def testXY(self):
         extras = types.SimpleNamespace(
-            pages = 'foo',
+            current = {
+                'observations': {
+                    'obs1': {
+                        'display': False
+                    }
+                }
+            },
         )
 
         data = {
-            'lang': 'foo',
-            'version': 'foo',
-            'station': station,
             'Extras': extras,
-            'HTML_ROOT': 'foo',
-            'filename': 'foo',
-            'logdbg': mock.Mock(),
         }
 
-        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        source = \
+        '''
+source-foo
 
-        filename = skin_dir + 'index.html.tmpl'
+#from weeutil.weeutil import to_bool, to_list
 
-        template = Cheetah.Template.Template(file=filename, searchList=[data])
-        str(template)
-        # result = str(template)
+#set $local_var = 'local'
+#set global current_modal_global = False
+$current_modal_global
 
+#if $getVar('$Extras.current', False)
+  #for observation in $getVar('$Extras.current.observations', {})
+      #if 'modal' in to_list($getVar('$Extras.current.observations.' + $observation + '.display', ['page', 'modal']))
+          #set global current_modal_global = True
+          #break
+      #end if
+  #end for
+#end if
+
+------
+$current_modal_global
+to_list($getVar('$Extras.current.observations.' + $observation + '.display', ['page', 'modal']))
+$getVar('$Extras.current.observations.' + $observation + '.display', ['page', 'modal'])
+$getVar('$Extras.current.observations')
+$local_var
+source-bar
+        '''
+
+        template_class = Cheetah.Template.Template.compile(source=source)
+        print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+
+        print(template_instance.getVar('current_modal_global'))
+        # print(result)
         print("done")
 
     def testX(self):
+        print("start")
+
         page_data = types.SimpleNamespace(
             foo4 = {}
             #foo4 = ['a']
@@ -74,6 +86,13 @@ class TestCheetahTemplate(unittest.TestCase):
         extras = types.SimpleNamespace(
             pages = page_data,
             chart_definitions = 'foo',
+            current = {
+                'observations': {
+                    'obs1': {
+                        'display': False
+                    }
+                }
+            },
         )
 
         mock_logdbg = mock.Mock()
@@ -90,20 +109,13 @@ class TestCheetahTemplate(unittest.TestCase):
             'logdbg': mock_logdbg,
         }
 
-        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
-        # ToDo: wrap in a context?
-        # ToDO: Do once in class setup
-        os.chdir(skin_dir)
-
-        filename = 'generators/pages.gen'
         filename = 'generators/body.inc'
 
         template_class = Cheetah.Template.Template.compile(file=filename)
         print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
 
         template_instance = template_class(searchList=[data])
-        result = str(template_instance)
-
+        result = template_instance.respond()
         print(result)
 
         print("done")
