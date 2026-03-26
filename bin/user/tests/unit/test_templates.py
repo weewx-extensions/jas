@@ -15,7 +15,8 @@ import types
 
 from user.tests import helpers
 
-from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug
+from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug,\
+      result_page_has_file_alert_modal_inc
 
 class TestBodyInc(unittest.TestCase):
     @classmethod
@@ -94,7 +95,7 @@ class TestBodyInc(unittest.TestCase):
         result = template_instance.respond()
         self.assertEqual(result, result_page_has_zoom_control)
 
-    def test_has_section_debug(self):
+    def test_page_has_section_debug(self):
         self.maxDiff = None
 
         page_name = 'foo1'
@@ -128,6 +129,44 @@ class TestBodyInc(unittest.TestCase):
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
         self.assertEqual(result, result_page_has_section_debug)
+
+
+    def test_page_has_file_alert_model_inc(self):
+        self.maxDiff = None
+
+        page_name = 'foo1'
+        section_name = 'debug'
+        extras = types.SimpleNamespace(
+            pages = {
+                page_name: {
+                    section_name: {
+                        'filename': 'sections/alert_modal.inc'
+                    }
+                }
+            },
+            chart_definitions = 'bar1',
+            current = {
+                'observations': {
+                    'obs1': {
+                        'display': False
+                    }
+                }
+            },
+        )
+
+        data = {
+            'page': page_name,
+            'Extras': extras,
+            'page_name_global': 'bar2',
+        }
+
+        filename = 'generators/body.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        self.assertEqual(result, result_page_has_file_alert_modal_inc)
 
 if __name__ == '__main__':
     helpers.run_tests()

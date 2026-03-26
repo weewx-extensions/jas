@@ -75,7 +75,7 @@ source-bar
         result = template_instance.respond()
 
         print(template_instance.getVar('current_modal_global'))
-        print(result)
+        print(f"----\n{result}\n----")
         # print("done")
 
     @unittest.skip("just an example")
@@ -118,7 +118,7 @@ source-bar
 
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
-        print(result)
+        print(f"----\n{result}\n----")
 
         #print("done")
 

@@ -131,3 +131,52 @@ result_page_has_section_debug = \
 
 
 '''
+
+result_page_has_file_alert_modal_inc = \
+'''
+
+
+    <div class="container">
+
+            <div class="row graphrow align-content-start">
+
+<div class="modal" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" id="alertModalHeader">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="alertModalBody">
+                <div id="alertDetailModal" class="text-center"></div>
+            </div>
+            <div class="modal-footer" id="alertModalFooter"></div>
+        </div>
+    </div>
+</div>
+      </div>
+    </div>
+      <script src="../charts/bar2.js"></script>
+    
+    <!-- Modal -->
+<div class="modal" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="chartModalHeader">
+        <h5 class="modal-title" id="chartModalTitle">Modal title</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="chartModalBody">
+        ...
+      </div>
+      <div class="modal-footer" id="chartModalFooter"></div>
+    </div>
+  </div>
+</div>
+
+
+'''
