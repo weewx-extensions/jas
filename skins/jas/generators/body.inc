@@ -14,15 +14,16 @@
 #end if
 
     <div class="container">
-    #if $getVar('$Extras.pages.' + $page + '.zoomControl', False)
+    #if $Extras.pages[$page].get('zoomControl', False)
       #include "sections/zoomControl.inc"
     #end if
 
     #set charts = $getVar('$Extras.chart_definitions')
+    #set $pages = $getVar('$Extras.pages')
     #set processing_grid = False
-    #for $section in $getVar('Extras.pages.' + $page)
+    #for $section in $pages[$page]
       #set include_name = $getVar('Extras.pages.' + $page + '.' + $section + '.filename', None)
-      #if isinstance($Extras.pages[$page][$section],dict) and to_bool($getVar('Extras.pages.' + $page + '.' + $section + '.enable', True))
+      #if isinstance($pages[$page][$section], dict) and to_bool($pages[$page][$section].get('enable', True))
         #set layout = $getVar('Extras.pages.' + $page + '.' + $section + '.layout', 'grid')
         #if $layout == 'grid' 
           #if not $processing_grid
@@ -57,7 +58,7 @@
     </div>
     #if $page_name_global != 'about'
       <script src="../charts/${page_name_global}.js"></script>
-  #end if
+    #end if
     
     <!-- Modal -->
 <div class="modal" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalTitle" aria-hidden="true">

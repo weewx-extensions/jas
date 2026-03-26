@@ -16,6 +16,8 @@ import types
 
 from user.tests import helpers
 
+from user.tests.unit.data.template_results.body_inc import result_page_has_section
+
 class TestTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -72,12 +74,10 @@ source-bar
         result = template_instance.respond()
 
         print(template_instance.getVar('current_modal_global'))
-        # print(result)
-        print("done")
+        print(result)
+        # print("done")
 
-    def testX(self):
-        print("start")
-
+    def testXZ(self):
         page_data = types.SimpleNamespace(
             foo4 = {}
             #foo4 = ['a']
@@ -117,6 +117,44 @@ source-bar
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
         print(result)
+
+        #print("done")
+
+    def testX(self):
+        print("start")
+        self.maxDiff = None
+
+        page_name = 'foo1'
+        section_name = 'debug'
+        extras = types.SimpleNamespace(
+            pages = {
+                page_name: {
+                    section_name: {}
+                }
+            },
+            chart_definitions = 'bar1',
+            current = {
+                'observations': {
+                    'obs1': {
+                        'display': False
+                    }
+                }
+            },
+        )
+
+        data = {
+            'page': page_name,
+            'Extras': extras,
+            'page_name_global': 'bar2',
+        }
+
+        filename = 'generators/body.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        self.assertEqual(result, result_page_has_section)
 
         print("done")
 
