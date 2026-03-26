@@ -232,3 +232,59 @@ result_page_layout_is_not_grid = \
 
 
 '''
+
+result_page_current_has_modal = \
+'''
+
+
+    <div class="container">
+
+
+    </div>
+      <script src="../charts/bar2.js"></script>
+    
+    <!-- Modal -->
+<div class="modal" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="chartModalHeader">
+        <h5 class="modal-title" id="chartModalTitle">Modal title</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="chartModalBody">
+        ...
+      </div>
+      <div class="modal-footer" id="chartModalFooter"></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="currentModal" tabindex="-1" role="dialog" aria-labelledby="currentModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" id="currentModalHeader">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="currentModalBody">
+                <table class="table">
+                    <tbody>
+                             <tr class="row mx0"> 
+                                <th scope="row" class="col" obs_label="obs1"></th>
+                                <td id="obs1_value_modal" class="col"></td>
+                            
+                    </tbody>
+                </table>
+                <div id="updateModalDate" class="text-center"></div>
+          
+            </div>
+            <div class="modal-footer" id="currentModalFooter"></div>
+        </div>
+    </div>
+</div>
+'''

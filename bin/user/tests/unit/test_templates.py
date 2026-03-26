@@ -16,7 +16,7 @@ import types
 from user.tests import helpers
 
 from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug,\
-      result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid
+      result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal
 
 class TestBodyInc(unittest.TestCase):
     @classmethod
@@ -204,6 +204,42 @@ class TestBodyInc(unittest.TestCase):
         result = template_instance.respond()
         print(f"----\n{result}\n----")
         self.assertEqual(result, result_page_layout_is_not_grid)
+
+    def test_page_has_current_modal(self):
+        self.maxDiff = None
+
+        page_name = 'foo1'
+        section_data = 'foo2'
+        extras = types.SimpleNamespace(
+            pages = {
+                page_name: {
+                    'section': section_data
+                }
+            },
+            chart_definitions = 'bar1',
+            current = {
+                'observations': {
+                    'obs1': {
+                        'display': 'modal'
+                    }
+                }
+            },
+        )
+
+        data = {
+            'page': page_name,
+            'Extras': extras,
+            'page_name_global': 'bar2',
+        }
+
+        filename = 'generators/body.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+
+        self.assertEqual(result, result_page_current_has_modal)
 
 if __name__ == '__main__':
     helpers.run_tests()
