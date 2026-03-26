@@ -22,8 +22,8 @@
     #set $pages = $getVar('$Extras.pages')
     #set processing_grid = False
     #for $section in $pages[$page]
-      #set include_name = $getVar('Extras.pages.' + $page + '.' + $section + '.filename', None)
       #if isinstance($pages[$page][$section], dict) and to_bool($pages[$page][$section].get('enable', True))
+        #set include_name = $pages[$page][$section].get('filename', None)
         #set layout = $getVar('Extras.pages.' + $page + '.' + $section + '.layout', 'grid')
         #if $layout == 'grid' 
           #if not $processing_grid
