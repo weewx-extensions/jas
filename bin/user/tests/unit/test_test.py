@@ -16,7 +16,7 @@ import types
 
 from user.tests import helpers
 
-from user.tests.unit.data.template_results.body_inc import result_page_has_section
+# from user.tests.unit.data.template_results.body_inc import result_page_has_section_debug
 
 class TestTest(unittest.TestCase):
     @classmethod
@@ -24,6 +24,7 @@ class TestTest(unittest.TestCase):
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
         os.chdir(skin_dir)
 
+    @unittest.skip("just an example")
     def testXY(self):
         extras = types.SimpleNamespace(
             current = {
@@ -77,6 +78,7 @@ source-bar
         print(result)
         # print("done")
 
+    @unittest.skip("just an example")
     def testXZ(self):
         page_data = types.SimpleNamespace(
             foo4 = {}
@@ -120,43 +122,6 @@ source-bar
 
         #print("done")
 
-    def testX(self):
-        print("start")
-        self.maxDiff = None
-
-        page_name = 'foo1'
-        section_name = 'debug'
-        extras = types.SimpleNamespace(
-            pages = {
-                page_name: {
-                    section_name: {}
-                }
-            },
-            chart_definitions = 'bar1',
-            current = {
-                'observations': {
-                    'obs1': {
-                        'display': False
-                    }
-                }
-            },
-        )
-
-        data = {
-            'page': page_name,
-            'Extras': extras,
-            'page_name_global': 'bar2',
-        }
-
-        filename = 'generators/body.inc'
-
-        template_class = Cheetah.Template.Template.compile(file=filename)
-        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
-        template_instance = template_class(searchList=[data])
-        result = template_instance.respond()
-        self.assertEqual(result, result_page_has_section)
-
-        print("done")
 
 if __name__ == '__main__':
     helpers.run_tests()

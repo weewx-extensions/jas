@@ -79,13 +79,35 @@ result_page_has_zoom_control = \
 
 '''
 
-result_page_has_section = \
+result_page_has_section_debug = \
 '''
 
 
     <div class="container">
 
+            <div class="row graphrow align-content-start">
 
+<button id="connectButton" class="btn d-none" type="button" text_label="connect_button_label" onclick="MQTTConnect()"></button>
+<button id="disconnectButton" class="btn d-none" type="button" text_label="disconnect_button_label" onclick="MQTTDisconnect()"></button>
+
+<div class="col-sm-10 mb-4">
+  <button type="button" class="btn" onclick="copyLog()">Copy Log</button>
+  <button type="button" class="btn" onclick="clearLog()">Clear Log</button>
+</div>
+
+<div class="col-sm-10 mb-4">
+  <div class="text-wrap" id="logDisplay"
+    style="overflow-y:scroll; height:300px">
+  </div>
+</div>
+
+<script>
+  if (window.self === window.top) {
+    document.getElementById('connectButton').classList.remove("d-none");
+    document.getElementById('disconnectButton').classList.remove("d-none");
+  }
+</script> 
+      </div>
     </div>
       <script src="../charts/bar2.js"></script>
     
