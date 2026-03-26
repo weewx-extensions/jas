@@ -10,6 +10,7 @@
 import unittest
 
 import Cheetah.Template
+import copy
 import os
 import types
 
@@ -17,6 +18,11 @@ from user.tests import helpers
 
 from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug,\
       result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
+
+from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration
+
+def stub_logdbg(_arg1):
+    pass
 
 class TestBodyInc(unittest.TestCase):
     @classmethod
@@ -202,7 +208,7 @@ class TestBodyInc(unittest.TestCase):
         # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
-        print(f"----\n{result}\n----")
+
         self.assertEqual(result, result_page_layout_is_not_grid)
 
     def test_page_has_current_modal(self):
@@ -277,6 +283,65 @@ class TestBodyInc(unittest.TestCase):
         result = template_instance.respond()
 
         self.assertEqual(result, result_page_display_aeris_alerts)
+
+class TestDataGen(unittest.TestCase):
+    page = 'foo8'
+    page_definition_name_global = 'foo2'
+    extras = types.SimpleNamespace(
+        page_definition = {
+            page_definition_name_global: {
+                'aggregate_interval': ['bar1']
+            }
+        },
+        pages = {
+            page: {}
+        },
+        chart_definitions = {}
+    )
+
+    data = {
+        'data_binding': 'foo1',
+        'page_definition_name_global': page_definition_name_global,
+        'version': 'foo3',
+        'genTime': 'foo4',
+        'aggregate_types': ['foo5'],
+        'interval_long_name_global': 'foo6',
+        'observations': {
+            'obs1': {
+                'aggregate_types': {
+                    'data_binding': {
+                        'unit_name': ['foo7']
+                    }
+                },
+            }
+        },
+        'page': page,
+        'HTML_ROOT': 'foo8',
+        'filename': 'foo9',
+        'logdbg': stub_logdbg,
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        os.chdir(skin_dir)
+
+    def test_miminal_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestDataGen.extras)
+        data = copy.deepcopy(TestDataGen.data)
+
+        data['Extras'] = extras
+
+        filename = 'generators/data.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_data_minimal_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()
