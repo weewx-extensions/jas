@@ -6,7 +6,7 @@
 #set global current_modal_global = False
 #if $getVar('$Extras.current', False)
   #for observation in $getVar('$Extras.current.observations', {})
-      #if 'modal' in to_list($getVar('$Extras.current.observations.' + $observation + '.display', ['page', 'modal']))
+      #if 'modal' in to_list($Extras.current['observations'][$observation].get('display', ['page', 'modal']))
           #set global current_modal_global = True
           #break
       #end if
@@ -24,7 +24,7 @@
     #for $section in $pages[$page]
       #if isinstance($pages[$page][$section], dict) and to_bool($pages[$page][$section].get('enable', True))
         #set include_name = $pages[$page][$section].get('filename', None)
-        #set layout = $getVar('Extras.pages.' + $page + '.' + $section + '.layout', 'grid')
+        #set layout = $Extras.pages[$page][$section].get('layout', 'grid')
         #if $layout == 'grid' 
           #if not $processing_grid
             #set processing_grid = True
