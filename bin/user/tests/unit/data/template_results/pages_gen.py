@@ -323,3 +323,78 @@ result_pages_multiple_series = \
 
   
 '''
+result_pages_debug_page = \
+'''
+
+
+<!doctype html>
+<html lang="foo1" data-bs-theme="light">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <meta name="generator" content="jas foo2 foo3">
+      
+
+      <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="../jas.css">
+      <link rel="stylesheet" type="text/css" href="../user.css">
+
+      <script src="https://cdn.jsdelivr.net/npm/echarts@latest/dist/echarts.min.js"></script>      <script src="https://cdn.jsdelivr.net/npm/moment@latest/moment.min.js"></script>
+      <script src="../data/internationalization.js"></script>
+      <script src="../data/foo4.js"></script>
+
+      <script src="../javascript/debug.js"></script>
+
+      <script src="https://cdn.jsdelivr.net/npm/paho-mqtt@latest/paho-mqtt.min.js"></script>      <script src="../javascript/mqtt.js"></script>
+
+      <!-- Optional JavaScript; choose one of the two! -->
+      <!-- Option 1: Bootstrap Bundle with Popper -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.bundle.min.js">      </script>
+
+      <!-- Option 2: Separate Popper and Bootstrap JS -->
+      <!--
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@latest/dist/umd/popper.min.js" ></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.min.js"></script>
+      -->
+
+   </head>
+    <body onresize="refreshSizes()" onload="refreshSizes()">
+      <div style="display: none;">
+        <iframe id="data-iframe"></iframe>
+      </div>
+
+
+
+    <div class="container">
+
+
+    </div>
+      <script src="../charts/debug.js"></script>
+    
+    <!-- Modal -->
+<div class="modal" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="chartModalHeader">
+        <h5 class="modal-title" id="chartModalTitle">Modal title</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="chartModalBody">
+        ...
+      </div>
+      <div class="modal-footer" id="chartModalFooter"></div>
+    </div>
+  </div>
+</div>
+
+
+    </body> 
+
+  
+'''

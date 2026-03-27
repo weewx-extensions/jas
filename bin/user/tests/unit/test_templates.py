@@ -24,7 +24,7 @@ from user.tests.unit.data.template_results.data_gen import result_data_minimal_c
     result_mqtt_configuration, result_data_windrose_configuration
 
 from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration,\
-    result_pages_comparison_series, result_pages_multiple_series
+    result_pages_comparison_series, result_pages_multiple_series, result_pages_debug_page
 
 def stub_logdbg(_arg1):
     pass
@@ -666,6 +666,21 @@ class TestPageGen(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_pages_multiple_series)
+
+    def test_debug_page(self):
+        self.maxDiff = None
+
+        data = copy.deepcopy(TestPageGen.data)
+        data['page_name_global'] = 'debug'
+
+        filename = 'generators/pages.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_pages_debug_page)
 
 if __name__ == '__main__':
     helpers.run_tests()
