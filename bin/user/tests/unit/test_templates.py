@@ -23,6 +23,8 @@ from user.tests.unit.data.template_results.data_gen import result_data_minimal_c
     result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax, result_current_conditions,\
     result_mqtt_configuration, result_data_windrose_configuration
 
+from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration
+
 def stub_logdbg(_arg1):
     pass
 
@@ -549,6 +551,48 @@ class TestDataGen(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_data_windrose_configuration)
+
+class TestPageGen(unittest.TestCase):
+    page = 'page-1'
+
+    extras = {
+        'pages': {
+            page: {}
+        },
+        'chart_definitions': {},
+    }
+
+    data = {
+        'lang': 'foo1',
+        'version': 'foo2',
+        'genTime': 'foo3',
+        'page': page,
+        'interval_name_global': 'foo4',
+        'page_name_global': 'foo5',
+        'HTML_ROOT': 'foo6',
+        'filename': 'foo7',
+        'Extras': extras,
+        'logdbg': stub_logdbg,
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        os.chdir(skin_dir)
+
+    def test_miminal_configuration(self):
+        self.maxDiff = None
+
+        data = copy.deepcopy(TestPageGen.data)
+
+        filename = 'generators/pages.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_pages_minimal_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()
