@@ -23,10 +23,10 @@
             "name": "Specific test",
             "type": "debugpy",
             "request": "launch",
-            "program": "bin/user/tests/unit/test_test.py",
+            "program": "bin/user/tests/unit/test_templates.py",
             "console": "integratedTerminal",
             "args": [
-                "TestTest",
+                "TestDataGen",
                 "testX"
             ]
         },

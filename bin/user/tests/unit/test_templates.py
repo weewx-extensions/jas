@@ -20,7 +20,7 @@ from user.tests.unit.data.template_results.body_inc import result_page_has_no_se
       result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
 
 from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration, result_display_aeris_observation,\
-    result_display_aeris_alert
+    result_display_aeris_alert, result_data_thisdate_no_aggregate
 
 def stub_logdbg(_arg1):
     pass
@@ -288,6 +288,7 @@ class TestBodyInc(unittest.TestCase):
 class TestDataGen(unittest.TestCase):
     page = 'foo8'
     page_definition_name_global = page
+    observation = 'obs1'
     extras = types.SimpleNamespace(
         page_definition = {
             page: {
@@ -300,8 +301,18 @@ class TestDataGen(unittest.TestCase):
         chart_definitions = {},
         current = {
             'observations': {}
-        }
+        },
+        thisdate = {
+            'observations': {
+                observation: {
+                    'unit': 'default'
+                }
+            }
+        },
     )
+
+    label = types.SimpleNamespace()
+    setattr(label, observation, 'obs-label')
 
     data = {
         'data_binding': 'foo1',
@@ -311,13 +322,16 @@ class TestDataGen(unittest.TestCase):
         'aggregate_types': ['foo5'],
         'interval_long_name_global': 'foo6',
         'observations': {
-            'obs1': {
+            observation: {
                 'aggregate_types': {
                     'data_binding': {
                         'unit_name': ['foo7']
                     }
                 },
             }
+        },
+        'unit': {
+            'label': label
         },
         'page': page,
         'HTML_ROOT': 'foo8',
@@ -388,6 +402,25 @@ class TestDataGen(unittest.TestCase):
         result = template_instance.respond()
         #print(f"----\n{result}\n----")
         self.assertEqual(result, result_display_aeris_alert)
+
+    def testX(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestDataGen.extras)
+        extras.pages[TestDataGen.page]['thisdate'] = {}
+
+        data = copy.deepcopy(TestDataGen.data)
+
+        data['Extras'] = extras
+
+        filename = 'generators/data.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_data_thisdate_no_aggregate)
 
 if __name__ == '__main__':
     helpers.run_tests()

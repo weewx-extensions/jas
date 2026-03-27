@@ -16,9 +16,12 @@ import types
 
 from user.tests import helpers
 
-# from user.tests.unit.data.template_results.body_inc import result_page_has_section_debug
+# from user.tests.unit.data.template_results.data_gen import result_display_aeris_alert
 
-class TestTest(unittest.TestCase):
+def stub_logdbg(_arg1):
+    pass
+
+class TestOld(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
@@ -122,6 +125,52 @@ source-bar
 
         #print("done")
 
+class TestTest(unittest.TestCase):
+    page = 'foo8'
+    page_definition_name_global = page
+    extras = types.SimpleNamespace(
+        page_definition = {
+            page: {
+                'aggregate_interval': ['bar1']
+            }
+        },
+        pages = {
+            page: {
+                'current': 'bar2'
+            }
+        },
+        chart_definitions = {},
+        current = {
+            'observations': {}
+        }
+    )
+
+    data = {
+        'data_binding': 'foo1',
+        'page_definition_name_global': page_definition_name_global,
+        'version': 'foo3',
+        'genTime': 'foo4',
+        'aggregate_types': ['foo5'],
+        'interval_long_name_global': 'foo6',
+        'observations': {
+            'obs1': {
+                'aggregate_types': {
+                    'data_binding': {
+                        'unit_name': ['foo7']
+                    }
+                },
+            }
+        },
+        'page': page,
+        'HTML_ROOT': 'foo8',
+        'filename': 'foo9',
+        'logdbg': stub_logdbg,
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        os.chdir(skin_dir)
 
 if __name__ == '__main__':
     helpers.run_tests()
