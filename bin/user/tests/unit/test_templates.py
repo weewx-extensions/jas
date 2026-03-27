@@ -19,7 +19,8 @@ from user.tests import helpers
 from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug,\
       result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
 
-from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration
+from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration, result_display_aeris_observation,\
+    result_display_aeris_alert
 
 def stub_logdbg(_arg1):
     pass
@@ -295,7 +296,7 @@ class TestDataGen(unittest.TestCase):
         },
         pages = {
             page: {
-                'current': 'bar2'
+                #'current': 'bar2'
             }
         },
         chart_definitions = {},
@@ -336,7 +337,7 @@ class TestDataGen(unittest.TestCase):
         self.maxDiff = None
 
         extras = copy.deepcopy(TestDataGen.extras)
-        del extras.pages[TestDataGen.page]['current']
+        #del extras.pages[TestDataGen.page]['current']
 
         data = copy.deepcopy(TestDataGen.data)
 
@@ -350,6 +351,46 @@ class TestDataGen(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_data_minimal_configuration)
+
+    def test_display_aeris_alerts(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestDataGen.extras)
+        extras.display_aeris_alert = True
+        extras.pages[TestDataGen.page]['current'] = {}
+
+        data = copy.deepcopy(TestDataGen.data)
+
+        data['Extras'] = extras
+
+        filename = 'generators/data.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        #print(f"----\n{result}\n----")
+        self.assertEqual(result, result_display_aeris_observation)
+
+    def test_display_aeries_alert(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestDataGen.extras)
+        extras.display_aeris_alert = True
+        extras.pages[TestDataGen.page]['current'] = {}
+
+        data = copy.deepcopy(TestDataGen.data)
+
+        data['Extras'] = extras
+
+        filename = 'generators/data.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        #print(f"----\n{result}\n----")
+        self.assertEqual(result, result_display_aeris_alert)
 
 if __name__ == '__main__':
     helpers.run_tests()
