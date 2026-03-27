@@ -20,7 +20,7 @@ from user.tests.unit.data.template_results.body_inc import result_page_has_no_se
       result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
 
 from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration, result_display_aeris_observation,\
-    result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate
+    result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax
 
 def stub_logdbg(_arg1):
     pass
@@ -309,6 +309,11 @@ class TestDataGen(unittest.TestCase):
                 }
             }
         },
+        minmax = {
+            'observations': {
+                observation: {}
+            }
+        },
     )
 
     label = types.SimpleNamespace()
@@ -422,8 +427,7 @@ class TestDataGen(unittest.TestCase):
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_data_thisdate_no_aggregate)
 
-
-    def testX(self):
+    def test_thisdate_has_aggregate(self):
         self.maxDiff = None
 
         extras = copy.deepcopy(TestDataGen.extras)
@@ -442,6 +446,25 @@ class TestDataGen(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_data_thisdate_has_aggregate)
+
+    def test_minmax(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestDataGen.extras)
+        extras.pages[TestDataGen.page]['minmax'] = {}
+
+        data = copy.deepcopy(TestDataGen.data)
+
+        data['Extras'] = extras
+
+        filename = 'generators/data.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_data_minmax)
 
 if __name__ == '__main__':
     helpers.run_tests()
