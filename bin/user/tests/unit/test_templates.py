@@ -295,9 +295,7 @@ class TestDataGen(unittest.TestCase):
             }
         },
         pages = {
-            page: {
-                #'current': 'bar2'
-            }
+            page: {}
         },
         chart_definitions = {},
         current = {
@@ -337,7 +335,6 @@ class TestDataGen(unittest.TestCase):
         self.maxDiff = None
 
         extras = copy.deepcopy(TestDataGen.extras)
-        #del extras.pages[TestDataGen.page]['current']
 
         data = copy.deepcopy(TestDataGen.data)
 
