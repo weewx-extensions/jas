@@ -23,7 +23,7 @@ from user.tests.unit.data.template_results.data_gen import result_data_minimal_c
     result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax, result_current_conditions,\
     result_mqtt_configuration, result_data_windrose_configuration
 
-from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration
+from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration
 
 def stub_logdbg(_arg1):
     pass
@@ -593,6 +593,26 @@ class TestPageGen(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_pages_minimal_configuration)
+
+    def test_zoom_control_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestPageGen.extras)
+        extras['pages'][TestPageGen.page] = {
+            'zoomControl': 'bar1'
+        }
+
+        data = copy.deepcopy(TestPageGen.data)
+        data['Extras'] = extras
+
+        filename = 'generators/pages.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        print(f"----\n{result}\n----")
+        self.assertEqual(result, result_pages_zoom_control_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()
