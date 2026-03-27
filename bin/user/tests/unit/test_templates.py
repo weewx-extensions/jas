@@ -23,10 +23,14 @@ from user.tests.unit.data.template_results.data_gen import result_data_minimal_c
     result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax, result_current_conditions,\
     result_mqtt_configuration, result_data_windrose_configuration
 
-from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration
+from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration,\
+    result_pages_comparison_series
 
 def stub_logdbg(_arg1):
     pass
+
+def stub_get_range(_arg1, _arg2, _arg3):
+    return (9, 10)
 
 class TestBodyInc(unittest.TestCase):
     @classmethod
@@ -560,6 +564,9 @@ class TestPageGen(unittest.TestCase):
             page: {}
         },
         'chart_definitions': {},
+        'page_definition': {
+            page: {}
+        }
     }
 
     data = {
@@ -573,6 +580,8 @@ class TestPageGen(unittest.TestCase):
         'filename': 'foo7',
         'Extras': extras,
         'logdbg': stub_logdbg,
+        'data_binding': 'foo8',
+        'getRange': stub_get_range,
     }
 
     @classmethod
@@ -613,6 +622,28 @@ class TestPageGen(unittest.TestCase):
         result = template_instance.respond()
         print(f"----\n{result}\n----")
         self.assertEqual(result, result_pages_zoom_control_configuration)
+
+    def test_comparison_series_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestPageGen.extras)
+        extras['page_definition'] = {
+            TestPageGen.page: {
+                'series_type': 'comparison'
+            }
+        }
+
+        data = copy.deepcopy(TestPageGen.data)
+        data['Extras'] = extras
+
+        filename = 'generators/pages.gen'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_pages_comparison_series)
 
 if __name__ == '__main__':
     helpers.run_tests()
