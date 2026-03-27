@@ -447,3 +447,96 @@ function getDatafoo6(pageDataString) {
 
   
 '''
+
+result_current_conditions = \
+'''
+
+
+/* jas foo3 foo4 */
+
+foo6foo5 = {};
+
+minMaxObs = [];
+thisDateObsList = [];
+var current = {};
+var current_observation = null;
+var current_aqi = null;
+var current_alert =null;
+var forecasts = [];
+
+var foo6startDate;
+var foo6endDate;
+var foo6startTimestamp;
+var foo6endTimestamp;
+var startMinMaxTimestamp;
+var endinMaxTimestamp;
+
+var updateDate;
+
+function getDatafoo6(pageDataString) {
+    pageData = JSON.parse(pageDataString);
+
+
+
+
+    forecasts = pageData.forecasts
+    foo6startDate = moment(pageData.startDate);
+    foo6endDate = moment(pageData.endDate);
+    foo6startTimestamp = pageData.startTimestamp;
+    foo6endTimestamp = pageData.endTimestamp;
+    startMinMaxDate = moment(pageData.startDate);
+    endMinMaxDate = moment(pageData.endDate);
+    startMinMaxTimestamp = pageData.startTimestamp;
+    endMinMaxTimestamp = pageData.endTimestamp;
+
+    var foo6endTimestamp_bar1 =  pageData.endTimestamp_bar1;
+
+    foo6data_binding.obs1_unit_name_foo7 = pageData.foo6data_binding.obs1_unit_name_foo7;
+    foo6data_binding_obs1_unit_name_foo7_dateTime = [].concat(foo6data_binding.obs1_unit_name_foo7.map(arr => arr[0]));
+    foo6data_binding_obs1_unit_name_foo7_data = [].concat(foo6data_binding.obs1_unit_name_foo7.map(arr => arr[1]));
+
+
+
+
+    var mqtt_enabled = false;
+    updateDate = pageData.updateDate;
+
+    current.header = {};
+    current.header.name = "obs1";
+
+    current.header.value = Number(pageData.currentHeaderValue);
+
+    if (!isNaN(current.header.value)) {
+        current.header.value = Number(current.header.value).toLocaleString(lang);
+    }
+    current.header.unit = "obs-label";
+
+    current.observations = new Map();
+    currentData = JSON.parse(pageData.currentData);
+
+
+
+
+    var observation = {};
+    observation.name = "obs1";
+    observation.mqtt = true;
+    observation.value = currentData.obs1;
+    if (!isNaN(observation.value)) {
+        observation.value = Number(observation.value).toLocaleString(lang);
+    }
+    observation.unit = "obs-label";
+    observation.maxDecimals = null;
+    observation.modalLabel = null;
+    observation.modalLabel = observation.name + "_value_modal";
+    current.observations.set("obs1", observation);
+
+    mqttData2 = {};
+    mqttData = {};
+
+
+
+
+}
+
+  
+'''
