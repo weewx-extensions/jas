@@ -286,17 +286,22 @@ class TestBodyInc(unittest.TestCase):
 
 class TestDataGen(unittest.TestCase):
     page = 'foo8'
-    page_definition_name_global = 'foo2'
+    page_definition_name_global = page
     extras = types.SimpleNamespace(
         page_definition = {
-            page_definition_name_global: {
+            page: {
                 'aggregate_interval': ['bar1']
             }
         },
         pages = {
-            page: {}
+            page: {
+                'current': 'bar2'
+            }
         },
-        chart_definitions = {}
+        chart_definitions = {},
+        current = {
+            'observations': {}
+        }
     )
 
     data = {
@@ -321,6 +326,7 @@ class TestDataGen(unittest.TestCase):
         'logdbg': stub_logdbg,
     }
 
+
     @classmethod
     def setUpClass(cls):
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
@@ -330,6 +336,8 @@ class TestDataGen(unittest.TestCase):
         self.maxDiff = None
 
         extras = copy.deepcopy(TestDataGen.extras)
+        del extras.pages[TestDataGen.page]['current']
+
         data = copy.deepcopy(TestDataGen.data)
 
         data['Extras'] = extras
