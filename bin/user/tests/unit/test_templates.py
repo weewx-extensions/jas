@@ -29,6 +29,8 @@ from user.tests.unit.data.template_results.pages_gen import result_pages_minimal
 from user.tests.unit.data.template_results.javascript import results_javascript_min_configuration, results_javascript_archive_pages_configuration,\
 results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration, results_javascript_mqtt_configuration
 
+from user.tests.unit.data.template_results.data import result_index_year_month_data
+
 def stub_logdbg(_arg1):
     pass
 
@@ -818,6 +820,37 @@ class TestJavascript(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, results_javascript_mqtt_configuration)
+
+class TestData(unittest.TestCase):
+    extras = {
+    }
+
+    data = {
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        os.chdir(skin_dir)
+
+    def test_index_year_month(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestJavascript.extras)
+
+        data = copy.deepcopy(TestJavascript.data)
+        data['Extras'] = extras
+        data['SummaryByYear'] = ['1999', '2000']
+        data['SummaryByMonth'] = ['1999-06', '1999-07', '1999-11', '1999-12']
+
+        filename = 'data/index.js.tmpl'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_index_year_month_data)
 
 if __name__ == '__main__':
     helpers.run_tests()
