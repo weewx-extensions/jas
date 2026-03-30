@@ -29,13 +29,54 @@ from user.tests.unit.data.template_results.pages_gen import result_pages_minimal
 from user.tests.unit.data.template_results.javascript import results_javascript_min_configuration, results_javascript_archive_pages_configuration,\
 results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration, results_javascript_mqtt_configuration
 
-from user.tests.unit.data.template_results.data import result_index_year_month_data
+from user.tests.unit.data.template_results.data import result_index_year_month_data, result_internationalization
 
 def stub_logdbg(_arg1):
     pass
 
 def stub_get_range(_arg1, _arg2, _arg3):
     return (9, 10)
+
+def stub_get_observation_labels(_arg1):
+    return {}
+
+def stub_get_text_labels(_arg1):
+    return {
+        'Language': {}
+    }
+
+def stub_get_datetime_formats(_arg1):
+    return {
+        'forecast_date_format': 'foo01',
+        'current_date_time': 'foo02',
+        'datepicker_date_format': 'foo03',
+        'year_to_year_xaxis_label': 'MM/DD',
+        'aggregate_interval_mqtt': {
+            'tooltip_x': 'foo05',
+            'xaxis_label': 'foo06',
+            'label': 'foo07'
+        },
+        'aggregate_interval_multiyear': {
+            'tooltip_x': 'foo08',
+            'xaxis_label': 'foo09',
+            'label': 'foo10'
+        },
+        'aggregate_interval_none': {
+            'tooltip_x': 'foo11',
+            'xaxis_label': 'foo12',
+            'label': 'foo013'
+        },
+        'aggregate_interval_hour': {
+            'tooltip_x': 'foo14',
+            'xaxis_label': 'foo15',
+            'label': 'foo016'
+        },
+        'aggregate_interval_day': {
+            'tooltip_x': 'foo17',
+            'xaxis_label': 'foo18',
+            'label': 'foo019'
+        },
+    }
 
 class TestBodyInc(unittest.TestCase):
     @classmethod
@@ -851,6 +892,32 @@ class TestData(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_index_year_month_data)
+
+
+    def test_internationalization(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestJavascript.extras)
+
+        data = copy.deepcopy(TestJavascript.data)
+        data['Extras'] = extras
+        data['lang'] = 'lang-1'
+        data['languages'] = {
+            'lang-1': {},
+            'lang-2': {},
+        }
+        data['observationLabels'] = stub_get_observation_labels
+        data['textLabels'] = stub_get_text_labels
+        data['dateTimeFormats'] = stub_get_datetime_formats
+
+        filename = 'data/internationalization.js.tmpl'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_internationalization)
 
 if __name__ == '__main__':
     helpers.run_tests()
