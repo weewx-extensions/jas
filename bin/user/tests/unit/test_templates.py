@@ -27,7 +27,7 @@ from user.tests.unit.data.template_results.pages_gen import result_pages_minimal
     result_pages_comparison_series, result_pages_multiple_series, result_pages_debug_page
 
 from user.tests.unit.data.template_results.javascript import results_javascript_min_configuration, results_javascript_archive_pages_configuration,\
-results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration
+results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration, results_javascript_mqtt_configuration
 
 def stub_logdbg(_arg1):
     pass
@@ -800,6 +800,24 @@ class TestJavascript(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, results_javascript_landing_page_configuration)
+
+    def test_mqtt_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestJavascript.extras)
+        extras['mqtt']['enable'] = True
+
+        data = copy.deepcopy(TestJavascript.data)
+        data['Extras'] = extras
+
+        filename = 'javascript/index.js.tmpl'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, results_javascript_mqtt_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()
