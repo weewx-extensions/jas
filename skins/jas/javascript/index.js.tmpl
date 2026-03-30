@@ -479,6 +479,7 @@ window.addEventListener("load", function (event) {
       sessionStorage.setItem('currentPage', '');
       #set landing_page = $getVar("$Extras.landing_page", "")
       #if not $landing_page in $getVar("$Extras.pages")
+        ## landing page not set, use first page in the navbar that is enabled
         #for $page_name in $getVar("$Extras.pages")
           #if to_bool($getVar("$Extras.pages." + $page_name + ".enable", True)) and \
               $getVar("$Extras.pages." + $page_name + ".navbar", 'primary') =='primary'
