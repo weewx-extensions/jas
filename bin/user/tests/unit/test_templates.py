@@ -34,7 +34,7 @@ from user.tests.unit.data.template_results.data import result_index_year_month_d
 from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation,\
     result_index_build_navigation_month, result_index_build_navigation_year, result_index_build_navigation_language
 
-from user.tests.unit.data.template_results.sections import result_current_modal_minimal_configuration
+from user.tests.unit.data.template_results.sections import result_current_modal_minimal_configuration, result_current_modal_configuration
 
 def stub_logdbg(_arg1):
     pass
@@ -1090,6 +1090,32 @@ class TestSections(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_current_modal_minimal_configuration)
+
+
+    def test_current_modal_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestSections.extras)
+        extras['current']['observation'] = 'obs-01'
+        extras['current']['observations'] = {
+            'obs-02': {},
+            'obs-03': {}
+        }
+        extras['display_aeris_observation'] = True
+        extras['display_aeris_aqi'] = True
+        extras['display_aeris_alert'] = True
+
+        data = copy.deepcopy(TestSections.data)
+        data['Extras'] = extras
+
+        filename = 'sections/current_modal.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_current_modal_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()
