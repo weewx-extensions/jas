@@ -81,8 +81,9 @@ textLabels = {};
 observationLabels.lang-1 = {};
 
 textLabels.lang-1 = {};
+textLabels.lang-1["Language"] = "Translated label";
 
-    languages['lang-1'] = '{}';
+    languages['lang-1'] = 'Translated label';
 
 dateTimeFormat.lang-1 = {};
 dateTimeFormat.lang-1.chart = {};
@@ -121,8 +122,9 @@ dateTimeFormat.lang-1.chart.day.label = "foo019";
 observationLabels.lang-2 = {};
 
 textLabels.lang-2 = {};
+textLabels.lang-2["Language"] = "Translated label";
 
-    languages['lang-2'] = '{}';
+    languages['lang-2'] = 'Translated label';
 
 dateTimeFormat.lang-2 = {};
 dateTimeFormat.lang-2.chart = {};
