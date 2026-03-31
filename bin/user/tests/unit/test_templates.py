@@ -36,7 +36,7 @@ from user.tests.unit.data.template_results.skin import result_index_min_configur
 
 from user.tests.unit.data.template_results.sections import result_chart_minimal_configuration, result_chart_configuration,\
     result_current_minimal_configuration, result_current_configuration, result_current_modal_minimal_configuration,\
-    result_current_modal_configuration, result_minmax_configuration
+    result_current_modal_configuration, result_minmax_configuration, result_thisdate_configuration
 
 def stub_logdbg(_arg1):
     pass
@@ -1241,6 +1241,31 @@ class TestSections(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_minmax_configuration)
+
+    def test_thisdate_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestSections.extras)
+        extras['thisdate'] = {
+            'observations': {
+                'obs-01': {
+                    'type': 'foo1'
+                },
+                'obs-02': {},                
+            }
+        }
+
+        data = copy.deepcopy(TestSections.data)
+        data['Extras'] = extras
+
+        filename = 'sections/thisdate.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_thisdate_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()

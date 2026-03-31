@@ -188,3 +188,33 @@ result_minmax_configuration = \
         </div>
     </div>
 </div>'''
+
+result_thisdate_configuration = \
+'''
+<div class="grid-cols01">
+    <div class="card">
+        <div class="card-body text-center">
+                <h5 class="card-title"  text_label="thisdate_title"></h5>
+                </h5>     
+                <input type="text" id="thisdatetimerange-input" style="text-align:center">   
+                <table class="table">
+                  <tbody>
+                        <tr  class="row mx0">
+                        <th class="col" scope="row" obs_label="obs-01"></th>
+                            <td id="obs-01_thisdate_foo1" class="col">
+                            </td>
+                            <td class="col"></td>
+                        </tr>    
+                        <tr  class="row mx0">
+                        <th class="col" scope="row" obs_label="obs-02"></th>
+                            <td id="obs-02_thisdate_min" class="col">
+                            </td>               
+                            <td id="obs-02_thisdate_max" class="col">
+                            </td>                                                          
+                        </tr>    
+                </tbody>
+                </table>     
+        </div>
+    </div>
+</div>
+'''
