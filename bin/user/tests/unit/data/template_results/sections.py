@@ -159,3 +159,32 @@ result_current_modal_configuration = \
         </div>
     </div>
 </div>'''
+
+result_minmax_configuration = \
+'''
+<div class="grid-cols01">
+    <div class="card">
+        <div class="card-body text-center">
+                <h5 class="card-title"  text_label="minmax_title"></h5>
+                </h5>        
+                <table class="table">
+                  <tbody>
+                        <tr class="row mx0">
+                            <th class="col" scope="row" obs_label="obs-01"></th>
+                            <td id="obs-01_minmax_min" class="col">
+                            </td>
+                            <td id="obs-01_minmax_max" class="col">
+                            </td>
+                        </tr>
+                        <tr class="row mx0">
+                            <th class="col" scope="row" obs_label="obs-02"></th>
+                            <td id="obs-02_minmax_min" class="col">
+                            </td>
+                            <td id="obs-02_minmax_max" class="col">
+                            </td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>'''
