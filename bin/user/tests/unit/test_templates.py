@@ -34,7 +34,7 @@ from user.tests.unit.data.template_results.data import result_index_year_month_d
 from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation,\
     result_index_build_navigation_month, result_index_build_navigation_year, result_index_build_navigation_language
 
-from user.tests.unit.data.template_results.sections import result_chart_minimal_configuration,\
+from user.tests.unit.data.template_results.sections import result_chart_minimal_configuration, result_chart_configuration,\
     result_current_minimal_configuration, result_current_configuration, result_current_modal_minimal_configuration, result_current_modal_configuration
 
 def stub_logdbg(_arg1):
@@ -1061,6 +1061,8 @@ class TestSkin(unittest.TestCase):
         self.assertEqual(result, result_index_build_navigation_language)
 
 class TestSections(unittest.TestCase):
+    page = 'paage-01'
+    section_global = 'section-01'
     extras = {
         'current': {
             'observations': {}
@@ -1069,9 +1071,9 @@ class TestSections(unittest.TestCase):
     }
 
     data = {
-        'page': 'page-01',
+        'page': page,
         'page_name_global': 'global-page-01',
-        'section_global': 'section-01',
+        'section_global': section_global,
     }
 
     @classmethod
@@ -1095,6 +1097,37 @@ class TestSections(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_chart_minimal_configuration)
+
+    def test_chart_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestSections.extras)
+        extras['pages'] = {
+            TestSections.page: {
+                TestSections.section_global: {
+                    'chart_modal': False
+                }
+            }
+        }
+        extras['chart_definitions'] = {
+            TestSections.section_global: {
+                'weewx': {
+                    'title': 'title-01'
+                }
+            }
+        }
+
+        data = copy.deepcopy(TestSections.data)
+        data['Extras'] = extras
+
+        filename = 'sections/chart.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_chart_configuration)
 
     def test_current_min_configuration(self):
         self.maxDiff = None

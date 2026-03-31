@@ -27,6 +27,22 @@ result_chart_minimal_configuration = \
     </div>   
 </div>   '''
 
+result_chart_configuration = \
+'''
+
+                                
+                                
+             
+<div class="grid-cols01">
+    <div class="card">
+    <div class="card-body text-center">
+               <h5 class="card-title"  data-bs-chart="section-01global-page-01" data-bs-title="title-01">            title-01
+        </h5>
+        <div id="section-01global-page-01"></div>
+    </div>
+    </div>   
+</div>   '''
+
 result_current_minimal_configuration = \
 '''
 
