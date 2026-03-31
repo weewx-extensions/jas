@@ -34,6 +34,8 @@ from user.tests.unit.data.template_results.data import result_index_year_month_d
 from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation,\
     result_index_build_navigation_month, result_index_build_navigation_year, result_index_build_navigation_language
 
+from user.tests.unit.data.template_results.sections import result_current_modal_minimal_configuration
+
 def stub_logdbg(_arg1):
     pass
 
@@ -1033,7 +1035,7 @@ class TestSkin(unittest.TestCase):
         # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
-        print(f"----\n{result}\n----")
+        # print(f"----\n{result}\n----")
         self.assertEqual(result, result_index_build_navigation_year)
 
     def test_index_build_navigation_language(self):
@@ -1056,6 +1058,38 @@ class TestSkin(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_index_build_navigation_language)
+
+class TestSections(unittest.TestCase):
+    extras = {
+        'current': {
+            'observations': {}
+        },
+    }
+
+    data = {
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
+        os.chdir(skin_dir)
+
+    def test_current_modal_min_configuration(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestSections.extras)
+
+        data = copy.deepcopy(TestSections.data)
+        data['Extras'] = extras
+
+        filename = 'sections/current_modal.inc'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_current_modal_minimal_configuration)
 
 if __name__ == '__main__':
     helpers.run_tests()
