@@ -31,7 +31,7 @@ results_javascript_archive_pages_month_disabled_configuration, results_javascrip
 
 from user.tests.unit.data.template_results.data import result_index_year_month_data, result_internationalization
 
-from user.tests.unit.data.template_results.skin import result_index_min_configuration
+from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation
 
 def stub_logdbg(_arg1):
     pass
@@ -957,6 +957,39 @@ class TestSkin(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_index_min_configuration)
+
+    def test_index_build_navigation(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestSkin.extras)
+        extras['pages'] = {
+            'page-01': {},
+            'page-02': {
+                'navbar': 'secondary',
+            },
+            'page-03': {
+                'query_string_on': 'page'
+            },
+            # ToDo: Is switching between primary and secondary navbar location 'legal'?
+            'page-04': {
+                'navbar': 'secondary',
+            },
+            'page-05': {
+                'enable': False,
+            }
+        }
+
+        data = copy.deepcopy(TestSkin.data)
+        data['Extras'] = extras
+
+        filename = 'index.html.tmpl'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_index_build_navigation)
 
 if __name__ == '__main__':
     helpers.run_tests()
