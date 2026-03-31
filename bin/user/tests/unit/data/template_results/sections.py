@@ -10,7 +10,7 @@
 # pylint: disable=line-too-long
 # pylint: disable=too-many-lines
 
-result_current_minimal_configuration = \
+result_chart_minimal_configuration = \
 '''
 <div class="modal" id="currentModal" tabindex="-1" role="dialog" aria-labelledby="currentModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -30,6 +30,21 @@ result_current_minimal_configuration = \
           
             </div>
             <div class="modal-footer" id="currentModalFooter"></div>
+        </div>
+    </div>
+</div>'''
+
+result_current_minimal_configuration = \
+'''
+
+<div class="grid-cols01">
+    <div class="card">
+        <div class="card-body text-center">
+                <table class="table">
+                  <tbody>
+                </tbody>
+            </table>
+            <div id="updateDateDiv"></div>
         </div>
     </div>
 </div>'''
