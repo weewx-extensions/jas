@@ -12,27 +12,20 @@
 
 result_chart_minimal_configuration = \
 '''
-<div class="modal" id="currentModal" tabindex="-1" role="dialog" aria-labelledby="currentModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header" id="currentModalHeader">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="currentModalBody">
-                <table class="table">
-                    <tbody>
-                    </tbody>
-                </table>
-                <div id="updateModalDate" class="text-center"></div>
-          
-            </div>
-            <div class="modal-footer" id="currentModalFooter"></div>
-        </div>
+
+                                
+                                
+                              
+             
+<div class="grid-cols01">
+    <div class="card">
+    <div class="card-body text-center">
+               <h5 class="card-title" text_label="section-01_title" data-bs-toggle="modal" data-bs-target="#chartModal" role="button" data-bs-chart="section-01global-page-01" data-bs-title="section-01_title">
+        </h5>
+        <div id="section-01global-page-01"></div>
     </div>
-</div>'''
+    </div>   
+</div>   '''
 
 result_current_minimal_configuration = \
 '''

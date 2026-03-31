@@ -1070,6 +1070,7 @@ class TestSections(unittest.TestCase):
 
     data = {
         'page': 'page-01',
+        'page_name_global': 'global-page-01',
         'section_global': 'section-01',
     }
 
@@ -1078,7 +1079,6 @@ class TestSections(unittest.TestCase):
         skin_dir = os.path.dirname(__file__) + '/../../../../skins/jas/'
         os.chdir(skin_dir)
 
-    @unittest.skip('')
     def test_chart_min_configuration(self):
         self.maxDiff = None
 
@@ -1087,7 +1087,7 @@ class TestSections(unittest.TestCase):
         data = copy.deepcopy(TestSections.data)
         data['Extras'] = extras
 
-        filename = 'sections/current_modal.inc'
+        filename = 'sections/chart.inc'
 
         template_class = Cheetah.Template.Template.compile(file=filename)
         # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
