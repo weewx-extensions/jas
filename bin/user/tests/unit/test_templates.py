@@ -31,7 +31,8 @@ results_javascript_archive_pages_month_disabled_configuration, results_javascrip
 
 from user.tests.unit.data.template_results.data import result_index_year_month_data, result_internationalization
 
-from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation
+from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation,\
+    result_index_build_navigation_month
 
 def stub_logdbg(_arg1):
     pass
@@ -990,6 +991,28 @@ class TestSkin(unittest.TestCase):
         result = template_instance.respond()
         # print(f"----\n{result}\n----")
         self.assertEqual(result, result_index_build_navigation)
+
+    def test_index_build_navigation_month(self):
+        self.maxDiff = None
+
+        extras = copy.deepcopy(TestSkin.extras)
+        extras['pages'] = {
+            'archive-month': {
+                'foo': 'bar'
+            }
+        }
+
+        data = copy.deepcopy(TestSkin.data)
+        data['Extras'] = extras
+
+        filename = 'index.html.tmpl'
+
+        template_class = Cheetah.Template.Template.compile(file=filename)
+        # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
+        template_instance = template_class(searchList=[data])
+        result = template_instance.respond()
+        # print(f"----\n{result}\n----")
+        self.assertEqual(result, result_index_build_navigation_month)
 
 if __name__ == '__main__':
     helpers.run_tests()
