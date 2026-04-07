@@ -204,6 +204,9 @@ class TestExtensions(unittest.TestCase):
         self.maxDiff = None
 
         now = int(time.time())
+        today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        year = str(today.year)
+        month = str(today.month)
 
         mock_generator = mock.Mock()
         mock_generator.skin_dict = configobj.ConfigObj(TestExtensions.skin_dict)
@@ -225,7 +228,7 @@ class TestExtensions(unittest.TestCase):
                 extension_list = SUT.get_extension_list(None, None)[0]
 
                 js = extension_list['genJs'](helpers.random_string(), TestExtensions.page_name, None, None, None, None)
-                self.assertEqual(js, result1.format(utc_offset=utc_offset, page_name=TestExtensions.page_name))
+                self.assertEqual(js, result1.format(utc_offset=utc_offset, page_name=TestExtensions.page_name, year=year, month=month))
 
     def test_extension_genJasOptions(self):
         self.maxDiff = None

@@ -12,8 +12,8 @@
 
 result1 =\
 '''// start
-selectedYear = '2026';
-selectedMonth = '3';
+selectedYear = '{year}';
+selectedMonth = '{month}';
 minFormat = 'none';
 maxFormat = 'none';
 pageName = '{page_name}';
