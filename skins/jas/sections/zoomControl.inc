@@ -1,9 +1,9 @@
-##    Copyright (c) 2021-2022 Rich Bell <bellrichm@gmail.com>
+##    Copyright (c) 2021-2026 Rich Bell <bellrichm@gmail.com>
 ##    See the file LICENSE.txt for your rights.
 <div class="row mb-4 justify-content-center">
-<div class="col text-center">
-    <a text_label="zoomControl_label"></a>
-    <input type="text" id="zoomdatetimerange-input" style="text-align:center">   
-    <button id="resetRange" text_label="resetRange_label" onclick="resetRange()"></button>
-</div>
+    <div class="col text-center">
+        <a text_label="zoomControl_label"></a>
+        <input type="text" id="zoomdatetimerange-input" style="text-align:center">   
+        <button id="resetRange" text_label="resetRange_label" onclick="resetRange()"></button>
+    </div>
 </div>

@@ -26,7 +26,7 @@
             "program": "bin/user/tests/unit/test_templates.py",
             "console": "integratedTerminal",
             "args": [
-                "TestCheetahTemplate",
+                "TestDataGen",
                 "testX"
             ]
         },
