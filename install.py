@@ -326,6 +326,7 @@ class JASInstaller(ExtensionInstaller):
                                              'skins/jas/javascript/about.js.tmpl',
                                              'skins/jas/javascript/day.js.tmpl',
                                              'skins/jas/javascript/debug.js.tmpl',
+                                             'skins/jas/javascript/functions.js',
                                              'skins/jas/javascript/index.js.tmpl',
                                              'skins/jas/javascript/last7days.js.tmpl',
                                              'skins/jas/javascript/last24hours.js.tmpl',
