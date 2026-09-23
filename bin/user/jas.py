@@ -1274,7 +1274,7 @@ class DataGenerator(JASGenerator):
             return data['response']
         else:
             if 'error' in data:
-                logerr(F"An error occurred: {data['error']['description']}")
+                logerr(F"An error occurred posting to {url}: {data['error']['description']}")
             else:
                 logerr("Unknown error")
             return {}
