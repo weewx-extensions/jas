@@ -16,18 +16,24 @@ import types
 
 from user.tests import helpers
 
-from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug, \
-    result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
+from user.tests.unit.data.template_results.body_inc import (
+    result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug,
+    result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal,
+    result_page_display_aeris_alerts)
 
-from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration, result_display_aeris_observation, \
-    result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax, result_current_conditions, \
-    result_mqtt_configuration, result_data_windrose_configuration
+from user.tests.unit.data.template_results.data_gen import (
+    result_data_minimal_configuration, result_display_aeris_observation, result_display_aeris_alert,
+    result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax,
+    result_current_conditions, result_mqtt_configuration, result_data_windrose_configuration)
 
-from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration, \
-    result_pages_comparison_series, result_pages_multiple_series, result_pages_debug_page
+from user.tests.unit.data.template_results.pages_gen import (
+    result_pages_minimal_configuration, result_pages_zoom_control_configuration,
+    result_pages_comparison_series, result_pages_multiple_series, result_pages_debug_page)
 
-from user.tests.unit.data.template_results.javascript import results_javascript_min_configuration, results_javascript_archive_pages_configuration, \
-    results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration, results_javascript_mqtt_configuration
+from user.tests.unit.data.template_results.javascript import (
+    results_javascript_min_configuration, results_javascript_archive_pages_configuration,
+    results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration,
+    results_javascript_mqtt_configuration)
 
 from user.tests.unit.data.template_results.data import result_index_year_month_data, result_internationalization
 
@@ -196,7 +202,6 @@ class TestBodyInc(unittest.TestCase):
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
         self.assertEqual(result, result_page_has_section_debug)
-
 
     def test_page_has_file_alert_model_inc(self):
         self.maxDiff = None
@@ -410,7 +415,6 @@ class TestDataGen(unittest.TestCase):
         'filename': 'foo9',
         'logdbg': stub_logdbg,
     }
-
 
     @classmethod
     def setUpClass(cls):
