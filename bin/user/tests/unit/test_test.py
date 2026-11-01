@@ -44,7 +44,7 @@ class TestOld(unittest.TestCase):
         }
 
         source = \
-        '''
+            '''
 source-foo
 
 #from weeutil.weeutil import to_bool, to_list
@@ -85,7 +85,7 @@ source-bar
     def testXZ(self):
         page_data = types.SimpleNamespace(
             foo4 = {}
-            #foo4 = ['a']
+            # foo4 = ['a']
         )
 
         extras = types.SimpleNamespace(
@@ -123,7 +123,7 @@ source-bar
         result = template_instance.respond()
         print(f"----\n{result}\n----")
 
-        #print("done")
+        # print("done")
 
 class TestTest(unittest.TestCase):
     page = 'foo8'

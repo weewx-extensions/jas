@@ -219,7 +219,7 @@ class TestExtensions(unittest.TestCase):
 
                 now = int(time.time())
                 utc_offset = (datetime.datetime.fromtimestamp(now) -
-                            datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
+                              datetime.datetime.utcfromtimestamp(now)).total_seconds()/60
 
                 mock_time.time.return_value = now
                 mock_get_languages.return_value = None
@@ -255,7 +255,7 @@ class TestExtensions(unittest.TestCase):
         self.maxDiff = None
 
         now = int(time.time())
-        first_timestamp = random.randint(0,0)
+        first_timestamp = random.randint(0, 0)
         last_timestamp = now
         first_year = int(datetime.datetime.fromtimestamp(first_timestamp).strftime('%Y'))
         last_year = int(datetime.datetime.fromtimestamp(last_timestamp).strftime('%Y')) + 1

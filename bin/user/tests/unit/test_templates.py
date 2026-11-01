@@ -16,26 +16,26 @@ import types
 
 from user.tests import helpers
 
-from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug,\
-      result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
+from user.tests.unit.data.template_results.body_inc import result_page_has_no_sections, result_page_has_zoom_control, result_page_has_section_debug, \
+    result_page_has_file_alert_modal_inc, result_page_layout_is_not_grid, result_page_current_has_modal, result_page_display_aeris_alerts
 
-from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration, result_display_aeris_observation,\
-    result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax, result_current_conditions,\
+from user.tests.unit.data.template_results.data_gen import result_data_minimal_configuration, result_display_aeris_observation, \
+    result_display_aeris_alert, result_data_thisdate_no_aggregate, result_data_thisdate_has_aggregate, result_data_minmax, result_current_conditions, \
     result_mqtt_configuration, result_data_windrose_configuration
 
-from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration,\
+from user.tests.unit.data.template_results.pages_gen import result_pages_minimal_configuration, result_pages_zoom_control_configuration, \
     result_pages_comparison_series, result_pages_multiple_series, result_pages_debug_page
 
-from user.tests.unit.data.template_results.javascript import results_javascript_min_configuration, results_javascript_archive_pages_configuration,\
-results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration, results_javascript_mqtt_configuration
+from user.tests.unit.data.template_results.javascript import results_javascript_min_configuration, results_javascript_archive_pages_configuration, \
+    results_javascript_archive_pages_month_disabled_configuration, results_javascript_landing_page_configuration, results_javascript_mqtt_configuration
 
 from user.tests.unit.data.template_results.data import result_index_year_month_data, result_internationalization
 
-from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation,\
+from user.tests.unit.data.template_results.skin import result_index_min_configuration, result_index_build_navigation, \
     result_index_build_navigation_month, result_index_build_navigation_year, result_index_build_navigation_language
 
-from user.tests.unit.data.template_results.sections import result_chart_minimal_configuration, result_chart_configuration,\
-    result_current_minimal_configuration, result_current_configuration, result_current_modal_minimal_configuration,\
+from user.tests.unit.data.template_results.sections import result_chart_minimal_configuration, result_chart_configuration, \
+    result_current_minimal_configuration, result_current_configuration, result_current_modal_minimal_configuration, \
     result_current_modal_configuration, result_minmax_configuration, result_thisdate_configuration
 
 def stub_logdbg(_arg1):
@@ -452,7 +452,7 @@ class TestDataGen(unittest.TestCase):
         # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
-        #print(f"----\n{result}\n----")
+        # print(f"----\n{result}\n----")
         self.assertEqual(result, result_display_aeris_observation)
 
     def test_display_aeries_alert(self):
@@ -472,7 +472,7 @@ class TestDataGen(unittest.TestCase):
         # print(f"----\n{Cheetah.Template.Template.generatedModuleCode(template_class)}\n----")
         template_instance = template_class(searchList=[data])
         result = template_instance.respond()
-        #print(f"----\n{result}\n----")
+        # print(f"----\n{result}\n----")
         self.assertEqual(result, result_display_aeris_alert)
 
     def test_thisdate_no_aggregate(self):
@@ -1251,7 +1251,7 @@ class TestSections(unittest.TestCase):
                 'obs-01': {
                     'type': 'foo1'
                 },
-                'obs-02': {},                
+                'obs-02': {},
             }
         }
 

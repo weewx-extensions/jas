@@ -27,18 +27,18 @@ This search list extension provides the following tags:
       interval: The interval name.
     Returns:
       The javascript
-        
+
   $genJasOptions
     Arguments:
       filename: The filename to write the options to.
       page: The page content the opitons are for.
     Returns:
       The options.
-    
+
   $genTime
     Returns:
       The current timestamp.
-    
+
   $getRange
     Arguments:
       start: The starting year.
@@ -46,7 +46,7 @@ This search list extension provides the following tags:
       data_binding: The WeeWX data binding.
     Returns:
       A tuple of the first and last year.
-    
+
         Input years can be the year, for example 1999.
         Or an offset from the first year in the database, +2.
         Or an offset from the last year in the database, -2.
@@ -126,12 +126,12 @@ import weewx
 import weecfg
 try:
     # Python 3
-    from urllib.request import Request, urlopen, HTTPError # pyright: ignore reportMissingImports=false
+    from urllib.request import Request, urlopen, HTTPError  # pyright: ignore reportMissingImports=false
     from urllib.error import URLError
 except ImportError:
     # Python 2
-    from urllib2 import Request, urlopen, HTTPError # pyright: ignore reportMissingImports=false
-    from urllib2 import URLError # pyright: ignore reportMissingImports=false
+    from urllib2 import Request, urlopen, HTTPError  # pyright: ignore reportMissingImports=false
+    from urllib2 import URLError  # pyright: ignore reportMissingImports=false
 
 from weewx.cheetahgenerator import SearchList
 from weewx.reportengine import merge_lang
@@ -140,10 +140,10 @@ from weewx.tags import TimespanBinder
 from weeutil.weeutil import to_bool, to_int, to_list, TimeSpan, timestamp_to_string
 
 try:
-    import weeutil.logger # pylint: disable=unused-import
+    import weeutil.logger  # pylint: disable=unused-import
     import logging
 
-    log = logging.getLogger(__name__) # pylint: disable=invalid-name
+    log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
     def logdbg(msg):
         """ log debug messages """
@@ -189,7 +189,7 @@ wind_ranges['meter_per_second'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
 wind_ranges['meter_per_second2'] = [1, 1.6, 3.4, 5.5, 8, 10.8, 13.9]
 wind_ranges['knot'] = [1, 4, 7, 11, 17, 22, 28]
 wind_ranges['knot2'] = [1, 4, 7, 11, 17, 22, 28]
-wind_ranges_count = len(wind_ranges) - 1
+WIND_RANGES_COUNT = len(wind_ranges) - 1
 
 class JAS(SearchList):
     """ Implement tags used by templates in the skin. """
@@ -206,12 +206,12 @@ class JAS(SearchList):
         logdbg(F"First run: {self.generator.first_run}")
         delta_time = self.gen_time - weewx.launchtime_ts if weewx.launchtime_ts else None
         logdbg(F"WeeWX uptime (seconds): {delta_time}")
-        #logdbg(self.skin_dict)
+        # logdbg(self.skin_dict)
 
         if 'lang' not in self.skin_dict:
             raise AttributeError("'lang' setting is required.")
 
-        #self.unit = weewx.units.UnitInfoHelper(generator.formatter, generator.converter)
+        # self.unit = weewx.units.UnitInfoHelper(generator.formatter, generator.converter)
 
         self.utc_offset = (datetime.datetime.fromtimestamp(self.gen_time) -
                            datetime.datetime.utcfromtimestamp(self.gen_time)).total_seconds()/60
@@ -247,29 +247,29 @@ class JAS(SearchList):
 
     def get_extension_list(self, timespan, db_lookup):
         # save these for use when the template variable/function is evaluated
-        #self.db_lookup = db_lookup
-        #self.timespan = timespan
+        # self.db_lookup = db_lookup
+        # self.timespan = timespan
 
         search_list_extension = {
-                                 'aggregate_types': self.aggregate_types,
-                                 'dateTimeFormats': self.get_datetime_formats,
-                                 'data_binding': self.data_binding,
-                                 'genJs': self.gen_js,
-                                 'genJasOptions': self.gen_jas_options,
-                                 'genTime': self.gen_time,
-                                 'getRange': self.get_range,
-                                 'getUnitLabel': self._get_unit_label,
-                                 'languages': self.languages,
-                                 'logdbg': logdbg,
-                                 'loginf': loginf,
-                                 'logerr': logerr,
-                                 'observations': self.observations,
-                                 'observationLabels': self.get_observation_labels,
-                                 'textLabels': self.get_text_labels,
-                                 #'utcOffset': self.utc_offset,
-                                 'version': VERSION,
-                                 'weewx_version': weewx.__version__,
-                                }
+            'aggregate_types': self.aggregate_types,
+            'dateTimeFormats': self.get_datetime_formats,
+            'data_binding': self.data_binding,
+            'genJs': self.gen_js,
+            'genJasOptions': self.gen_jas_options,
+            'genTime': self.gen_time,
+            'getRange': self.get_range,
+            'getUnitLabel': self._get_unit_label,
+            'languages': self.languages,
+            'logdbg': logdbg,
+            'loginf': loginf,
+            'logerr': logerr,
+            'observations': self.observations,
+            'observationLabels': self.get_observation_labels,
+            'textLabels': self.get_text_labels,
+            # 'utcOffset': self.utc_offset,
+            'version': VERSION,
+            'weewx_version': weewx.__version__,
+        }
 
         return [search_list_extension]
 
@@ -340,7 +340,7 @@ class JAS(SearchList):
         if 'thisdate' in self.skin_dict['Extras']:
             thisdate_observations = self.skin_dict.get('Extras', {}).get('thisdate', {}).get('observations', {})
             thisdate_data_binding = self.skin_dict.get('Extras', {}).get('thisdate', {}).get('data_binding', skin_data_binding)
-            for observation in  self.skin_dict['Extras']['thisdate']['observations'].sections:
+            for observation in self.skin_dict['Extras']['thisdate']['observations'].sections:
                 data_binding = thisdate_observations[observation].get('data_binding', thisdate_data_binding)
                 if observation not in self.wind_observations:
                     unit = thisdate_observations[observation].get('unit', 'default')
@@ -394,6 +394,7 @@ class JAS(SearchList):
         self.skin_dicts[language]['Texts'].merge((self.skin_dict['Extras'].get('lang', {}).get(language, {}).get('Texts', {})))
 
     def get_observation_labels(self, language):
+        """ The observation labels of a language. """
         if language not in self.skin_dicts:
             if language in self.languages:
                 self.build_skin_lang_dict(language)
@@ -401,6 +402,7 @@ class JAS(SearchList):
         return self.skin_dicts[language]['Labels']['Generic']
 
     def get_text_labels(self, language):
+        """ The text labels of a language. """
         if language not in self.skin_dicts:
             if language in self.languages:
                 self.build_skin_lang_dict(language)
@@ -462,6 +464,7 @@ class JAS(SearchList):
 
     # ToDo: duplicate code
     def get_range(self, start: int, end: int, data_binding: str) -> tuple[int, int]:
+        """ The start and end year a range option asks for. """
         dbm = self.generator.db_binder.get_manager(data_binding=data_binding)
         first_year = int(datetime.datetime.fromtimestamp(dbm.firstGoodStamp()).strftime('%Y'))
         last_year = int(datetime.datetime.fromtimestamp(dbm.lastGoodStamp()).strftime('%Y'))
@@ -483,6 +486,7 @@ class JAS(SearchList):
         return (start_year, end_year)
 
     def gen_js(self, filename: str, page: str, page_name: str, year: str, month: str, interval_long_name: str) -> str:
+        """ The javascript of a page. """
         start_time = time.time()
 
         today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -504,7 +508,7 @@ class JAS(SearchList):
         min_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('min', 'none')
         max_format = self.skin_dict['Extras']['page_definition'].get(page, {}).get('aggregate_interval', {}).get('max', 'none')
         if page in self.skin_dict['Extras']['pages'] and \
-          'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
+                'data' in to_list(self.skin_dict['Extras']['pages'][page].get('query_string_on', self.skin_dict['Extras']['pages'].get('query_string_on', []))):
             bust_cache = 'true'
         else:
             bust_cache = 'false'
@@ -561,6 +565,7 @@ class JAS(SearchList):
         return data
 
     def gen_jas_options(self, filename: str, page: str) -> str:
+        """ The chart options of a page. """
         start_time = time.time()
         data = ""
 
@@ -589,7 +594,7 @@ class JAS(SearchList):
             this_date = "false"
 
         if to_bool(self.skin_dict['Extras']['pages'][page].get('mqtt', True)) \
-             and to_bool(self.skin_dict['Extras'].get('mqtt', {}).get('enable', False)) or page == "debug":
+                and to_bool(self.skin_dict['Extras'].get('mqtt', {}).get('enable', False)) or page == "debug":
             mqtt = "true"
         else:
             mqtt = "false"
@@ -626,9 +631,9 @@ class JASGenerator(weewx.reportengine.ReportGenerator):
 
         self.data_binding = self.skin_dict['data_binding']
 
-        self.generator_dict = {'archive-day'  : weeutil.weeutil.genDaySpans,
+        self.generator_dict = {'archive-day': weeutil.weeutil.genDaySpans,
                                'archive-month': weeutil.weeutil.genMonthSpans,
-                               'archive-year' : weeutil.weeutil.genYearSpans}        
+                               'archive-year': weeutil.weeutil.genYearSpans}
 
     def _spangen(self, start_ts, stop_ts):
         return [weeutil.weeutil.TimeSpan(start_ts, stop_ts)]
@@ -653,7 +658,7 @@ class JASGenerator(weewx.reportengine.ReportGenerator):
 
         # If we're on an aggregation boundary, regenerate.
         time_dt = datetime.datetime.fromtimestamp(stop_ts)
-        tdiff = time_dt -  time_dt.replace(hour=0, minute=0, second=0, microsecond=0)
+        tdiff = time_dt - time_dt.replace(hour=0, minute=0, second=0, microsecond=0)
         if abs(tdiff.seconds % generate_interval_seconds) < 1:
             return False
 
@@ -705,9 +710,9 @@ class ChartGenerator(JASGenerator):
         self._set_chart_defs()
 
     def run(self):
-        self.generator_dict = {'archive-day'  : weeutil.weeutil.genDaySpans,
-                    'archive-month': weeutil.weeutil.genMonthSpans,
-                    'archive-year' : weeutil.weeutil.genYearSpans}        
+        self.generator_dict = {'archive-day': weeutil.weeutil.genDaySpans,
+                               'archive-month': weeutil.weeutil.genMonthSpans,
+                               'archive-year': weeutil.weeutil.genYearSpans}
 
         # Get start and stop times
         default_archive = self.db_binder.get_manager(self.data_binding)
@@ -727,8 +732,8 @@ class ChartGenerator(JASGenerator):
             stop_ts = default_archive.lastGoodStamp()
 
         destination_dir = os.path.join(self.config_dict['WEEWX_ROOT'],
-                                    self.skin_dict['HTML_ROOT'],
-                                    'charts')
+                                       self.skin_dict['HTML_ROOT'],
+                                       'charts')
 
         try:
             # Create the directory that is to receive the generated files.  If
@@ -740,16 +745,16 @@ class ChartGenerator(JASGenerator):
 
         for page_name in self.skin_dict['Extras']['pages'].sections:
             if self.skin_dict['Extras']['pages'].get('enable', True) and \
-                page_name in self.skin_dict['Extras']['page_definition']:
+                    page_name in self.skin_dict['Extras']['page_definition']:
 
                 if page_name in self.generator_dict:
                     _spangen = self.generator_dict[page_name]
                 else:
                     _spangen = self._spangen
                 for timespan in _spangen(start_ts, stop_ts):
-                    #self.timespan = timespan # ToDo:
+                    # self.timespan = timespan # ToDo:
                     start_tt = time.localtime(timespan.start)
-                    #stop_tt = time.localtime(timespan.stop)
+                    # stop_tt = time.localtime(timespan.stop)
                     if page_name == 'archive-year':
                         filename = os.path.join(destination_dir, "%4d.js") % start_tt[0]
                         period_type = 'historical'
@@ -894,22 +899,22 @@ class ChartGenerator(JASGenerator):
 
         chart_final = ("\n"
                        f"/* jas {VERSION} {str(self.gen_time)} */\n"
-                      f"utc_offset = {str(self.utc_offset)};\n"
-                      "function simpleTooltipFormatter(args) {\n"
-                      "  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n"
-                      "  let tooltip = `<div>${dateTime}</div> `;\n"
-                      "\n"
-                      "  args.forEach(({ color, seriesName, value }) => {\n"
-                      "    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n"
-                      "    if (value != null) {tooltip += `<div style='color: ${color};'>${seriesName} ${value}</div>`};\n"
-                      "  });\n"
-                      "  return tooltip;\n"
-                      "}\n"
-                      "\n"
-                      "function setupCharts() {\n"
-                      f"  ordinateNames = ['{self.ordinate_names_string}'];\n"
-                      f"{wind_range_legend}"
-                      "\n")
+                       f"utc_offset = {str(self.utc_offset)};\n"
+                       "function simpleTooltipFormatter(args) {\n"
+                       "  dateTime = moment.unix(args[0].axisValue/1000).utcOffset(utc_offset).format(dateTimeFormat[lang].chart[aggregate_interval].toolTipX);\n"
+                       "  let tooltip = `<div>${dateTime}</div> `;\n"
+                       "\n"
+                       "  args.forEach(({ color, seriesName, value }) => {\n"
+                       "    value = value[1] ? Number(value[1]).toLocaleString(lang) : value[1];\n"
+                       "    if (value != null) {tooltip += `<div style='color: ${color};'>${seriesName} ${value}</div>`};\n"
+                       "  });\n"
+                       "  return tooltip;\n"
+                       "}\n"
+                       "\n"
+                       "function setupCharts() {\n"
+                       f"  ordinateNames = ['{self.ordinate_names_string}'];\n"
+                       f"{wind_range_legend}"
+                       "\n")
 
         chart2 = ""
         chart3 = ""
@@ -934,7 +939,7 @@ class ChartGenerator(JASGenerator):
                 # If this was supported, this would make caching the javascript more complicated
                 # And possibly less useful
                 # The workaround is to define a specific chart for the page
-                #self.charts_def[chart].merge(self.skin_dict['Extras']['pages'][page][chart])
+                # self.charts_def[chart].merge(self.skin_dict['Extras']['pages'][page][chart])
 
                 if chart not in self.charts_javascript:
                     self.charts_javascript[chart] = {}
@@ -962,8 +967,8 @@ class ChartGenerator(JASGenerator):
                         name = "'name'" if name is not None else "null"
                         chart2 += ("seriesData = {};\n"
                                    f"seriesData.obs = '{obs}';\n"
-                                  f"seriesData.name = {name};\n"
-                                  "pageChart.series.push(seriesData);\n")
+                                   f"seriesData.name = {name};\n"
+                                   "pageChart.series.push(seriesData);\n")
                 elif series_type == 'multiple':
                     chart2 += "pageChart.def = option;\n"
                     chart3 += self._gen_update_multiple_chart_data(page_name, chart_def, chart_data_binding)
@@ -1004,8 +1009,8 @@ class ChartGenerator(JASGenerator):
             chart3 += ("      {name: " + name + ",\n"
                        "       data: [\n")
             (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
-                                                        self.skin_dict['Extras']['pages'][page_name].get('end', None),
-                                                        chart_data_binding)
+                                                     self.skin_dict['Extras']['pages'][page_name].get('end', None),
+                                                     chart_data_binding)
             for year in range(start_year, end_year):
                 chart3 += f"               ...year{str(year)}_{aggregate_type}.{weewx_observation}_{obs_data_binding},\n"
             chart3 += "             ]},\n"
@@ -1023,8 +1028,8 @@ class ChartGenerator(JASGenerator):
         obs_data_binding = chart_def['series'][obs].get('weewx', {}).get('data_binding', chart_data_binding)
         aggregate_type = chart_def['series'][obs]['weewx']['aggregate_type']
         (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page_name].get('start', None),
-                                                    self.skin_dict['Extras']['pages'][page_name].get('end', None),
-                                                    chart_data_binding)
+                                                 self.skin_dict['Extras']['pages'][page_name].get('end', None),
+                                                 chart_data_binding)
         for year in range(start_year, end_year):
             chart3 += (f"      {{name: '{str(year)}',\n"
                        f"       data: year{str(year)}_{aggregate_type}.{obs}_{obs_data_binding}"
@@ -1065,7 +1070,7 @@ class ChartGenerator(JASGenerator):
         if obs and series_type != 'comparison':
             aggregate_type = self.chart_defs[chart]['series'][obs]['weewx']['aggregate_type']
             aggregate_interval = self.skin_dict['Extras']['page_definition'][page].get('aggregate_interval', {}) \
-                                .get(aggregate_type, 'none')
+                .get(aggregate_type, 'none')
 
             if series_type == 'multiple':
                 return "  aggregate_interval = 'multiyear'\n"
@@ -1086,8 +1091,8 @@ class ChartGenerator(JASGenerator):
             if series_type == 'comparison':
                 obs = next(iter(value))
                 (start_year, end_year) = self._get_range(self.skin_dict['Extras']['pages'][page].get('start', None),
-                                                            self.skin_dict['Extras']['pages'][page].get('end', None),
-                                                            chart_data_binding)
+                                                         self.skin_dict['Extras']['pages'][page].get('end', None),
+                                                         chart_data_binding)
                 for year in range(start_year, end_year):
                     chart2 += ("     {\n"
                                f"    name: '{str(year)}',\n"
@@ -1130,7 +1135,7 @@ class ChartGenerator(JASGenerator):
                         if unit_name is not None:
                             y_axis_label = self._get_unit_label(unit_name)
                         else:
-                            y_axis_label = self._get_obs_unit_label( chart_def['weewx']['yAxis'][i_str]['weewx']['obs'])
+                            y_axis_label = self._get_obs_unit_label(chart_def['weewx']['yAxis'][i_str]['weewx']['obs'])
 
                         name_js = f"      name:' {y_axis_label}',\n"
                         del y_axis_default['name']
@@ -1230,8 +1235,8 @@ class DataGenerator(JASGenerator):
             # Even though 'closest' still uses xWeather's own algorithm and is 'older', it seems more accurate
             self.aqi_url = F"{aqi_endpoint}closest?p={latitude},{longitude}"
             self.aqi_url += F"&format=json&limit=1&client_id={client_id}&client_secret={client_secret}"
-            #self.aqi_url = F"{aqi_endpoint}{latitude},{longitude}"
-            #self.aqi_url += F"?format=json&limit=1&client_id={client_id}&client_secret={client_secret}"
+            # self.aqi_url = F"{aqi_endpoint}{latitude},{longitude}"
+            # self.aqi_url += F"?format=json&limit=1&client_id={client_id}&client_secret={client_secret}"
 
             self.alert_url = F"{alert_endpoint}{latitude},{longitude}"
             self.alert_url += F"?format=json&client_id={client_id}&client_secret={client_secret}"
@@ -1272,12 +1277,12 @@ class DataGenerator(JASGenerator):
 
         if 'success' in data and data['success']:
             return data['response']
+
+        if 'error' in data:
+            logerr(F"An error occurred posting to {url}: {data['error']['description']}")
         else:
-            if 'error' in data:
-                logerr(F"An error occurred posting to {url}: {data['error']['description']}")
-            else:
-                logerr("Unknown error")
-            return {}
+            logerr("Unknown error")
+        return {}
 
     def _get_forecasts(self):
         now = time.time()
@@ -1295,7 +1300,7 @@ class DataGenerator(JASGenerator):
 
     def _retrieve_forecasts(self, current_hour):
         forecast_observations = {
-            'US' : {
+            'US': {
                 'temp_max': 'maxTempF',
                 'temp_min': 'minTempF',
                 'temp_unit': 'F',
@@ -1304,7 +1309,7 @@ class DataGenerator(JASGenerator):
                 'wind_min': 'windSpeedMinMPH',
                 'wind_unit': 'mph',
             },
-            'METRIC' : {
+            'METRIC': {
                 'temp_max': 'maxTempC',
                 'temp_min': 'minTempC',
                 'temp_unit': 'C',
@@ -1313,7 +1318,7 @@ class DataGenerator(JASGenerator):
                 'wind_min': 'windSpeedMinKPH',
                 'wind_unit': 'km/h',
             },
-            'METRICWX' : {
+            'METRICWX': {
                 'temp_max': 'maxTempC',
                 'temp_min': 'minTempC',
                 'temp_unit': 'C',
@@ -1349,10 +1354,11 @@ class DataGenerator(JASGenerator):
                 forecast['temp_max'] = period[forecast_observations[self.unit_system]['temp_max']]
                 forecast['temp_unit'] = forecast_observations[self.unit_system]['temp_unit']
                 forecast['rain'] = period['pop']
-                forecast['wind_min'] = round(period[forecast_observations[self.unit_system]['wind_min']] \
-                                        * forecast_observations[self.unit_system]['wind_conversion'], wind_decimals)
-                forecast['wind_max'] = round(period[forecast_observations[self.unit_system]['wind_max']] \
-                                        * forecast_observations[self.unit_system]['wind_conversion'], wind_decimals)
+                wind_conversion = forecast_observations[self.unit_system]['wind_conversion']
+                forecast['wind_min'] = round(period[forecast_observations[self.unit_system]['wind_min']] * wind_conversion,
+                                             wind_decimals)
+                forecast['wind_max'] = round(period[forecast_observations[self.unit_system]['wind_max']] * wind_conversion,
+                                             wind_decimals)
                 forecast['wind_unit'] = forecast_observations[self.unit_system]['wind_unit']
                 forecasts.append(forecast)
 
@@ -1386,13 +1392,12 @@ class DataGenerator(JASGenerator):
                 value_tuple = weewx.units.UnknownType(obs_type)
 
         # Finally, return a ValueHelper
-        current_value =  weewx.units.ValueHelper(value_tuple, 'current', self.formatter, self.converter)
+        current_value = weewx.units.ValueHelper(value_tuple, 'current', self.formatter, self.converter)
         # End of stolen code
 
         if unit_name != 'default':
             return getattr(current_value, unit_name)
-        else:
-            return current_value
+        return current_value
 
     def _get_observations_information(self):
         observations = {}
@@ -1456,7 +1461,7 @@ class DataGenerator(JASGenerator):
         if 'thisdate' in self.skin_dict['Extras']:
             thisdate_observations = self.skin_dict.get('Extras', {}).get('thisdate', {}).get('observations', {})
             thisdate_data_binding = self.skin_dict.get('Extras', {}).get('thisdate', {}).get('data_binding', skin_data_binding)
-            for observation in  self.skin_dict['Extras']['thisdate']['observations'].sections:
+            for observation in self.skin_dict['Extras']['thisdate']['observations'].sections:
                 data_binding = thisdate_observations[observation].get('data_binding', thisdate_data_binding)
                 if observation not in self.wind_observations:
                     unit = thisdate_observations[observation].get('unit', 'default')
@@ -1518,7 +1523,7 @@ class DataGenerator(JASGenerator):
             return weeutil.weeutil.archiveDaySpan(time_stamp)
 
         if time_period == 'week':
-            #week_start = to_int(self.option_dict.get('week_start', 6))
+            # week_start = to_int(self.option_dict.get('week_start', 6))
             week_start = 6
             return weeutil.weeutil.archiveWeekSpan(time_stamp, startOfWeek=week_start, weeks_ago=0)
 
@@ -1558,23 +1563,23 @@ class DataGenerator(JASGenerator):
         for aggregate_type in self.skin_dict['Extras']['page_definition'][page_definition_name]['aggregate_interval']:
             aggregate_interval = self.skin_dict['Extras']['page_definition'][page_definition_name]['aggregate_interval'][aggregate_type]
             if aggregate_interval == 'day':
-                end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 86400 * 86400 - (self.utc_offset * 60)) * 1000
+                end_timestamp = (self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 86400 * 86400 - (self.utc_offset * 60)) * 1000
             elif aggregate_interval == 'hour':
-                end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 3600 * 3600 - (self.utc_offset * 60)) * 1000
+                end_timestamp = (self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 3600 * 3600 - (self.utc_offset * 60)) * 1000
             else:
-                end_timestamp =(self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 60 * 60 - (self.utc_offset * 60)) * 1000
+                end_timestamp = (self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw // 60 * 60 - (self.utc_offset * 60)) * 1000
 
-            data +=  f'  pageData.endTimestamp_{aggregate_type} = {str(end_timestamp)};\n'
+            data += f'  pageData.endTimestamp_{aggregate_type} = {str(end_timestamp)};\n'
 
         return data
 
     def _get_timespan_binder(self, timespan, time_period, data_binding):
         return TimespanBinder(self._get_timespan(time_period, timespan.stop),
-                                     self.db_binder.bind_default(data_binding),
-                                     data_binding=data_binding,
-                                     context=time_period,
-                                     formatter=self.formatter,
-                                     converter=self.converter)
+                              self.db_binder.bind_default(data_binding),
+                              data_binding=data_binding,
+                              context=time_period,
+                              formatter=self.formatter,
+                              converter=self.converter)
 
     def _get_aggregate(self, timespan, observation, data_binding, time_period, aggregate_type, unit_name = None, rounding=2, add_label=False, localize=False):
         obs_binder = weewx.tags.ObservationBinder(
@@ -1615,8 +1620,7 @@ class DataGenerator(JASGenerator):
         data_timespan = TimeSpan(start_ts, end_ts)
 
         # current day calculation
-        #day_ts = int(timespan.stop - timespan.stop % age)
-
+        # day_ts = int(timespan.stop - timespan.stop % age)
 
         start_vec_t1, stop_vec_t1, wind_speed_data_raw = weewx.xtypes.get_series(  # pylint: disable=unused-variable
             'windSpeed', data_timespan, db_manager)
@@ -1637,7 +1641,7 @@ class DataGenerator(JASGenerator):
             wind_data[ordinate_name]['max'] = 0
             wind_data[ordinate_name]['speed_data'] = []
             j = 0
-            while j < wind_ranges_count:
+            while j < WIND_RANGES_COUNT:
                 wind_data[ordinate_name]['speed_data'].append(0)
                 j += 1
             i += 1
@@ -1664,28 +1668,26 @@ class DataGenerator(JASGenerator):
 
             i += 1
 
-        for ordinate_name, _  in wind_data.items():
-            if wind_data[ordinate_name]['count'] > 0:
-                wind_data[ordinate_name]['average'] = \
-                    wind_data[ordinate_name]['sum'] / \
-                    wind_data[ordinate_name]['count']
+        for ordinate_data in wind_data.values():
+            if ordinate_data['count'] > 0:
+                ordinate_data['average'] = ordinate_data['sum'] / ordinate_data['count']
             else:
-                wind_data[ordinate_name]['average'] = 0.0
+                ordinate_data['average'] = 0.0
 
         wind_compass_avg = []
         wind_compass_max = []
         wind_compass_speeds = []
         j = 0
-        while j < wind_ranges_count:
+        while j < WIND_RANGES_COUNT:
             wind_compass_speeds.append([])
             j += 1
 
-        for wind_ordinal_data, _ in wind_data.items():
-            wind_compass_avg.append(wind_data[wind_ordinal_data]['average'])
-            wind_compass_max.append(wind_data[wind_ordinal_data]['max'])
+        for ordinate_data in wind_data.values():
+            wind_compass_avg.append(ordinate_data['average'])
+            wind_compass_max.append(ordinate_data['max'])
 
             i = 0
-            for wind_x in wind_data[wind_ordinal_data]['speed_data']:
+            for wind_x in ordinate_data['speed_data']:
                 wind_compass_speeds[i].append(wind_x)
                 i += 1
 
@@ -1747,10 +1749,10 @@ class DataGenerator(JASGenerator):
                                     weewx_observation = 'windGust'
                                 else:
                                     weewx_observation = 'windSpeed'
-                                #end if
+                                # end if
                             else:
                                 weewx_observation = observation
-                            #end if
+                            # end if
                             data += f'  pageData.{array_name} = {self._get_series(timespan, weewx_observation, data_binding, interval, None, None, self.time_display, "unix_epoch_ms", unit_name, 2, True)};\n'
 
         data += "\n"
@@ -1858,9 +1860,10 @@ class DataGenerator(JASGenerator):
     def _check_forecast(self):
         pages = self.skin_dict.get('Extras', {}).get('pages', {})
         for page in pages:
-            if to_bool(self.skin_dict['Extras']['pages'][page].get('enable', True)) and \
-                'forecast' in self.skin_dict['Extras']['pages'][page].sections and \
-                to_bool(self.skin_dict['Extras']['pages'][page]['forecast'].get('enable', True)):
+            page_dict = self.skin_dict['Extras']['pages'][page]
+            if to_bool(page_dict.get('enable', True)) and \
+                    'forecast' in page_dict.sections and \
+                    to_bool(page_dict['forecast'].get('enable', True)):
                 return True
 
         return False
@@ -1874,10 +1877,10 @@ class DataGenerator(JASGenerator):
         interval_end_seconds_global = self._get_timespan_binder(timespan, interval_name, page_data_binding).end.raw
 
         if self.skin_dict['Extras']['pages'][page_definition_name].get('windRose', None) is not None:
-            avg_value, max_value, wind_directions = self._get_wind_compass(data_binding=page_data_binding, start_time=interval_start_seconds_global, end_time=interval_end_seconds_global) # need to match function signature pylint: disable=unused-variable
+            avg_value, max_value, wind_directions = self._get_wind_compass(data_binding=page_data_binding, start_time=interval_start_seconds_global, end_time=interval_end_seconds_global)  # need to match function signature pylint: disable=unused-variable
             i = 0
             for wind in wind_directions:
-                data += "  pageData." + interval_long_name + "avg.windCompassRange"  + str(i) + "_" + page_data_binding + " = JSON.stringify(" +  str(wind) +  ");\n"
+                data += "  pageData." + interval_long_name + "avg.windCompassRange"  + str(i) + "_" + page_data_binding + " = JSON.stringify(" + str(wind) + ");\n"
                 i += 1
 
         return data
@@ -1914,7 +1917,7 @@ class DataGenerator(JASGenerator):
         year_month = {}
         for page_name in self.skin_dict['Extras']['pages'].sections:
             if self.skin_dict['Extras']['pages'].get('enable', True) and \
-                page_name in self.skin_dict['Extras']['page_definition']:
+                    page_name in self.skin_dict['Extras']['page_definition']:
 
                 generate_interval = self.skin_dict['Extras']['page_definition'][page_name].get('generate_interval', None)
                 if page_name in self.generator_dict:
@@ -1925,7 +1928,7 @@ class DataGenerator(JASGenerator):
                 for timespan in _spangen(start_ts, stop_ts):
                     # self.timespan = timespan
                     start_tt = time.localtime(timespan.start)
-                    #stop_tt = time.localtime(timespan.stop)
+                    # stop_tt = time.localtime(timespan.stop)
                     if page_name == 'archive-year':
                         year = f"{start_tt[0]:4d}"
                         if year not in year_month:
@@ -1964,7 +1967,7 @@ class DataGenerator(JASGenerator):
                         time_period = page_name
                         interval_long_name = page_name + '_'
 
-                    #ToDO: research this
+                    # ToDO: research this
                     if self._skip_generation(self.skin_dict.get('DataGenerator'), timespan, generate_interval, period_type, filename, stop_ts):
                         continue
 
@@ -2049,7 +2052,7 @@ class DataGenerator(JASGenerator):
         script_string = ''
         if page_definition_name in ['yeartoyear', 'multiyear']:
             data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding',
-                                                                        self.skin_dict['Extras'].get('data_binding', self.data_binding))
+                                                                                       self.skin_dict['Extras'].get('data_binding', self.data_binding))
             (year_start, year_end) = self._get_range(self.skin_dict['Extras']['pages'][page_definition_name].get('start', None),
                                                      self.skin_dict['Extras']['pages'][page_definition_name].get('end', None),
                                                      data_binding)
@@ -2063,14 +2066,14 @@ class DataGenerator(JASGenerator):
             dataload_string += f'        {interval_long_name}dataLoad();\n'
         elif series_type in ['multiple', 'comparison']:
             data_binding = self.skin_dict['Extras']['pages'][page_definition_name].get('data_binding',
-                                                                        self.skin_dict['Extras'].get('data_binding', self.data_binding))
+                                                                                       self.skin_dict['Extras'].get('data_binding', self.data_binding))
             (year_start, year_end) = self._get_range(self.skin_dict['Extras']['pages'][page_definition_name].get('start', None),
                                                      self.skin_dict['Extras']['pages'][page_definition_name].get('end', None),
                                                      data_binding)
             for year in range(year_start, year_end):
                 dataload_string += f'        year{str(year)}_dataLoad();\n'
 
-        data = user.jas_templates.data_load_template.format(VERSION=VERSION,
+        data = user.jas_templates.DATA_LOAD_TEMPLATE.format(VERSION=VERSION,
                                                             gen_time=self.gen_time,
                                                             momentjs_version=momentjs_version,
                                                             momentjs_minified=momentjs_minified,
@@ -2096,7 +2099,7 @@ class DataGenerator(JASGenerator):
 
         data_aqi = '  pageData.aqi = {};\n'
         if self.data_aqi:
-            data_aqi += user.jas_templates.data_aqi_template.format(data_aqi_value=str(self.data_aqi["value"]),
+            data_aqi += user.jas_templates.DATA_AQI_TEMPLATE.format(data_aqi_value=str(self.data_aqi["value"]),
                                                                     data_aqi_timestamp=str(self.data_aqi["timestamp"]),
                                                                     data_aqi_category=self.data_aqi["category"],
                                                                     data_aqi_color=self.data_aqi["color"],
@@ -2109,7 +2112,7 @@ class DataGenerator(JASGenerator):
         if self.data_alert:
             data_alert += '  pageData.alerts = [];\n'
             for alert in self.data_alert:
-                data_alert += user.jas_templates.data_alert_template.format(alert_type=alert["type"].replace(".", "_"),
+                data_alert += user.jas_templates.DATA_ALERT_TEMPLATE.format(alert_type=alert["type"].replace(".", "_"),
                                                                             alert_name=alert["name"],
                                                                             alert_loc=alert["loc"],
                                                                             alert_emergency=str(alert["emergency"]).lower(),
@@ -2118,26 +2121,26 @@ class DataGenerator(JASGenerator):
                                                                             alert_cat=alert["cat"],
                                                                             alert_body=alert["body"].replace("\n", "<br>"),
                                                                             alert_body_full=alert["bodyFull"].replace("\n", "<br>")
-                                                                           )
+                                                                            )
         else:
             data_alert += '  pageData.alerts = null;\n'
 
         data_forecast = '  pageData.forecasts = [];\n\n'
         if self.data_forecast:
             for forecast in self.data_forecast:
-                data_forecast += user.jas_templates.data_forecast_tempate.format(forecast_timestamp=str(forecast["timestamp"]),
-                                                                                forecast_observation_codes='"' + '","'.join(forecast["observation"]) +'"',
-                                                                                forecast_day_code=forecast["day"],
-                                                                                forecast_temp_min=str(forecast["temp_min"]),
-                                                                                forecast_temp_max=str(forecast["temp_max"]),
-                                                                                forecast_temp_unit=forecast["temp_unit"],
-                                                                                forecast_rain=str(forecast["rain"]),
-                                                                                forecast_wind_min=str(forecast["wind_min"]),
-                                                                                forecast_wind_max=str(forecast["wind_max"]),
-                                                                                forecast_wind_unit=forecast["wind_unit"]
-                                                                                )
+                data_forecast += user.jas_templates.DATA_FORECAST_TEMPLATE.format(
+                    forecast_timestamp=str(forecast["timestamp"]),
+                    forecast_observation_codes='"' + '","'.join(forecast["observation"]) + '"',
+                    forecast_day_code=forecast["day"],
+                    forecast_temp_min=str(forecast["temp_min"]),
+                    forecast_temp_max=str(forecast["temp_max"]),
+                    forecast_temp_unit=str(forecast["temp_unit"]),
+                    forecast_rain=str(forecast["rain"]),
+                    forecast_wind_min=str(forecast["wind_min"]),
+                    forecast_wind_max=str(forecast["wind_max"]),
+                    forecast_wind_unit=forecast["wind_unit"])
 
-        data = user.jas_templates.data_load_template2.format(VERSION=VERSION,
+        data = user.jas_templates.DATA_LOAD_TEMPLATE2.format(VERSION=VERSION,
                                                              gen_time=self.gen_time,
                                                              interval_long_name=interval_long_name)
 
@@ -2180,7 +2183,7 @@ class DataGenerator(JASGenerator):
         current_data_binding = self.skin_dict['Extras']['current'].get('data_binding', skin_data_binding)
         interval_current = self.skin_dict['Extras']['current'].get('interval', interval)
 
-        #data += 'var mqtt_enabled = false;\n'
+        # data += 'var mqtt_enabled = false;\n'
         data += f'  pageData.updateDate = {str(self._get_current(timespan, "dateTime", data_binding=current_data_binding, unit_name="default").raw * 1000)};\n'
         if self.skin_dict['Extras']['current'].get('observation', False):
             data_binding = self.skin_dict['Extras']['current'].get('header_data_binding', current_data_binding)
@@ -2189,18 +2192,18 @@ class DataGenerator(JASGenerator):
         data += '  var currentData = {};\n'
         for observation in self.skin_dict['Extras']['current']['observations']:
             data_binding = self.skin_dict['Extras']['current']['observations'][observation].get('data_binding', current_data_binding)
-            type_value =  self.skin_dict['Extras']['current']['observations'][observation].get('type', "")
+            type_value = self.skin_dict['Extras']['current']['observations'][observation].get('type', "")
             unit_name = self.skin_dict['Extras']['current']['observations'][observation].get('unit', "default")
 
             if type_value == 'rise':
-                 # ToDo: this is a place holder and needs work
-                #set observation_value = '"' + str($getattr($almanac, $observation + 'rise')) + '";'
+                # ToDo: this is a place holder and needs work
+                # set observation_value = '"' + str($getattr($almanac, $observation + 'rise')) + '";'
                 observation_value = 'bar'
-                #label = 'foo'
+                # label = 'foo'
             elif type_value in ['first', 'last', 'min', 'max', 'sum']:
                 observation_value = self._get_aggregate(timespan, observation, data_binding, interval_current, type_value, unit_name, False)
             else:
-                observation_value = self._get_current(timespan, observation, data_binding, unit_name).format(add_label=False,localize=False)
+                observation_value = self._get_current(timespan, observation, data_binding, unit_name).format(add_label=False, localize=False)
 
             data += f'  currentData.{observation} = "{observation_value}";\n'
 

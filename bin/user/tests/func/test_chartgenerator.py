@@ -21,7 +21,7 @@ import weewx.manager
 
 import user.jas
 
-from  user.tests.func.data.chartgenerator_results import result1, result2, result3, result4
+from user.tests.func.data.chartgenerator_results import result1, result2, result3, result4
 
 config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_error=True)
 
@@ -34,7 +34,7 @@ except ModuleNotFoundError:
 
 binding = 'wx_binding'
 
-#@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
+# @unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
 class TestChartGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
@@ -83,7 +83,7 @@ class TestChartGenerator(unittest.TestCase):
             generator = user.jas.ChartGenerator(config, config['StdReport']['jas'], ts, True, None, record)
 
             result = generator._gen_charts(helpers.random_string(), 'yeartoyear', 'yeartoyear', 'yeartoyear')
-            #print(result)
+            # print(result)
             self.assertEqual(result, result2.format(now=now, utc_offset=utc_offset))
 
             print("done 1")

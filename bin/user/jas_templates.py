@@ -7,8 +7,8 @@
 Data templates used by JAS skin.
 '''
 
-data_aqi_template = \
-'''
+DATA_AQI_TEMPLATE = \
+    '''
   pageData.aqi.value = {data_aqi_value};
   pageData.aqi.timestamp = {data_aqi_timestamp};
   pageData.aqi.category = "{data_aqi_category}";
@@ -17,8 +17,8 @@ data_aqi_template = \
   pageData.aqi.dominant = "{data_aqi_dominant}";
 '''
 
-data_alert_template = \
-'''
+DATA_ALERT_TEMPLATE = \
+    '''
   alert = {{}};
   alert.type = "alert_type_{alert_type}";
   alert.name = "{alert_name}";
@@ -32,8 +32,8 @@ data_alert_template = \
   pageData.alerts.push(alert);
 '''
 
-data_forecast_tempate = \
-'''
+DATA_FORECAST_TEMPLATE = \
+    '''
   forecast = {{}};
   forecast.timestamp = {forecast_timestamp};
   forecast.observation_codes = [{forecast_observation_codes}];
@@ -48,8 +48,8 @@ data_forecast_tempate = \
   pageData.forecasts.push(forecast);
 '''
 
-data_load_template = \
-'''<!doctype html>
+DATA_LOAD_TEMPLATE = \
+    '''<!doctype html>
 <html>
   <head>
     <meta name="generator" content="jas {VERSION} {gen_time}">
@@ -68,14 +68,13 @@ data_load_template = \
 </html>
 '''
 
-data_load_template2 =\
-'''// the start
+DATA_LOAD_TEMPLATE2 = (
+    '''// the start
 '''
-
-data_load_template2 +=\
-'''/* jas {VERSION} {gen_time} */
+    '''/* jas {VERSION} {gen_time} */
 pageData = {{}};
 function {interval_long_name}dataLoad() {{
   traceStart = Date.now();
   console.debug(Date.now().toString() + " dataLoad start");
 '''
+)

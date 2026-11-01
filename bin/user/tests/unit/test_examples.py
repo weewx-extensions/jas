@@ -132,7 +132,7 @@ $contents
         # 3. Instantiate the template and render
         # Passing data via searchList
         t = Template(template_def, searchList=[data])
-        actual_output = str(t).strip() # Convert to string and strip whitespace for clean comparison
+        actual_output = str(t).strip()  # Convert to string and strip whitespace for clean comparison
 
         # 4. Define the expected output
         expected_output = """

@@ -22,7 +22,7 @@ import weeutil.weeutil
 
 import user.jas
 
-from  user.tests.func.data.datagenerator_results import result1, result2
+from user.tests.func.data.datagenerator_results import result1, result2
 
 binding = 'wx_binding'
 config = configobj.ConfigObj('bin/user/tests/func/data/weewx.test.conf', file_error=True)
@@ -33,7 +33,7 @@ except ModuleNotFoundError:
     for _, data_binding in config['DataBindings'].items():
         data_binding['schema'] = 'schemas.wview_extended.schema'
 
-#@unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
+# @unittest.skip("Not ready to  run. Need to figure out how to deal with test data.")
 class TestDataGenerator(unittest.TestCase):
     def test_gen_it(self):
         self.maxDiff = None
