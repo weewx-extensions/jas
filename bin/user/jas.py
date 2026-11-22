@@ -178,7 +178,7 @@ except ImportError:
 
 import user.jas_templates
 
-VERSION = "1.2.0-rc03"
+VERSION = "1.2.0"
 
 wind_ranges = {}
 wind_ranges['mile_per_hour'] = [1, 4, 8, 13, 19, 25, 32]

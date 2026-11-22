@@ -212,3 +212,6 @@ Fixes:
 - Memory leaks
   Moved much of the generation from Cheetah to Python. '
   This works around the Cheetah cache growing forever when including files that change.
+  
+  V1.2.0
+  Major cleanup
