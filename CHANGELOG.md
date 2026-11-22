@@ -1,14 +1,19 @@
-  V1.2.0
+# Changelog
+
+## [1.2.0]
+
   Major cleanup
 
-V1.1.1
+## [1.1.1]
 
-Enhancements:
+### Enhancements
+
  - The forecast section now has an option to enable/disable.
  - Aggregations of 'min' and 'max' are now supported in the 'current' section.
    Useful for things like closest lightning strike (min distance).
 
-Fixes:
+### Fixed
+
 - Missing files when installing (#132).
 - Handle missing currentObservations (#135).
 - Missing latest month/year in dropdown (#136).
@@ -17,19 +22,20 @@ Fixes:
   Moved much of the generation from Cheetah to Python. '
   This works around the Cheetah cache growing forever when including files that change.
 
-V1.1.0
+## [1.1.0]
 
 This is a complete rewrite of WeeWX-JAS management and loading of WeeWX data, resulting in these improvements.
-- Refreshing data no longer requires a full page refresh/reload. 
+- Refreshing data no longer requires a full page refresh/reload.
   This is true for both the refresh button and automated refreshes.
-- An option to add a query string to data requests has been added. 
+- An option to add a query string to data requests has been added.
   This allows WeeWX-jas to leverage the internet's cache infrastructure.
   See, https://github.com/bellrichm/weewx-jas/wiki/Pages#query_string_on for additional information.
 - The data generated from WeeWx is now only generated once per aggregate interval.
 - Page html is only generated once, on the first report cycle after WeeWX startup.
 - Data helper javascript functions are only generated once, on the first report cycle after WeeWX startup.
 
-Fixes:
+### Fixed
+
 - 'Current' and 'Min/Max' sections are now optional.
 - 'Landing page' is now optional.
 - Handle the case where the WeeWX default value for 'unit_system' is missing.
@@ -37,45 +43,52 @@ Fixes:
 - Correct UTC offset used for min/max date time display.
 - Handle non-numeric, like N/A, current observation values.
 
-Additional Enhancements:
+### Additional Enhancements
+
 - Additional debug logging.
 
-V1.0.0
+## [1.0.0]
 
-Breaking Change:
 The 'topics = ' and '[[[[[fields]]]]]' have been moved under a [[[[[topics]]]]] section.
+
 See https://github.com/bellrichm/weewx-jas/wiki/MQTT for additional information.
 
-Enhancements:
+### Enhancements
+
 - Ability to subscribe to multiple MQTT topics.
 - Improved look of navigation bar.
 - Charts can be opened in a modal/pop-up window.
 - Current observations can be opened in a modal/pop-up window.
 
-Internal:
+### Internal
+
 - Improved performance of generating charts by caching data across page generation (#107).
 - Removed unused 'suffix' code.
 
-V0.4.1
+## [0.4.1]
 
-Fixes:
+### Fixed
+
 - jas always gets ‘current’ data from the db.
   This fixes the case where a current xtype is in an alternate binding.
   In this case the data to calculate the xtype will never be in the archive record.
 
-Enhancements:
+### Enhancements
+
 - Responsiveness of charts is improved, resulting in small sized charts looking better.
 - Added option to configure the number of columns a section should use.
 
-V0.4.0
+## [0.4.0]
 
-Fixes
+### Fixed
+
 - Provide default values for labels with missing translations.
 - Fix missing translations.
 - Chart information overlapping.
 - Fixed navbar collapse on certain tablets.
 
-New
+### New
+
 - Support bootstrap dark theme.
 - Added an ‘about’ page.
 - Support for user overriding the CSS.
@@ -84,52 +97,70 @@ New
 - Ability to position archive year and archive archive month in navbar.
 - Removed markers from tooltip and update text to match chart
 
-Enhancements
+### Enhancements
+
 - Use bootstrap icons instead of weather-icons.
 
-Internal
+### Internal
+
 - Javascript is generated with Python instead of with Cheetah.
 - Data is generated with Python instead of with Cheetah.
 - Bootstrap version updated to 5.3.0.
 
-V0.3.1
-Enhancements:
+## [0.3.1]
+
+### Enhancements
+
 - Dynamically collapse navbar. (#75)
 - Support unit conversion for individual observations. (#77)
 - Support multiple y axis in user defined charts. (#78)
 - Support data binding for current observations. (#88)
 - Allow label overrides in weewx.conf. (#95)
-Fixes:
+
+### Fixed
+
 - Calculation of wind min and max. (#87)
 - Add jasOptions.gen to install.py. (#89)
 - Memory 'leak' due to Chetah processing of #include. (#96, #98)
-Internal:
+
+### Internal
+
 - Move looping from Cheetah to javascript. (#85)
 
-V0.3.0
-New:
+## [0.3.0]
+
+### New
+
 - Dynamic language display. All 'language based' UI elements are dynamically populated.
   This allows the UI to display based on the browser settings or even based on user choice.
   The data is populated from WeeWX's lang files, so the translation process is the same as other skins.
   Note: Currently user defined charts can only be in one language. See #80
-Enhancements:
+
+### Enhancements
+
 - 'max decimals' is configurable in all tabular data.
 - Improved display of collapsed menu.
 - Legend moved to bottom. Improves display on small screens. (#79)
-Fixes:
+
+### Fixed
+
 - More text is now able to be translated.
-- More dates and times are now able to be formatted. 
+- More dates and times are now able to be formatted.
 - Missing data in 'this date' section. (#55)
 - Y axis no longer fixed at 0. (#72)
 - Correctly handle mqtt payloads with renamed observations. (#66)
 - Current header observation missing in some MQTT messages. (#66)
 - Handle null/None values when determining the min value in a date/time range. (#76)
-Internal:
+
+### Internal
+
 - Ability to output cheetah statements before they are evaluated.
 - Dynamic logging/debugging infrastructure added.
 
-V0.2.3
-Fixes:
+## [0.2.3]
+
+### Fixed
+
 - Reinstated the experimental wind and rain icons in the forecast section. (#36)
 - Add unit labels to the 'this date' section. (#35)
 - Internationalize forecast section (#43)
@@ -138,11 +169,13 @@ Fixes:
 - Translate refresh button (#51)
 - Translate connect/disconnect button (#52)
 - Current, Min/Max, and This Date sections are not responsive (#48)
-Enhancements:
+
+### Enhancements
+
 - Add support for 2 y axis. (#35)
 - Add some default charts.
 - Add some default observations in the 'current', 'min/max', and 'this date' sections.
-- Option to not update 'current' observations from MQTT. 
+- Option to not update 'current' observations from MQTT.
   Useful for 'sum' observations like rain and ET.
 - Dependent javascript library versions are configurable. (#41)
 - Whether to use minified javascript libraries is configurable.
@@ -153,22 +186,29 @@ Enhancements:
 - Close menu on item selection. (#44)
 - Configure 'year to year' x-axis label format. (#47)
 
-V0.2.2-rc03
-Fixes:
+## [0.2.2-rc03]
+
+### Fixed
+
 - Wrong label used for 'summed' observations (#32)
 - Continual learning and cleanup in support of setting data binding.
 - On-going cleanup
-Enhancements:
+
+### Enhancements
+
 - Add examples of charting data in additional datbases.
 - Configure start and end year for multi-year charts. (#30)
 - Support mapping MQTT names to WeeWX names (#34)
 
-V0.2.2-rc02
-Fixes:
+## [0.2.2-rc02]
+
+### Fixed
+
 - Hide year/month drop-down when the associated page(s) are disabled.
 - Handle when the amount of data is less than the interval.  Most common on new installs.
 
-Enhancements:
+### Enhancements
+
 - Allow the landing page to be configured.
 - By default, disable the historical month pages.
 - By default, disable the debug pages.
@@ -178,33 +218,42 @@ Enhancements:
 - Include a favicon.
 - Log generation of additional pages.
 
-V0.2.2-rc01
-Fixes:
+## [0.2.2-rc01]
+
+### Fixed
+
 - Observations in multiple charts can have different data bindings.
 - Fixed bug that caused the same chart to be defined multiple times.
 - Use data binding of the observation to determine its interval.
-Enhancements:
+
+### Enhancements
+
 - Allow pages to be enabled/disabled.
 - Wind rose proof of concept.
 - Added legends.
 - Log generation times.
 
-V0.2.1
-Fixes:
+## [0.2.1]
+
+### Fixed
+
 - Correctly handle months that are shorter than current month.
 - Display current date, not date that html was generated.
-- Fix formstting of current date. 
+- Fix formstting of current date.
 - Internal cleanup.
-Enhancements:
+
+### Enhancements
+
 - Use iframes instead of separate pages.
   This will allow the MQTT connection to persist across 'page' loads.
 - Improve y-axis range.
 - Start of a debug page.
 - Update charts with MQTT data - proof of concept.
 
-V0.2.0-rc01  
-Fixes:
-Enhancements:
+## [0.2.0-rc01]
+
+### Enhancements
+
 - Add support for ECharts as the charting 'engine'.
 - Initial support for updating current values via MQTT.
 - Improved handling of historical charts.
@@ -212,6 +261,7 @@ Enhancements:
 - Add to homescreen "as an application".
 - Auto page reload.
 
-V0.1.0-rc01
+## [0.1.0-rc01]
+
 - Initial Release
   Charting using ApexCharts
